@@ -7,7 +7,13 @@ module.exports = {
   mode: 'jit',
 
   theme: {
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        // Simple 16 column grid
+        'auto-box': 'repeat(autofill, 100px)',
+
+      }
+    }
   },
   plugins: [],
 }

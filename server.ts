@@ -1,22 +1,27 @@
 // server.js
-import express from 'express'
-import next from 'next'
 import axios, { AxiosError } from 'axios'
+import dotenv from 'dotenv'
+import express from 'express'
 import session from 'express-session'
+import next from 'next'
 import { AuthHandler } from './express/handlers/AuthHandler'
+dotenv.config({ path: '.env.local' })
+
+
+
+
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = 'localhost'
-const port = 4001
+const port = parseInt(process.env.PORT || '4001')
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
-const client_secret = '7dEhazy0gYAdBS5rZGTrombUEkwUUut9'
-const client_id = 'license_component'
-const token_endpoint = 'http://localhost:8080/realms/test/protocol/openid-connect/token'
-
-const userEndpoint = 'http://loclahost:4000'
-const licesenDefinitionEndpoint = 'http://localhost:4002'
+const client_secret = process.env.OIDC_CLIENT_SECRET!
+const client_id = process.env.OIDC_CLIENT_ID!
+const token_endpoint = process.env.OIDC_TOKEN_ENDPOINT!
+const userMngEndpoint = process.env.USER_MANAGER_ENDPOINT!
+const deployURL = process.env.DEPLOY_URL!
 
 declare module 'express-session' {
     export interface SessionData {
@@ -42,8 +47,6 @@ app.prepare().then(() => {
         secret: 'keyboard cat',
     }))
 
-
-
     server.get('/user-info', AuthHandler.requireSessison, (req, res) => {
         return res.send(req.session.user)
     })
@@ -61,17 +64,19 @@ app.prepare().then(() => {
                     client_id,
                     client_secret,
                     code,
-                    redirect_uri: 'http://localhost:4001/signIn'
+                    redirect_uri: `${process.env.DEPLOY_URL}/signIn`
                 },
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
             const access_token = resp.data.access_token
+            console.log({ access_token })
             req.session.access_token = access_token
             return res.send()
         } catch (err: any) {
-            return res.status(err.response.statusCode).send(err.response.data)
+            console.log(err.response.data)
+            return res.status(err.response.status).send(err.response.data)
         }
 
     })
@@ -81,7 +86,7 @@ app.prepare().then(() => {
         const definition_path = '/license-definitions'
         try {
             // get users from user service with axios and use context_path
-            const resp = await axios.get(`${userEndpoint}${context_path}`, {
+            const resp = await axios.get(`${userMngEndpoint}${context_path}`, {
                 headers: {
                     Authoriation: `Bearer ${req.session.access_token}`
                 }
@@ -104,26 +109,6 @@ app.prepare().then(() => {
 
     })
 
-    server.get('/license-definition', AuthHandler.requireSessison, async (req, res) => {
-        const definition_path = '/license-definitions'
-        try {
-            // get defintion from license-definition service with axios and use definition_path
-            const resp2 = await axios.get(`${licesenDefinitionEndpoint}${definition_path}`, {
-                headers: {
-                    Authoriation: `Bearer ${req.session.access_token}`
-                }
-            }
-            )
-
-            return res.json(resp2.data)
-        } catch (err) {
-            // check if Axios error
-            if (err instanceof AxiosError) {
-                return res.status(err.response?.status!).send(err.response?.data)
-            }
-            return res.status(500).send()
-        }
-    })
 
 
 

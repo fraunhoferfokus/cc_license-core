@@ -21,12 +21,11 @@ export default function SignIn() {
 
     }, [code])
 
+    const auth_url = `http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=openid profile email&client_id=license-core&redirect_uri=http://localhost:3000/signIn`;
 
     return <>
         <div className="bg-[#e7ebef] flex items-center justify-center h-[100%]">
-            <Button variant="contained" href={`
-            http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=openid profile email&client_id=license_component&redirect_uri=http://localhost:4001/signIn
-            `}>Sign In with Keycloak</Button>
+            <Button variant="contained" href={auth_url}>Sign In with Keycloak</Button>
         </div>
     </>
 
