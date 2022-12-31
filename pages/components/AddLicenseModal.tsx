@@ -4,8 +4,10 @@ import { Button, MenuItem, Paper, Select, TextField, Tooltip } from "@mui/materi
 import axios from 'axios';
 import { useState } from "react";
 import CustomModal from "./CustomModal";
-
+import { useStore } from "../zustand/store";
 export default function AddLicenseModal({ open, setOpen }: any) {
+
+    const { fetchLicenseDefinitions } = useStore(state => state)
 
     const [users, setUsers] = useState([])
 
@@ -96,7 +98,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                             >
                                 {licenseDefinitions.map((el: any, index) => {
                                     let element = el[0]
-                                    let metadata = element.metadata.lom
+                                    let metadata = element.metadata
                                     let image = metadata.annotation[1].description.value
                                     console.log(image)
                                     return (
@@ -184,14 +186,12 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                 }
 
                                                 for (const el of data) {
-                                                    const resp = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/urn:bilo:medium:${el[0].data.product_id}`)
-                                                    el[0].metadata = resp.data.data
+                                                    const resp = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/${el[0].data.product_id}`)
+                                                    el[0].metadata = resp.data.data.lom
                                                 }
-                                                console.log({ data })
                                                 setLicenseDefinitions(data)
+                                                fetchLicenseDefinitions()
                                             })
-
-
                                             .catch((e) => {
                                                 setElement((el) => ({ ...el, isValidDownloadID: false }))
                                             })

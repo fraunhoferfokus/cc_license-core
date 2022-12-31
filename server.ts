@@ -71,7 +71,7 @@ app.prepare().then(() => {
                 }
             })
             const access_token = resp.data.access_token
-            console.log({ access_token })
+
             req.session.access_token = access_token
             return res.send()
         } catch (err: any) {
