@@ -1,28 +1,46 @@
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
-import { Box, Divider, MenuItem, Modal, Paper, Select, Typography } from '@mui/material'
+import { Autocomplete, Box, MenuItem, Paper, Select, TextField } from '@mui/material'
 import { RequestContext } from 'next/dist/server/base-server'
-import { useEffect, useState } from 'react'
-import { Transition } from 'react-transition-group'
-import { useStore } from './zustand/store';
+import dynamic from 'next/dynamic'
+import { useEffect, useRef, useState } from 'react'
+import { isTemplateExpression } from 'typescript'
 import { requireSession } from './auth-mw/auth'
 import AddLicenseModal from './components/AddLicenseModal'
+import LicenseAssignmentGroup from './components/LicenseAssigmentGroup'
+import LicenseAssignmentUser from './components/LicenseAssignmentUser'
 import { toBILO } from './helper/helper'
+import { useStore } from './zustand/store'
 
-export default function Home({ user }: { user: any }) {
 
-  const [users, setUsers] = useState([])
+export default dynamic(() => Promise.resolve(Home), {
+  ssr: false
+})
+
+
+function Home({ user }: { user: any }) {
   const [open, setOpen] = useState(false);
-  const { licenseDefinitions, fetchLicenseDefinitions } = useStore(state => state)
+  const { licenseDefinitions, fetchLicenseDefinitions, users, fetchUsers, groups } = useStore(state => state)
   const [pickedLicense, setPickedLicense] = useState<any>(null)
+
+  const [pickedSelect, setPickedSelect] = useState('placeholder')
+  const [selectedUsers, setSelectedUsers] = useState<any>([])
+  const [selectedGroups, setSelectedGroups] = useState<any>([])
 
   let constraints = pickedLicense?.permissions[0]?.constraints
 
 
 
+
   let bilo = toBILO(pickedLicense)
+
+
+
+  const autoC = useRef(null);
+
 
   useEffect(() => {
     fetchLicenseDefinitions()
+    fetchUsers()
   }, [])
 
   return (
@@ -83,6 +101,7 @@ export default function Home({ user }: { user: any }) {
                 const metadata = ele.metadata
                 return (
                   <div
+                    key={ele.policyid}
                     style={
                       {
                         borderBottom: pickedLicense?.policyid === ele.policyid ? '2px solid #3f51b5' : 'none',
@@ -90,32 +109,30 @@ export default function Home({ user }: { user: any }) {
                       }
                     }
                     className="flex justify-center items-center"
+                  ><Paper
+                    sx={
+                      {
+                        backgroundColor: 'white',
+                        borderRadius: '10px',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '90px',
+                        height: '90px',
+                        border: '1px solid #e7ebef',
+                        position: 'relative',
+                        backgroundImage: `url(${metadata.annotation[1].description.value})`,
+                        opacity: pickedLicense?.policyid === ele.policyid ? 1 : 0.5,
+                      }
+                    }
+                    className="hover:opacity-100 transition-all duration-300 cursor-pointer"
+                    onClick={() => {
+                      setPickedLicense(ele)
+                      
+                    }}
                   >
 
-                    <Paper
-                      sx={
-                        {
-                          backgroundColor: 'white',
-                          borderRadius: '10px',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          width: '90px',
-                          height: '90px',
-                          border: '1px solid #e7ebef',
-                          position: 'relative',
-                          backgroundImage: `url(${metadata.annotation[1].description.value})`,
-                          opacity: pickedLicense?.policyid === ele.policyid ? 1 : 0.5,
-                        }
-                      }
-                      className="hover:opacity-100 transition-all duration-300 cursor-pointer"
-                      onClick={() => {
-                        setPickedLicense(ele)
-                      }}
-                    >
 
-
-                    </Paper>
-                  </div>
+                    </Paper></div>
 
                 )
 
@@ -163,7 +180,7 @@ export default function Home({ user }: { user: any }) {
 
         </div>
 
-        <div className='flex flex-col gap-2 flex-1'>
+        <div className='flex flex-col gap-2 flex-1 min-h-0'>
           <div className='flex gap-5'>
             <Paper className="basis-[50%] p-4  border-box text-center">
               Zuweisung Verwalten
@@ -172,17 +189,104 @@ export default function Home({ user }: { user: any }) {
             </Paper>
           </div>
 
-          <div className='flex gap-5 h-full'>
-            <Paper className="basis-[50%] p-[2%]">
-              <Select defaultValue={'nutzer'}>
-                <MenuItem value={'nutzer'} selected={
-                  bilo.lizenzTyp !== 'Gruppenlizenz' && true}>Nutzer</MenuItem>
-                <MenuItem value={'gruppe'}>Gruppe</MenuItem>
+          <div className='flex gap-5 basis-[50%] min-h-0'>
+            <Paper className="basis-[50%] p-[2%] flex flex-row justify-center items-center overflow-scroll">
+              <Select
+                placeholder='Wählen Sie zunächst eine Lizenz aus ...'
+                disabled={!pickedLicense}
+                onChange={(e) => {
+                  setPickedSelect(e.target.value)
+
+                  // @ts-ignore
+                  const ref:any = autoC.current
+                  const cross = ref.getElementsByClassName('MuiAutocomplete-clearIndicator')[0]
+                  if(cross) cross.click()
+
+                }}
+                value={pickedSelect}
+
+
+
+              >
+                <MenuItem value={'user'}
+                
+                  disabled={bilo.lizenzTyp === 'Gruppenlizenz'}
+                >
+                  Nutzer
+                </MenuItem>
+                <MenuItem value={'group'}
+                >
+                  Gruppe
+                </MenuItem>
+                <MenuItem value={'placeholder'}
+                  disabled={true}
+                  hidden={true}
+                  className='hidden'
+                >
+                  Wählen Sie zunächst eine Lizenz  aus ...
+                </MenuItem>
 
               </Select>
+
+
+
+
+              <Autocomplete
+                className='w-[100%] p-2'
+                //@ts-ignore
+                multiple={true}
+                renderInput={(params) => <TextField {...params} label="Search" />}
+                ref={autoC}
+                options={
+                  pickedSelect === 'user' ? users.map((user) => {
+                    return { label: user.email, value: user.id }
+
+                  }) : groups.map((group) => {
+                    return { label: group.displayName, value: group.id }
+                  }
+
+                  )
+                }
+                onChange={(e, value) => {
+                  if (pickedSelect === 'user') {
+                    // if array empty
+                    if (value.length === 0) {
+                      setSelectedUsers(users)
+
+                    } else {
+
+                      setSelectedUsers(value.map((item: any) => ({ email: item.label, id: item.value })))
+                    }
+                  } if (pickedSelect === 'group') {
+                    // if array empty
+                    if (value.length === 0) {
+                      setSelectedUsers(groups)
+                    } else {
+                      setSelectedGroups(value.map((item: any) => ({ email: item.label, id: item.value })))
+
+                    }
+                  }
+                }}
+              />
+
+
+
+
+
+
             </Paper>
-            <Paper className="basis-[50%] p-[2%]">
-              2
+            <Paper className="basis-[50%] p-[2%] flex flex-col min-h-0 overflow-scroll">
+              {pickedSelect === 'user' &&
+                <LicenseAssignmentUser
+                  selectedUsers={selectedUsers}
+                />
+              }
+
+              {pickedSelect === 'group' &&
+                <LicenseAssignmentGroup
+                  filteredGroups={selectedGroups}
+                />
+              }
             </Paper>
           </div>
 
@@ -198,14 +302,13 @@ export default function Home({ user }: { user: any }) {
 
 export async function getServerSideProps(context: RequestContext) {
   return requireSession(context).then((props) => {
-    console.log({ props })
     // fetch users with axios
     // axios.get('http://localhost:3000/api/users').then((res) => {
-    //   console.log(res.data)
     // })
     return props
 
   })
 }
+
 
 

@@ -5,8 +5,12 @@ import { persist } from 'zustand/middleware'
 interface State {
     licenseDefinitions: any[],
     licenseAssignment: any[],
-    fetchLicenseDefinitions: () => any
-    fetchLicenseAssignments: () => any
+    fetchLicenseDefinitions: () => any,
+    fetchLicenseAssignments: () => any,
+    users: any[],
+    groups: any[],
+    fetchUsers: () => any,
+
 }
 
 export const useStore = create<State>()(
@@ -57,8 +61,27 @@ export const useStore = create<State>()(
             fetchLicenseAssignments: async () => {
 
             },
+            users: [],
+            groups: [],
+            fetchUsers: async () => {
+                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/context`)
+                set({ users: resp.data })
+
+                let groups: any[] = []
+                for (const user of resp.data) {
+                    for (const group of user.gruppen) {
+                        if (!groups.find((item: any) => item.id === group.id)) {
+                            groups.push(group)
+                        }
+                    }
+
+                }
 
 
+                set({ groups })
+
+
+            }
         }),
         {
             name: 'license-storage',

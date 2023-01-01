@@ -109,6 +109,13 @@ app.prepare().then(() => {
 
     })
 
+    server.get('/license-assignment', (req, res, next) => {
+
+    })
+
+
+
+
 
 
 
