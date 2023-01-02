@@ -5,6 +5,7 @@ import { LicenseDefinitionModel } from "license_manager";
 import next from "next";
 import LicenseAssignmentDAO from "../models/LicenseAssignmentDAO";
 import { v4 as uuid } from 'uuid'
+import { userAgent } from "next/server";
 
 
 class LicenseAssignmentController {
@@ -44,7 +45,6 @@ class LicenseAssignmentController {
 
     createLicenseAssignment: express.Handler = async (req, res, next) => {
         try {
-            console.log('creating happy')
             const { licenseDefinitionID, targetID } = req.body
 
             const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseDefinitionID}`)).data
@@ -53,9 +53,8 @@ class LicenseAssignmentController {
             // check if licenseDefinition is a for group or for user
             const permissions = licenseDefinition.permissions!
             const licenseType = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose')!.rightoperand
-            
-            console.log(licenseDefinition.permissions![0].constraints)
-            const amount = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/count')!.rightoperand
+
+            const amount = parseInt(permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/count')!.rightoperand!)
             const role = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')?.rightoperand
             const assigner = permissions[0].assigner
 
@@ -85,6 +84,7 @@ class LicenseAssignmentController {
 
             switch (licenseType) {
                 case 'Einzellizenz':
+                case 'Volumenlizenz':
                     const found = licenseAssignments.find((assignment) => assignment.inheritfrom === licenseDefinitionID)
                     const user = (await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users/${targetID}`)).data
                     if (found) return res.status(400).json({ message: 'Single-License already assigned' })
@@ -93,10 +93,54 @@ class LicenseAssignmentController {
                     }
                     await LicenseAssignmentDAO.create(toBeCreated)
                     break;
-                case 'Volumenlizenz':
-
-                    break;
                 case 'Gruppenlizenz':
+                    const promiseArr: any[] = []
+                    const alreadyHave = licenseAssignments.find((assignment) =>
+                        assignment.inheritfrom === licenseDefinitionID &&
+                        assignment.permissions![0].assignee === targetID
+                    )
+
+                    if (alreadyHave) {
+                        return res.status(400).json({ message: 'That group is already enrolled to that license-defintion' })
+
+                    }
+
+                    const count = licenseAssignments.filter((assignment) =>
+                        assignment.inheritfrom === licenseDefinitionID
+                        && assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')).length
+
+                    if (count >= amount) {
+                        return res.status(400).json({ message: 'No more licenses available to enroll to group' })
+                    }
+
+                    // create for every user 
+                    const group: any = (await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups/${targetID}`)).data
+                    for (const user of group.users) {
+
+                        // check whether already assignment for that user exist and skip
+                        const curr: any = user
+                        const found = licenseAssignments.find((assignment) => assignment.inheritfrom === licenseDefinitionID &&
+                            assignment.permissions![0].assignee === curr.id
+                        )
+
+                        if (!found) {
+                            const unique = uuid()
+                            const userAssingment: LicenseDefinitionModel = JSON.parse(JSON.stringify({ ...toBeCreated, _id: unique, policyid: unique })) as LicenseDefinitionModel
+                            userAssingment.permissions![0].assignee = curr.id
+                            promiseArr.push(LicenseAssignmentDAO.create(userAssingment))
+                        }
+                    }
+
+
+                    toBeCreated.permissions![0].constraints?.push({
+                        "name": "http://www.w3.org/ns/odrl/2/recipient",
+                        "operator": "eq",
+                        "rightoperand": "group"
+                    })
+
+                    console.log(toBeCreated.permissions![0].assignee)
+                    promiseArr.push(LicenseAssignmentDAO.create(toBeCreated))
+                    await Promise.all(promiseArr)
                     break;
             }
 
@@ -110,31 +154,49 @@ class LicenseAssignmentController {
 
     deleteLicenseAssignment: express.Handler = async (req, res, next) => {
         try {
+            const licenseAssignments = await LicenseAssignmentDAO.findAll()
             const licenseAssignment = await LicenseAssignmentDAO.findById(req.params.id)
             const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseAssignment.inheritfrom}`)).data
             const permissions = licenseDefinition.permissions!
             const licenseType = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose')!.rightoperand
-            const amount = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/amount')!.rightoperand
+            const amount = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/count')!.rightoperand
             const role = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')?.rightoperand
             const assigner = permissions[0].assigner
 
             switch (licenseType) {
                 case 'Einzellizenz':
+                case 'Volumenlizenz':
                     if (licenseAssignment!.permissions![0].constraints!.find((constraint) => constraint.rightoperand === 'activated')) {
                         return res.status(400).json({ message: 'License is already activated and cannot be deleted...' })
                     }
                     await LicenseAssignmentDAO.deleteById(req.params.id)
                     break;
-                case 'Volumenlizenz':
-
-                    break;
                 case 'Gruppenlizenz':
+                    // create for every user 
+                    const promiseArr: any[] = []
+                    const group: any = (await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups/${licenseAssignment.permissions![0].assignee}`)).data
+                    for (const user of group.users) {
+                        const userLicenseAssignment = licenseAssignments.find((item) =>
+                            item.permissions![0].assignee === user.id
+                        )!
+
+                        // check whether one has already been activated!
+                        // if (!userLicenseAssignment?.permissions![0].constraints?.find((item) => item.name === 'http://www.w3.org/ns/odrl/2/event' && item.rightoperand === 'deactivated')) {
+                        //     return res.status(400).json({ message: 'Die Rückweisung funktioniert nicht, da einer der User schon die Gruppenlizenz aktiviert hat..' })
+
+                        // }
+                        promiseArr.push(LicenseAssignmentDAO.deleteById(userLicenseAssignment._id))
+                    }
+                    promiseArr.push(LicenseAssignmentDAO.deleteById(licenseAssignment._id))
+
+                    await Promise.all(promiseArr)
                     break;
             }
 
             return res.status(204).send()
 
         } catch (err: any) {
+            console.log(err)
             return res.status(err?.response?.statusCode || 500).json(err)
         }
     }

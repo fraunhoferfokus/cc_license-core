@@ -4,33 +4,46 @@ import { LicenseDefinitionModel } from "license_manager"
 import { useState } from "react"
 import { useStore } from "../zustand/store"
 
-export default function LicenseAssignmentUser({ selectedUsers, pickedLicense, bilo,
+export default function LicenseAssignmentUser({
+    selectedUsers,
+    pickedLicenses,
+    bilo,
     currentlyAssignedAmount
+
 }: {
-    selectedUsers: any, pickedLicense: LicenseDefinitionModel, bilo: any,
+    selectedUsers: any,
+    pickedLicenses: LicenseDefinitionModel[],
+    bilo: any,
     currentlyAssignedAmount: any
 }) {
-    const { users, groups, licenseAssignments, createLicenseAssignment } = useStore(state => state)
+    const { users, groups, licenseAssignments, createLicenseAssignment, deleteLicenseAssignment } = useStore(state => state)
 
-    const [dialogBoxProperties, setDialogBoxProperties] = useState<{ open: boolean, value: string | null }>({
+    const [dialogBoxProperties, setDialogBoxProperties] = useState<{
+        open: boolean,
+        value: string | null,
+        userHasThisParticularLicense: any,
+    }>({
         open: false,
-        value: null
+        value: null,
+        userHasThisParticularLicense: null
     })
 
     const role = bilo.sonderlizenz
 
-
-
-
     return (
         <>
             {selectedUsers.map((user: any) => {
-                console.log(user.id)
-                const licenseAssignment = licenseAssignments.find((assignment) => {
+                const userLicenseAssignments = licenseAssignments.filter((assignment) => {
                     return assignment.permissions![0].assignee === user.id
                 })
 
+                const userHasThisParticularLicense =
+                    userLicenseAssignments.find((userAssignment) => {
+                        return pickedLicenses.find((license) => license.policyid === userAssignment.inheritfrom)
+                    })
+
                 return (<Paper className="flex"
+                    key={user.id}
                     square
                     variant="outlined"
                 >
@@ -39,18 +52,32 @@ export default function LicenseAssignmentUser({ selectedUsers, pickedLicense, bi
                         disabled={
                             role && !user?.gruppen.find((gruppe: any) => gruppe.rolle === role)
                             ||
-                            currentlyAssignedAmount === bilo.lizenzanzahl && !licenseAssignment
+                            currentlyAssignedAmount === bilo.lizenzanzahl && !userHasThisParticularLicense
                         }
                         checked={
-                            licenseAssignment ? true : false
+                            userHasThisParticularLicense ? true : false
                         }
                         value={user.id}
                         onChange={
                             (e) => {
                                 if (!e.target.checked) {
-                                    setDialogBoxProperties(() => ({ open: true, value: e.target.value }))
+                                    setDialogBoxProperties(() => ({
+                                        open: true, value: e.target.value,
+                                        userHasThisParticularLicense
+                                    }))
                                 } else {
-                                    // createLicenseAssignment(pickedLicense._id, e.target.value)
+                                    if (bilo.lizenzTyp === 'Einzellizenz') {
+                                        let tempLicense = pickedLicenses[0]
+                                        createLicenseAssignment(tempLicense._id, e.target.value)
+                                    } else {
+                                        // volumelizenz
+                                        let tempLicense = pickedLicenses.find((license) =>
+                                            !licenseAssignments.find((assignment) => assignment.inheritfrom === license.policyid)
+
+                                        )!
+                                        createLicenseAssignment(tempLicense._id, e.target.value)
+
+                                    }
                                 }
                             }
                         }
@@ -85,12 +112,13 @@ export default function LicenseAssignmentUser({ selectedUsers, pickedLicense, bi
                 <DialogActions>
                     <Button onClick={
                         () => {
-                            setDialogBoxProperties(() => ({ open: false, value: null }))
+                            deleteLicenseAssignment(dialogBoxProperties.userHasThisParticularLicense.policyid)
+                            setDialogBoxProperties((props) => ({ ...props, open: false, value: null }))
                         }
                     }>Zustimmen</Button>
                     <Button onClick={
                         () => {
-                            setDialogBoxProperties(() => ({ open: false, value: null }))
+                            setDialogBoxProperties((props) => ({ ...props, open: false, value: null }))
                         }
                     } autoFocus>
                         Abbrechen

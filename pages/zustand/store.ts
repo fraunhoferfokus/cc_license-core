@@ -12,7 +12,7 @@ interface State {
     groups: any[],
     fetchUsers: () => any,
     createLicenseAssignment: (licenseDefinitionID: string, targetID: string) => any,
-
+    deleteLicenseAssignment: (licenseAssignmentID: string) => any,
 }
 
 export const useStore = create<State>()(
@@ -89,8 +89,14 @@ export const useStore = create<State>()(
                 axios.post(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`, {
                     licenseDefinitionID,
                     targetID
+                }).then(async () => {
+                    get().fetchLicenseAssignments()
                 })
-                get().fetchLicenseAssignments()
+            },
+            deleteLicenseAssignment(licenseAssignmentID: string) {
+                axios.delete(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments/${licenseAssignmentID}`).then(async () => {
+                    get().fetchLicenseAssignments()
+                })
             }
         }),
         {

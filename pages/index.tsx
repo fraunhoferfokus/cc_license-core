@@ -26,17 +26,21 @@ function Home({ user }: { user: any }) {
 
   const [pickedSelect, setPickedSelect] = useState('placeholder')
   const [selectedUsers, setSelectedUsers] = useState<any>(users)
-  const [selectedGroups, setSelectedGroups] = useState<any>(groups)
+  const [selectedGroups, setSelectedGroups] = useState<any>([])
 
   let constraints = pickedLicenses ? pickedLicenses[0]?.permissions[0]?.constraints : null
 
   let pickedLicense = pickedLicenses ? pickedLicenses[0] : null
   let bilo = toBILO(pickedLicense)
   const currentlyAssignedAmount =
-    bilo.lizenzTyp === 'Einzellizenz' || bilo.lizenzTyp === 'Gruppenlizenz' ?
+    bilo.lizenztyp === 'Einzellizenz' ?
       licenseAssignments?.filter((item) => item.inheritfrom! === pickedLicense?._id).length
       :
-      pickedLicenses?.filter((license: any) => licenseAssignments.find((assignment) => assignment.inheritfrom === license.policyid)).length
+      bilo.lizenztyp === 'Gruppenlizenz' ? licenseAssignments?.filter((item) => item.inheritfrom! === pickedLicense?._id &&
+        item.permissions![0]!.constraints?.find((item) => item.name === 'http://www.w3.org/ns/odrl/2/recipient')
+      ).length :
+
+        pickedLicenses?.filter((license: any) => licenseAssignments.find((assignment) => assignment.inheritfrom === license.policyid)).length
 
   const autoC = useRef(null);
 
@@ -245,7 +249,7 @@ function Home({ user }: { user: any }) {
               >
                 <MenuItem value={'user'}
 
-                  disabled={bilo.lizenzTyp === 'Gruppenlizenz'}
+                  disabled={bilo.lizenztyp === 'Gruppenlizenz'}
                 >
                   Nutzer
                 </MenuItem>
@@ -288,18 +292,15 @@ function Home({ user }: { user: any }) {
                     // if array empty
                     if (value.length === 0) {
                       setSelectedUsers(users)
-
                     } else {
-
                       setSelectedUsers(value.map((item: any) => ({ email: item.label, id: item.value })))
                     }
                   } if (pickedSelect === 'group') {
                     // if array empty
                     if (value.length === 0) {
-                      setSelectedUsers(groups)
+                      setSelectedGroups([])
                     } else {
-                      setSelectedGroups(value.map((item: any) => ({ email: item.label, id: item.value })))
-
+                      setSelectedGroups(value.map((item: any) => ({ displayName: item.label, id: item.value })))
                     }
                   }
                 }}
@@ -316,14 +317,18 @@ function Home({ user }: { user: any }) {
                 <LicenseAssignmentUser
                   currentlyAssignedAmount={currentlyAssignedAmount}
                   selectedUsers={selectedUsers}
-                  pickedLicense={pickedLicenses}
+                  pickedLicenses={pickedLicenses}
                   bilo={bilo}
                 />
               }
 
               {pickedSelect === 'group' &&
                 <LicenseAssignmentGroup
-                  filteredGroups={selectedGroups}
+                  currentlyAssignedAmount={currentlyAssignedAmount}
+                  selectedGroups={selectedGroups}
+                  pickedLicenses={pickedLicenses}
+                  bilo={bilo}
+
                 />
               }
             </Paper>
