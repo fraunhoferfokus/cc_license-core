@@ -1,15 +1,17 @@
 import axios from 'axios'
+import { LicenseDefinitionModel } from 'license_manager'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface State {
     licenseDefinitions: any[],
-    licenseAssignment: any[],
+    licenseAssignments: LicenseDefinitionModel[],
     fetchLicenseDefinitions: () => any,
     fetchLicenseAssignments: () => any,
     users: any[],
     groups: any[],
     fetchUsers: () => any,
+    createLicenseAssignment: (licenseDefinitionID: string, targetID: string) => any,
 
 }
 
@@ -17,7 +19,7 @@ export const useStore = create<State>()(
     persist(
         (set, get, props) => ({
             licenseDefinitions: [],
-            licenseAssignment: [],
+            licenseAssignments: [],
             fetchLicenseDefinitions: async () => {
                 const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseDefinitions`)
                 let data = resp.data
@@ -59,12 +61,13 @@ export const useStore = create<State>()(
                 set({ licenseDefinitions: data })
             },
             fetchLicenseAssignments: async () => {
-
+                const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`)
+                set({ licenseAssignments: resp.data })
             },
             users: [],
             groups: [],
             fetchUsers: async () => {
-                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/context`)
+                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`)
                 set({ users: resp.data })
 
                 let groups: any[] = []
@@ -81,6 +84,13 @@ export const useStore = create<State>()(
                 set({ groups })
 
 
+            },
+            createLicenseAssignment(licenseDefinitionID: string, targetID: string) {
+                axios.post(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`, {
+                    licenseDefinitionID,
+                    targetID
+                })
+                get().fetchLicenseAssignments()
             }
         }),
         {

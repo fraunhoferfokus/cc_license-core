@@ -1,11 +1,13 @@
 // server.js
-import axios, { AxiosError } from 'axios'
 import dotenv from 'dotenv'
+dotenv.config({ path: '.env.local' })
+
+import axios, { AxiosError } from 'axios'
 import express from 'express'
 import session from 'express-session'
 import next from 'next'
+import licenseAssigmentsCtrl from './express/controllers/licenseAssigmentsCtrl'
 import { AuthHandler } from './express/handlers/AuthHandler'
-dotenv.config({ path: '.env.local' })
 
 
 
@@ -75,45 +77,14 @@ app.prepare().then(() => {
             req.session.access_token = access_token
             return res.send()
         } catch (err: any) {
+            console.log(err)
             console.log(err.response.data)
-            return res.status(err.response.status).send(err.response.data)
+            return res.status(err.response.statusCode).send(err.response.data)
         }
 
     })
 
-    server.get('/user-context', AuthHandler.requireSessison, async (req, res) => {
-        const context_path = '/users'
-        const definition_path = '/license-definitions'
-        try {
-            // get users from user service with axios and use context_path
-            const resp = await axios.get(`${userMngEndpoint}${context_path}`, {
-                headers: {
-                    Authoriation: `Bearer ${req.session.access_token}`
-                }
-            })
-            // get defintion from license-definition service with axios and use definition_path
-            // const resp2 = await axios.get(`${licesenDefinitionEndpoint}${definition_path}`, {
-            //     headers: {
-            //         Authoriation: `Bearer ${req.session.access_token}`
-            //     }
-            // })
-            return res.json(resp.data)
-        } catch (err) {
-            // check if Axios error
-            if (err instanceof AxiosError) {
-                return res.status(err.response?.status!).send(err.response?.data)
-            }
-            return res.status(500).send()
-        }
-
-
-    })
-
-    server.get('/license-assignment', (req, res, next) => {
-
-    })
-
-
+    server.use('/license-assignments', licenseAssigmentsCtrl)
 
 
 

@@ -19,21 +19,24 @@ export default dynamic(() => Promise.resolve(Home), {
 
 function Home({ user }: { user: any }) {
   const [open, setOpen] = useState(false);
-  const { licenseDefinitions, fetchLicenseDefinitions, users, fetchUsers, groups } = useStore(state => state)
-  const [pickedLicense, setPickedLicense] = useState<any>(null)
+  const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsers, groups,
+    licenseAssignments
+  } = useStore(state => state)
+  const [pickedLicenses, setPickedLicenses] = useState<any>(null)
 
   const [pickedSelect, setPickedSelect] = useState('placeholder')
-  const [selectedUsers, setSelectedUsers] = useState<any>([])
-  const [selectedGroups, setSelectedGroups] = useState<any>([])
+  const [selectedUsers, setSelectedUsers] = useState<any>(users)
+  const [selectedGroups, setSelectedGroups] = useState<any>(groups)
 
-  let constraints = pickedLicense?.permissions[0]?.constraints
+  let constraints = pickedLicenses ? pickedLicenses[0]?.permissions[0]?.constraints : null
 
-
-
-
+  let pickedLicense = pickedLicenses ? pickedLicenses[0] : null
   let bilo = toBILO(pickedLicense)
-
-
+  const currentlyAssignedAmount =
+    bilo.lizenzTyp === 'Einzellizenz' || bilo.lizenzTyp === 'Gruppenlizenz' ?
+      licenseAssignments?.filter((item) => item.inheritfrom! === pickedLicense?._id).length
+      :
+      pickedLicenses?.filter((license: any) => licenseAssignments.find((assignment) => assignment.inheritfrom === license.policyid)).length
 
   const autoC = useRef(null);
 
@@ -41,7 +44,22 @@ function Home({ user }: { user: any }) {
   useEffect(() => {
     fetchLicenseDefinitions()
     fetchUsers()
+    fetchLicenseAssignments()
+
   }, [])
+
+  useEffect(() => {
+    // @ts-ignore
+    const ref: any = autoC.current
+    const cross = ref.getElementsByClassName('MuiAutocomplete-clearIndicator')[0]
+    if (cross) {
+      cross.click()
+    }
+
+
+
+  }, [pickedSelect])
+
 
   return (
     <>
@@ -58,7 +76,7 @@ function Home({ user }: { user: any }) {
             </Paper>
           </div>
 
-          <div className='flex gap-5 min-h-0
+          <div className='flex gap-5 min-h-0 flex-1
           '>
             <Paper className="basis-[50%] p-[2%] 
             grid grid-cols-[repeat(auto-fill,100px)]
@@ -126,8 +144,8 @@ function Home({ user }: { user: any }) {
                     }
                     className="hover:opacity-100 transition-all duration-300 cursor-pointer"
                     onClick={() => {
-                      setPickedLicense(ele)
-                      
+                      setPickedLicenses(el)
+
                     }}
                   >
 
@@ -185,11 +203,32 @@ function Home({ user }: { user: any }) {
             <Paper className="basis-[50%] p-4  border-box text-center">
               Zuweisung Verwalten
             </Paper>
-            <Paper className="basis-[50%] invisible">
+            <Paper className="basis-[50%] p-2 flex flex-row justify-between">
+              <p>
+                Currently Assigned:
+                <b>
+                  {currentlyAssignedAmount}
+                </b>
+              </p>
+              <p>
+                Still available: <b>
+
+                  {bilo.lizenzanzahl && bilo.lizenzanzahl - currentlyAssignedAmount}
+                </b>
+              </p>
+
+              <p>
+                Activated:
+                <b>
+
+                  {/* {bilo.lizenzanzahl && bilo.lizenzanzahl - currentlyAssignedAmount} */}
+                </b>
+              </p>
+
             </Paper>
           </div>
 
-          <div className='flex gap-5 basis-[50%] min-h-0'>
+          <div className='flex gap-5 min-h-0 flex-1'>
             <Paper className="basis-[50%] p-[2%] flex flex-row justify-center items-center overflow-scroll">
               <Select
                 placeholder='Wählen Sie zunächst eine Lizenz aus ...'
@@ -197,10 +236,6 @@ function Home({ user }: { user: any }) {
                 onChange={(e) => {
                   setPickedSelect(e.target.value)
 
-                  // @ts-ignore
-                  const ref:any = autoC.current
-                  const cross = ref.getElementsByClassName('MuiAutocomplete-clearIndicator')[0]
-                  if(cross) cross.click()
 
                 }}
                 value={pickedSelect}
@@ -209,7 +244,7 @@ function Home({ user }: { user: any }) {
 
               >
                 <MenuItem value={'user'}
-                
+
                   disabled={bilo.lizenzTyp === 'Gruppenlizenz'}
                 >
                   Nutzer
@@ -248,6 +283,7 @@ function Home({ user }: { user: any }) {
                   )
                 }
                 onChange={(e, value) => {
+                  console.log(value.length)
                   if (pickedSelect === 'user') {
                     // if array empty
                     if (value.length === 0) {
@@ -278,7 +314,10 @@ function Home({ user }: { user: any }) {
             <Paper className="basis-[50%] p-[2%] flex flex-col min-h-0 overflow-scroll">
               {pickedSelect === 'user' &&
                 <LicenseAssignmentUser
+                  currentlyAssignedAmount={currentlyAssignedAmount}
                   selectedUsers={selectedUsers}
+                  pickedLicense={pickedLicenses}
+                  bilo={bilo}
                 />
               }
 
