@@ -21,7 +21,7 @@ export default function SignIn() {
 
     }, [code])
 
-    const auth_url = `http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=openid profile email&client_id=license-core&redirect_uri=http://localhost:3000/signIn`;
+    const auth_url = `${process.env.NEXT_PUBLIC_BASE_OIDC}/realms/test/protocol/openid-connect/auth?response_type=code&scope=openid profile email&client_id=${process.env.NEXT_PUBLIC_OIDC_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI}`;
 
     return <>
         <div className="bg-[#e7ebef] flex items-center justify-center h-[100%]">

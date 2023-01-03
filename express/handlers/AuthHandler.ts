@@ -8,7 +8,7 @@ export class AuthHandler {
     static requireSessison: Handler = async (req, res, next) => {
         if (req.session.access_token) {
             try {
-                const resp = await axios.get('http://localhost:8080/realms/test/protocol/openid-connect/userinfo', {
+                const resp = await axios.get(`${process.env.OIDC_USERINFO_ENDPOINT}`, {
                     headers: {
                         Authorization: `Bearer ${req.session.access_token}`
                     }

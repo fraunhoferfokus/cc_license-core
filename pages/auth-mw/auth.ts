@@ -17,6 +17,7 @@ export async function requireSession(context: RequestContext) {
         }
 
     } catch (err) {
+        console.log(err)
         return {
             redirect: {
                 destination: '/signIn',

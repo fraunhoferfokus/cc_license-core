@@ -2,13 +2,13 @@
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
 
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import express from 'express'
 import session from 'express-session'
 import next from 'next'
+import launchCtrl from './express/controllers/launchCtrl'
 import licenseAssigmentsCtrl from './express/controllers/licenseAssigmentsCtrl'
 import { AuthHandler } from './express/handlers/AuthHandler'
-import launchCtrl from './express/controllers/launchCtrl'
 
 
 
@@ -23,7 +23,6 @@ const handle = app.getRequestHandler()
 const client_secret = process.env.OIDC_CLIENT_SECRET!
 const client_id = process.env.OIDC_CLIENT_ID!
 const token_endpoint = process.env.OIDC_TOKEN_ENDPOINT!
-const userMngEndpoint = process.env.USER_MANAGER_ENDPOINT!
 const deployURL = process.env.DEPLOY_URL!
 
 declare module 'express-session' {
@@ -74,7 +73,6 @@ app.prepare().then(() => {
                 }
             })
             const access_token = resp.data.access_token
-            console.log({access_token})
             req.session.access_token = access_token
             return res.send()
         } catch (err: any) {
@@ -97,8 +95,12 @@ app.prepare().then(() => {
         return handle(req, res)
     })
 
+    console.log('hello')
+
     server.listen(port, () => {
         console.log(`> Ready on http://${hostname}:${port}`)
     })
 
+}).catch((err) =>{
+    console.log(err)
 })
