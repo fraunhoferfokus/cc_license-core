@@ -6,8 +6,10 @@ import { useEffect, useRef, useState } from 'react'
 import { isTemplateExpression } from 'typescript'
 import { requireSession } from './auth-mw/auth'
 import AddLicenseModal from './components/AddLicenseModal'
+import LaunchPage from './components/LaunchPage'
 import LicenseAssignmentGroup from './components/LicenseAssigmentGroup'
 import LicenseAssignmentUser from './components/LicenseAssignmentUser'
+import NotificationPage from './components/NotificationPage'
 import { toBILO } from './helper/helper'
 import { useStore } from './zustand/store'
 
@@ -44,7 +46,7 @@ function Home({ user }: { user: any }) {
 
   const autoC = useRef(null);
 
-
+  const [page, setPage] = useState('assignment')
   useEffect(() => {
     fetchLicenseDefinitions()
     fetchUsers()
@@ -63,6 +65,10 @@ function Home({ user }: { user: any }) {
 
 
   }, [pickedSelect])
+
+  useEffect(() => {
+    if (bilo.lizenztyp === 'Gruppenlizenz') setPickedSelect('group')
+  }, [bilo])
 
 
   return (
@@ -83,40 +89,42 @@ function Home({ user }: { user: any }) {
           <div className='flex gap-5 min-h-0 flex-1
           '>
             <Paper className="basis-[50%] p-[2%] 
-            grid grid-cols-[repeat(auto-fill,100px)]
-            grid-rows-[repeat(auto-fill,100px)]
+            grid grid-cols-[repeat(auto-fill,150px)]
+            grid-rows-[repeat(auto-fill,150px)]
               overflow-scroll
               
              gap-2">
 
-              <Box
-                sx={
-                  {
-                    backgroundColor: 'white',
-                    height: '100px',
-                    width: '100px',
-                    borderRadius: '10px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    border: '1px solid #e7ebef',
-                  }
-                }
-                onClick={() => setOpen(true)}
-              >
-                <AddOutlinedIcon
+              <div className='flex justify-center items-center'>
+                <Box
                   sx={
                     {
-                      color: "#DAE2F3",
-                      fontSize: '100px',
-                      cursor: 'pointer',
+                      backgroundColor: 'white',
+                      height: '100px',
+                      width: '100px',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      border: '1px solid #e7ebef',
                     }
                   }
+                  onClick={() => setOpen(true)}
                 >
+                  <AddOutlinedIcon
+                    sx={
+                      {
+                        color: "#DAE2F3",
+                        fontSize: '100px',
+                        cursor: 'pointer',
+                      }
+                    }
+                  >
 
-                </AddOutlinedIcon>
+                  </AddOutlinedIcon>
 
-              </Box>
+                </Box>
+              </div>
 
               {licenseDefinitions.map((el, i) => {
                 const ele = el[0]
@@ -130,7 +138,7 @@ function Home({ user }: { user: any }) {
 
                       }
                     }
-                    className="flex justify-center items-center"
+                    className="flex justify-center items-center w-[150px] h-[150px]"
                   ><Paper
                     sx={
                       {
@@ -138,11 +146,14 @@ function Home({ user }: { user: any }) {
                         borderRadius: '10px',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        width: '90px',
-                        height: '90px',
+                        width: '135px',
+                        height: '135px',
                         border: '1px solid #e7ebef',
                         position: 'relative',
                         backgroundImage: `url(${metadata.annotation[1].description.value})`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center center',
+                        backgroundSize: 'contain',
                         opacity: pickedLicense?.policyid === ele.policyid ? 1 : 0.5,
                       }
                     }
@@ -159,6 +170,7 @@ function Home({ user }: { user: any }) {
                 )
 
               })}
+
 
 
 
@@ -196,6 +208,9 @@ function Home({ user }: { user: any }) {
                   </b>
                 </div>
               }
+              <div>
+                ID der Lizendefintion:   <b>{pickedLicense?.policyid}</b>
+              </div>
 
             </Paper>
           </div>
@@ -204,24 +219,74 @@ function Home({ user }: { user: any }) {
 
         <div className='flex flex-col gap-2 flex-1 min-h-0'>
           <div className='flex gap-5'>
-            <Paper className="basis-[50%] p-4  border-box text-center">
-              Zuweisung Verwalten
+            <Paper className="basis-[50%] p-4  border-box text-center flex justify-center items-center">
+              <Select defaultValue={'assignment'} className='flex-1'
+
+                onChange={(e) => {
+                  setPage(e.target.value)
+                }}
+              >
+
+                <MenuItem value={'assignment'}
+
+                >
+                  Zuweisung Verwalten
+                </MenuItem>
+                <MenuItem value={'launch'}
+                >
+                  Launch Test
+                </MenuItem>
+                <MenuItem value={'notification'}
+                >
+                  Bedarfsmeldung äußern
+                </MenuItem>
+
+              </Select>
             </Paper>
-            <Paper className="basis-[50%] p-2 flex flex-row justify-between">
-              <p>
-                Currently Assigned:
-                <b>
-                  {currentlyAssignedAmount}
-                </b>
-              </p>
-              <p>
-                Still available: <b>
+            <Paper className="basis-[50%] p-2 flex flex-row ">
+              {
+                (bilo.lizenztyp === 'Einzellizenz' ||
+                  bilo.lizenztyp === 'Volumenlizenz'
+                ) ?
+                  <p className='basis-[33%] text-center'>
+                    Derzeit zugewiesen:
+                    <b>
+                      {currentlyAssignedAmount}
+                    </b>
 
-                  {bilo.lizenzanzahl && bilo.lizenzanzahl - currentlyAssignedAmount}
-                </b>
-              </p>
+                  </p> :
+                  <p className='basis-[33%] text-center'>
+                    Maximal aktive:
+                    <b >
+                      {!isNaN(bilo.lizenzanzahl) && bilo.lizenzanzahl}
+                    </b>
 
-              <p>
+                  </p>
+
+              }
+
+              {
+                (bilo.lizenztyp === 'Einzellizenz' ||
+                  bilo.lizenztyp === 'Volumenlizenz'
+                ) ?
+                  <p className='basis-[33%] text-center'>
+                    Verfügbar:
+                    <b>
+                      {!isNaN(bilo.lizenzanzahl) && bilo.lizenzanzahl - currentlyAssignedAmount}
+                    </b>
+                  </p>
+                  :
+                  <p className='basis-[33%] text-center'>
+                    Derzeit aktive:
+                    <b>
+
+                    </b>
+                  </p>
+
+              }
+
+              <p className='basis-[33%] text-center '
+              >
                 Activated:
                 <b>
 
@@ -232,106 +297,123 @@ function Home({ user }: { user: any }) {
             </Paper>
           </div>
 
+
+
           <div className='flex gap-5 min-h-0 flex-1'>
-            <Paper className="basis-[50%] p-[2%] flex flex-row justify-center items-center overflow-scroll">
-              <Select
-                placeholder='Wählen Sie zunächst eine Lizenz aus ...'
-                disabled={!pickedLicense}
-                onChange={(e) => {
-                  setPickedSelect(e.target.value)
+            {page === 'assignment' &&
+              <>
+                <Paper className="basis-[50%] p-[2%] flex flex-row justify-center items-center overflow-scroll">
 
 
-                }}
-                value={pickedSelect}
+                  <Select
+                    placeholder='Wählen Sie zunächst eine Lizenz aus ...'
+                    disabled={!pickedLicense}
+                    onChange={(e) => {
+                      setPickedSelect(e.target.value)
 
 
-
-              >
-                <MenuItem value={'user'}
-
-                  disabled={bilo.lizenztyp === 'Gruppenlizenz'}
-                >
-                  Nutzer
-                </MenuItem>
-                <MenuItem value={'group'}
-                >
-                  Gruppe
-                </MenuItem>
-                <MenuItem value={'placeholder'}
-                  disabled={true}
-                  hidden={true}
-                  className='hidden'
-                >
-                  Wählen Sie zunächst eine Lizenz  aus ...
-                </MenuItem>
-
-              </Select>
+                    }}
+                    value={pickedSelect}
 
 
 
+                  >
+                    <MenuItem value={'user'}
 
-              <Autocomplete
-                className='w-[100%] p-2'
-                //@ts-ignore
-                multiple={true}
-                renderInput={(params) => <TextField {...params} label="Search" />}
-                ref={autoC}
-                options={
-                  pickedSelect === 'user' ? users.map((user) => {
-                    return { label: user.email, value: user.id }
+                      disabled={bilo.lizenztyp === 'Gruppenlizenz'}
+                    >
+                      Nutzer
+                    </MenuItem>
+                    <MenuItem value={'group'}
+                    >
+                      Gruppe
+                    </MenuItem>
+                    <MenuItem value={'placeholder'}
+                      disabled={true}
+                      hidden={true}
+                      className='hidden'
+                    >
+                      Wählen Sie zunächst eine Lizenz  aus ...
+                    </MenuItem>
 
-                  }) : groups.map((group) => {
-                    return { label: group.displayName, value: group.id }
+                  </Select>
+                  <Autocomplete
+                    className='w-[100%] p-2'
+                    //@ts-ignore
+                    multiple={true}
+                    renderInput={(params) => <TextField {...params} label="Search" />}
+                    ref={autoC}
+                    options={
+                      pickedSelect === 'user' ? users.map((user) => {
+                        return { label: user.email, value: user.id }
+
+                      }) : groups.map((group) => {
+                        return { label: group.displayName, value: group.id }
+                      }
+
+                      )
+                    }
+                    onChange={(e, value) => {
+                      console.log(value.length)
+                      if (pickedSelect === 'user') {
+                        // if array empty
+                        if (value.length === 0) {
+                          setSelectedUsers(users)
+                        } else {
+                          setSelectedUsers(value.map((item: any) => ({ email: item.label, id: item.value })))
+                        }
+                      } if (pickedSelect === 'group') {
+                        // if array empty
+                        if (value.length === 0) {
+                          setSelectedGroups([])
+                        } else {
+                          setSelectedGroups(value.map((item: any) => ({ displayName: item.label, id: item.value })))
+                        }
+                      }
+                    }}
+                  />
+
+
+
+
+
+
+
+
+
+                </Paper>
+                <Paper className="basis-[50%] p-[2%] flex flex-col min-h-0 overflow-scroll">
+                  {pickedSelect === 'user' &&
+                    <LicenseAssignmentUser
+                      currentlyAssignedAmount={currentlyAssignedAmount}
+                      selectedUsers={selectedUsers}
+                      pickedLicenses={pickedLicenses}
+                      bilo={bilo}
+                    />
                   }
 
-                  )
-                }
-                onChange={(e, value) => {
-                  console.log(value.length)
-                  if (pickedSelect === 'user') {
-                    // if array empty
-                    if (value.length === 0) {
-                      setSelectedUsers(users)
-                    } else {
-                      setSelectedUsers(value.map((item: any) => ({ email: item.label, id: item.value })))
-                    }
-                  } if (pickedSelect === 'group') {
-                    // if array empty
-                    if (value.length === 0) {
-                      setSelectedGroups([])
-                    } else {
-                      setSelectedGroups(value.map((item: any) => ({ displayName: item.label, id: item.value })))
-                    }
+                  {pickedSelect === 'group' &&
+                    <LicenseAssignmentGroup
+                      currentlyAssignedAmount={currentlyAssignedAmount}
+                      selectedGroups={selectedGroups}
+                      pickedLicenses={pickedLicenses}
+                      bilo={bilo}
+
+                    />
                   }
-                }}
-              />
+                </Paper>
+              </>
 
+            }
+            {
+              page === 'launch' &&
+              <LaunchPage />
+            }
+            {
+              page === 'notification' &&
+              <NotificationPage />
+            }
 
-
-
-
-
-            </Paper>
-            <Paper className="basis-[50%] p-[2%] flex flex-col min-h-0 overflow-scroll">
-              {pickedSelect === 'user' &&
-                <LicenseAssignmentUser
-                  currentlyAssignedAmount={currentlyAssignedAmount}
-                  selectedUsers={selectedUsers}
-                  pickedLicenses={pickedLicenses}
-                  bilo={bilo}
-                />
-              }
-
-              {pickedSelect === 'group' &&
-                <LicenseAssignmentGroup
-                  currentlyAssignedAmount={currentlyAssignedAmount}
-                  selectedGroups={selectedGroups}
-                  pickedLicenses={pickedLicenses}
-                  bilo={bilo}
-
-                />
-              }
-            </Paper>
           </div>
 
         </div>

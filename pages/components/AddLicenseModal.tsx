@@ -129,6 +129,9 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                         border: '1px solid #e7ebef',
                                                         position: 'relative',
                                                         backgroundImage: `url(${metadata.annotation[1].description.value})`,
+                                                        backgroundRepeat: 'no-repeat',
+                                                        backgroundPosition: 'center center',
+                                                        backgroundSize: 'contain',
                                                     }
                                                 }
                                             >

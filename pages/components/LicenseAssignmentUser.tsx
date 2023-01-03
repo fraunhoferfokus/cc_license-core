@@ -42,6 +42,10 @@ export default function LicenseAssignmentUser({
                         return pickedLicenses.find((license) => license.policyid === userAssignment.inheritfrom)
                     })
 
+                const isActivated =
+                    userHasThisParticularLicense &&
+                    !userHasThisParticularLicense?.permissions![0].constraints?.find((constraint) => constraint.rightoperand === 'deactivated')
+
                 return (<Paper className="flex"
                     key={user.id}
                     square
@@ -53,7 +57,11 @@ export default function LicenseAssignmentUser({
                             role && !user?.gruppen.find((gruppe: any) => gruppe.rolle === role)
                             ||
                             currentlyAssignedAmount === bilo.lizenzanzahl && !userHasThisParticularLicense
+                            ||
+                            isActivated
                         }
+                       
+
                         checked={
                             userHasThisParticularLicense ? true : false
                         }

@@ -58,6 +58,8 @@ class LicenseAssignmentController {
             const role = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')?.rightoperand
             const assigner = permissions[0].assigner
 
+            const target = permissions[0].target
+
 
             const unique_id = uuid()
             const toBeCreated = new LicenseDefinitionModel({
@@ -69,7 +71,7 @@ class LicenseAssignmentController {
                     action: "http://www.w3.org/ns/odrl/2/use",
                     assigner,
                     assignee: targetID,
-                    target: licenseDefinitionID,
+                    target,
                     constraints: [
                         {
                             name: "http://www.w3.org/ns/odrl/2/event",
@@ -109,8 +111,8 @@ class LicenseAssignmentController {
                         assignment.inheritfrom === licenseDefinitionID
                         && assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')).length
 
-                    if (count >= amount) {
-                        return res.status(400).json({ message: 'No more licenses available to enroll to group' })
+                    if (count >= 1) {
+                        return res.status(400).json({ message: 'Group licenses can only be enrolled once!' })
                     }
 
                     // create for every user 
@@ -166,8 +168,8 @@ class LicenseAssignmentController {
             switch (licenseType) {
                 case 'Einzellizenz':
                 case 'Volumenlizenz':
-                    if (licenseAssignment!.permissions![0].constraints!.find((constraint) => constraint.rightoperand === 'activated')) {
-                        return res.status(400).json({ message: 'License is already activated and cannot be deleted...' })
+                    if (!licenseAssignment!.permissions![0].constraints!.find((constraint) => constraint.rightoperand === 'deactivated')) {
+                        return res.status(400).json({ message: 'Lizenz wurde bereits aktiviert und kann nicht rückgängig gemacht werden' })
                     }
                     await LicenseAssignmentDAO.deleteById(req.params.id)
                     break;

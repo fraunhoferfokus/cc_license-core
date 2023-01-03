@@ -8,6 +8,7 @@ import session from 'express-session'
 import next from 'next'
 import licenseAssigmentsCtrl from './express/controllers/licenseAssigmentsCtrl'
 import { AuthHandler } from './express/handlers/AuthHandler'
+import launchCtrl from './express/controllers/launchCtrl'
 
 
 
@@ -86,7 +87,9 @@ app.prepare().then(() => {
 
     server.use('/license-assignments', licenseAssigmentsCtrl)
 
-
+    server.use('/launch',
+        launchCtrl
+    )
 
 
 
