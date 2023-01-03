@@ -103,6 +103,9 @@ export const useStore = create<State>()(
                 return axios.post(`${process.env.NEXT_PUBLIC_SELF_URL}/launch`, {
                     userID,
                     licenseDefinitionID
+                }).then((resp) => {
+                    get().fetchLicenseAssignments()
+                    return resp
                 })
             }
         }),

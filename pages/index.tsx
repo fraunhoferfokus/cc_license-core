@@ -188,11 +188,11 @@ function Home({ user }: { user: any }) {
               <div>Lizenztyp: <b>{constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/purpose').rightoperand}</b></div>
 
               <div>
-                Aktivierung (von):<b> {constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/gteq').rightoperand}</b>
+                Aktivierung (von):<b> {bilo.gueltigkeitsbeginn}</b>
               </div>
 
               <div>
-                Aktivierung (bis):   <b>{constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/lteq').rightoperand}</b>
+                Aktivierung (bis):   <b>{bilo.gueltigkeitsende}</b>
               </div>
 
               <div>
@@ -279,7 +279,45 @@ function Home({ user }: { user: any }) {
                   <p className='basis-[33%] text-center'>
                     Derzeit aktive:
                     <b>
+                      {(() => {
+                        const userLicenses = licenseAssignments.filter((assignment) => {
+                          const permissions = assignment.permissions![0]!
+                          const isGroup = permissions.constraints!.find((item) => item.name === 'http://www.w3.org/ns/odrl/2/recipient')
 
+                          if (assignment.inheritfrom === pickedLicense?.policyid
+                            && !isGroup
+
+                          ) {
+                            return true
+                          }
+                        })
+
+                        return userLicenses.filter((assignment) => {
+                          const permissions = assignment.permissions![0]!
+                          const constraints = permissions.constraints!
+
+                          const hatDatum = constraints.find((item) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/lteq')?.rightoperand
+                          if (hatDatum) {
+                            const gueltigBis = new Date(hatDatum)
+                            const pickedLicensePermissions = pickedLicense?.permissions[0]!
+
+                            const underBoundDate = new Date(pickedLicensePermissions.constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/gteq').rightoperand)
+                            const upperBoundDate = new Date(pickedLicensePermissions.constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/lteq').rightoperand)
+
+                            if (gueltigBis >= underBoundDate && gueltigBis <= upperBoundDate) {
+                              return true
+                            }
+                          }
+
+
+                          return false
+
+
+
+
+                        }).length
+
+                      })()}
                     </b>
                   </p>
 

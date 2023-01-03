@@ -100,23 +100,27 @@ export default function LaunchPage(props: any) {
 
 
             </Paper>
-            <Button
-                className="mt-2"
-                variant="contained"
-                disabled={!pickedLicense}
-                type="submit"
-                onClick={() => {
-                    launchLicense(user.id, licenseDefinition!.policyid).then((resp) => {
-                        const curr: any = ref.current!
-                        curr.write(resp)
-                    })
-                }}
 
-
+            <form target="iframe" method="POST"
+                action={`${process.env.NEXT_PUBLIC_SELF_URL}/launch`}
             >
-                Launch
-
-            </Button>
+                <Button
+                    className="mt-2"
+                    variant="contained"
+                    disabled={!pickedLicense}
+                    type="submit"
+                    onClick={() => {
+                        setTimeout((()=>{
+                            fetchLicenseAssignments()
+                        }),800)
+                        
+                    }}
+                >
+                    Launch
+                </Button>
+                <input type="hidden" name="userID" value={user?.id} />
+                <input type="hidden" name="licenseDefinitionID" value={licenseDefinition?.policyid} />
+            </form>
 
         </Paper>
         <Paper className="basis-[50%] p-[5%] flex flex-row justify-center items-center overflow-scroll">

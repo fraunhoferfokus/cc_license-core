@@ -18,13 +18,13 @@ class LicenseAssignmentController {
     }
 
     configRouters() {
-        this.router.get('/', this.launchLicenseAssignment)
         this.router.post('/', this.launchLicenseAssignment)
     }
 
     launchLicenseAssignment: express.Handler = async (req, res, next) => {
         try {
-            console.log('ah')
+            console.log('req.body', req.body)
+
             // const metadataID = req.params.metadataID
             // TODO: later extract from access token of user!
             const userID = req.body.userID
@@ -43,7 +43,7 @@ class LicenseAssignmentController {
 
 
             if (!userLicense) {
-                return res.status(404).json({ message: 'No license assignment found for this metadata and user' })
+                return res.status(404).send('Keine Lizenz für User und Lizenzdefinition gefunden')
             }
 
             const url = `${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/${permissions![0].target}`
@@ -64,7 +64,7 @@ class LicenseAssignmentController {
             let endDate = new Date()
 
             if (today < activationLowerBoundary || today > activationHigherBoundary) {
-                return res.status(403).json({ message: `License cannot be launched. License activation is from ${activationLowerBoundary} to ${activationHigherBoundary}` })
+                return res.status(403).send(`Lizenz kann nicht geladen werden. Lizenzzeitraum ist von ${activationLowerBoundary} nis ${activationHigherBoundary}`)
             }
 
 
@@ -122,7 +122,7 @@ class LicenseAssignmentController {
                         }).length
 
                         if (counter >= lizenzanzahl) {
-                            return res.status(403).json({ message: 'Maximale Anzahl an Gleichzeitigen Lizenzen erreicht' })
+                            return res.status(403).send('Maximale Anzahl an Gleichzeitigen Lizenzen erreicht')
                         }
                     }
 
