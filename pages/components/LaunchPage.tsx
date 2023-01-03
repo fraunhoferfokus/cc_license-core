@@ -5,7 +5,7 @@ import { useStore } from "../zustand/store";
 
 
 export default function LaunchPage(props: any) {
-    const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, launchLicense, users, fetchUsers, groups,
+    const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsers, groups,
         licenseAssignments
     } = useStore(state => state)
 
@@ -99,10 +99,11 @@ export default function LaunchPage(props: any) {
 
 
 
+
             </Paper>
 
             <form target="iframe" method="POST"
-                action={`${process.env.NEXT_PUBLIC_SELF_URL}/launch`}
+                action={`${process.env.NEXT_PUBLIC_SELF_URL}/launch/mgmt`}
             >
                 <Button
                     className="mt-2"

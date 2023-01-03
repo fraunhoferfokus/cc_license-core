@@ -18,11 +18,39 @@ class LicenseAssignmentController {
     }
 
     configRouters() {
+        this.router.get('/users', this.getLicenseAssingmentForUser)
         this.router.get('/', this.getLicenseAssignments);
         this.router.get('/:id', this.getLicenseAssignment);
         this.router.post('/', this.createLicenseAssignment);
         this.router.delete('/:id', this.deleteLicenseAssignment);
     }
+
+    getLicenseAssingmentForUser: express.Handler = async (req, res, next) => {
+        try {
+            const licenseAssignments = await LicenseAssignmentDAO.findAll()
+            const authorization = req.headers.authorization
+            if (!authorization) {
+                return res.status(401).send('Authorization header not found')
+            }
+            const access_token = authorization.split(' ')[1]
+            // get user id from access token
+
+            const me = (await axios.get(`${process.env.OIDC_USERINFO_ENDPOINT}`, {
+                headers: {
+                    Authorization: `Bearer ${access_token}`
+                }
+            }
+            )).data
+
+            const userID = me.email
+            const userLicenseAssignments = licenseAssignments.filter(licenseAssignment => licenseAssignment.permissions![0]!.assignee === userID)
+            return res.json(userLicenseAssignments)
+        } catch (err: any) {
+            return res.status(err?.response?.statusCode || 500).json(err)
+        }
+
+    }
+
 
     getLicenseAssignments: express.Handler = async (req, res, next) => {
         try {
