@@ -4,7 +4,7 @@ import create from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface State {
-    licenseDefinitions: (LicenseDefinitionModel& {metadata:any})[][],
+    licenseDefinitions: (LicenseDefinitionModel & { metadata: any })[][],
     licenseAssignments: LicenseDefinitionModel[],
     fetchLicenseDefinitions: () => any,
     fetchLicenseAssignments: () => any,
@@ -13,6 +13,26 @@ interface State {
     fetchUsers: () => any,
     createLicenseAssignment: (licenseDefinitionID: string, targetID: string) => any,
     deleteLicenseAssignment: (licenseAssignmentID: string) => any,
+    notification: {
+        product_id: string | null,
+        license_type: string | null,
+        start_date: Date | null,
+        end_date: Date | null,
+        elapsed_time: number | null,
+        count: number | null
+    },
+    setNotification: (obj: {
+        product_id: string | null,
+        license_type: string | null,
+        start_date: Date | null,
+        end_date: Date | null,
+        elapsed_time: number | null,
+        count: number | null
+    }) => any,
+    createNotification: (payload: any) => any,
+    deleteNotification: (notficationID: string) => any,
+    fetchNotifications: () => any,
+    notifications: any[],
 }
 
 export const useStore = create<State>()(
@@ -98,6 +118,34 @@ export const useStore = create<State>()(
                     get().fetchLicenseAssignments()
                 })
             },
+            notification: {
+                product_id: null,
+                license_type: null,
+                start_date: null,
+                end_date: null,
+                elapsed_time: null,
+                count: null
+            },
+            setNotification: (obj) => {
+                set({ notification: obj })
+            },
+            createNotification(payload: any) {
+                axios.post(`${process.env.NEXT_PUBLIC_SELF_URL}/notifications`, payload).then(async () => {
+                    get().fetchNotifications()
+                })
+            },
+            deleteNotification(notficationID: string) {
+                axios.delete(`${process.env.NEXT_PUBLIC_SELF_URL}/notifications/${notficationID}`).then(async () => {
+                    get().fetchNotifications()
+                })
+            },
+            fetchNotifications: async () => {
+                const resp = (await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/notifications`)).data
+                set({ notifications: resp.data })
+            },
+            notifications: []
+
+
         }),
         {
             name: 'license-storage',

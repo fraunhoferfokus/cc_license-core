@@ -1,5 +1,5 @@
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
-import { Autocomplete, Box, MenuItem, Paper, Select, TextField } from '@mui/material'
+import { Autocomplete, Box, Button, MenuItem, Paper, Select, TextField } from '@mui/material'
 import { RequestContext } from 'next/dist/server/base-server'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
@@ -22,6 +22,7 @@ export default dynamic(() => Promise.resolve(Home), {
 function Home({ user }: { user: any }) {
   const [open, setOpen] = useState(false);
   const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsers, groups,
+    setNotification, notification,
     licenseAssignments
   } = useStore(state => state)
   const [pickedLicenses, setPickedLicenses] = useState<any>(null)
@@ -71,9 +72,11 @@ function Home({ user }: { user: any }) {
   }, [bilo])
 
 
+
   return (
     <>
-      <div className={`w-full h-full bg-[#e7ebef] p-[5%] flex flex-col gap-[10%]
+
+      <div className={`w-full h-full bg-[#e7ebef] p-[2%] flex flex-col gap-[5%]
          ${open ? 'blur-3xl' : ''}
          `}>
 
@@ -159,7 +162,15 @@ function Home({ user }: { user: any }) {
                     }
                     className="hover:opacity-100 transition-all duration-300 cursor-pointer"
                     onClick={() => {
-                      setPickedLicenses(el)
+
+                      if (pickedLicenses &&
+                        pickedLicenses[0] === ele
+                      ) {
+                        setPickedLicenses(null)
+                      } else {
+                        setPickedLicenses(el)
+
+                      }
 
                     }}
                   >
@@ -178,38 +189,71 @@ function Home({ user }: { user: any }) {
 
             </Paper>
 
-            <Paper className="basis-[50%] p-[2%] overflow-scroll">
+            <Paper className="basis-[50%] p-[2%] overflow-scroll flex flex-col">
 
-              <h1>{pickedLicense?.metadata.general?.title?.value}</h1>
-              <div>Product ID: <b>{pickedLicense?.permissions[0].target}</b></div>
+              <h1>{pickedLicense?.metadata.general?.title?.value || 'Title'}</h1>
+              <div className='flex-1'>
+                <div>Product ID: <b>{pickedLicense?.permissions[0].target}</b></div>
 
-              <div>Anzahl: <b>{bilo.lizenzanzahl}</b></div>
+                <div>Anzahl: <b>{bilo.lizenzanzahl}</b></div>
 
-              <div>Lizenztyp: <b>{bilo.lizenztyp}</b></div>
+                <div>Lizenztyp: <b>{bilo.lizenztyp}</b></div>
 
-              <div>
-                Aktivierung (von):<b> {bilo.gueltigkeitsbeginn}</b>
-              </div>
-
-              <div>
-                Aktivierung (bis):   <b>{bilo.gueltigkeitsende}</b>
-              </div>
-
-              <div>
-                Gültigskeitsdauer: <b>{constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/elapsedTime').rightoperand}</b>
-              </div>
-              {
-                constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/recipient') &&
-
-                <div
-                >Sonderlizenz:
-                  <b>
-                    {" " + constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/recipient').rightoperand}
-                  </b>
+                <div>
+                  Aktivierung (von):<b> {bilo.gueltigkeitsbeginn}</b>
                 </div>
-              }
-              <div>
-                ID der Lizendefintion:   <b>{pickedLicense?.policyid}</b>
+
+                <div>
+                  Aktivierung (bis):   <b>{bilo.gueltigkeitsende}</b>
+                </div>
+
+                <div>
+                  Gültigskeitsdauer: <b>{constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/elapsedTime').rightoperand}</b>
+                </div>
+                {
+                  constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/recipient') &&
+
+                  <div
+                  >Sonderlizenz:
+                    <b>
+                      {" " + constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/recipient').rightoperand}
+                    </b>
+                  </div>
+                }
+                <div>
+                  ID der Lizendefintion:   <b>{pickedLicense?.policyid}</b>
+                </div>
+              </div>
+
+              <div className='flex justify-end'>
+                <Button variant="outlined"
+                  disabled={!pickedLicense}
+                  onClick={() => {
+                    setPage('notification')
+
+                    const constraints = pickedLicense?.permissions[0].constraints
+
+                    let one = new Date(constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime'
+                      && item.operator === 'http://www.w3.org/ns/odrl/2/gteq'
+                    ).rightoperand)
+
+                    let two = new Date(constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime'
+                      && item.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+                    ).rightoperand)
+
+
+                    setNotification({
+                      product_id: bilo.productid,
+                      license_type: bilo.lizenztyp,
+                      count: bilo.lizenzanzahl,
+                      elapsed_time: bilo.gueltigkeitsdauer,
+                      start_date: one,
+                      end_date: two,
+                    })
+
+                  }}
+
+                >Bedarf melden</Button>
               </div>
 
             </Paper>
@@ -243,7 +287,12 @@ function Home({ user }: { user: any }) {
 
               </Select>
             </Paper>
-            <Paper className="basis-[50%] p-2 flex flex-row ">
+            <Paper className="basis-[50%] p-2 flex flex-row "
+
+              style={{
+                visibility: page !== 'notification' ? 'visible' : 'hidden'
+              }}
+            >
               {
                 (bilo.lizenztyp === 'Einzellizenz' ||
                   bilo.lizenztyp === 'Volumenlizenz'
@@ -272,7 +321,7 @@ function Home({ user }: { user: any }) {
                   <p className='basis-[33%] text-center'>
                     Verfügbar:
                     <b>
-                      { bilo.lizenzanzahl - currentlyAssignedAmount}
+                      {bilo.lizenzanzahl - currentlyAssignedAmount}
                     </b>
                   </p>
                   :
@@ -324,6 +373,11 @@ function Home({ user }: { user: any }) {
               }
 
               <p className='basis-[33%] text-center '
+                style={{
+                  color: bilo.lizenztyp === 'Gruppenlizenz' ? 'grey' : '',
+                  opacity: bilo.lizenztyp === 'Gruppenlizenz' ? '0.5' : '1.0'
+
+                }}
               >
                 Activated:
                 <b>
@@ -446,13 +500,14 @@ function Home({ user }: { user: any }) {
             {
               page === 'launch' &&
               <LaunchPage
-              setPickedLicenses={setPickedLicenses}
-              pickedLicenses={pickedLicenses}
+                setPickedLicenses={setPickedLicenses}
+                pickedLicenses={pickedLicenses}
               />
             }
             {
               page === 'notification' &&
-              <NotificationPage />
+              <NotificationPage
+              />
             }
 
           </div>
@@ -460,10 +515,8 @@ function Home({ user }: { user: any }) {
         </div>
 
       </div>
-    </>
-    // <Core>
 
-    // </Core>
+    </>
   )
 }
 
