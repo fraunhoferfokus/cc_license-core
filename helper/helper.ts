@@ -15,16 +15,15 @@ export const toBILO = (license?: any) => {
 
     let gueltigkeitsbeginn = new Date(one)
     let gueltigkeitsende = new Date(two)
-
-
+    let anzahl = constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/count').rightoperand
 
     return {
         sonderlizenz: constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/recipient')?.rightoperand,
-        lizenzanzahl: parseInt(constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/count').rightoperand),
+        lizenzanzahl: anzahl ? parseInt(anzahl) : 0,
         gueltigkeitsbeginn:
-        gueltigkeitsbeginn.getDate() + '-' + (gueltigkeitsbeginn.getMonth() + 1) + '-' + gueltigkeitsbeginn.getFullYear(),
-        gueltigkeitsende: 
-            gueltigkeitsende.getDate() + '-' + (gueltigkeitsende.getMonth() + 1) + '-' + gueltigkeitsende.getFullYear()
+            gueltigkeitsbeginn.getDate() ? gueltigkeitsbeginn.getDate() + '-' + (gueltigkeitsbeginn.getMonth() + 1) + '-' + gueltigkeitsbeginn.getFullYear() : '',
+        gueltigkeitsende:
+            gueltigkeitsende.getDate() ? gueltigkeitsende.getDate() + '-' + (gueltigkeitsende.getMonth() + 1) + '-' + gueltigkeitsende.getFullYear() : ''
         ,
         gueltigkeitsdauer: parseInt(constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/elapsedTime').rightoperand),
         nutzungssysteme: constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/product').rightoperand,

@@ -1,14 +1,16 @@
 import { Autocomplete, Button, Paper, TextField } from "@mui/material";
 import { LicenseDefinitionModel } from "license_manager";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useStore } from "../../zustand/store";
 
 
-export default function LaunchPage(props: any) {
+export default function LaunchPage(props: any,) {
     const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsers, groups,
         licenseAssignments
     } = useStore(state => state)
 
+
+    const parentPickedLicenses = props.pickedLicenses
 
 
     const [user, setUser] = useState<any>(null)
@@ -19,10 +21,43 @@ export default function LaunchPage(props: any) {
         }
     })
 
-
-    const [pickedLicense, setPickedLicense] = useState<LicenseDefinitionModel | null>(null)
-    const licenseDefinition = licenseDefinitions.flat(10).find((license) => license.policyid === pickedLicense?.inheritfrom)
+    const [pickedUserLicense, setPickedUserLicense] = useState<LicenseDefinitionModel | null>(null)
+    const licenseDefinition = licenseDefinitions.flat(10).find((license) => license.policyid === pickedUserLicense?.inheritfrom)
     const ref = useRef(null)
+
+
+
+    useEffect(() => {
+
+        const ass = userAssignments.find((assignment) => {
+            return parentPickedLicenses?.find((license: LicenseDefinitionModel) => {
+                return license.policyid === assignment.inheritfrom
+            })
+        })
+
+
+        setPickedUserLicense(ass || null)
+
+
+    }, [parentPickedLicenses])
+
+    useEffect(() => {
+
+
+        const foundLicenses = licenseDefinitions.find((licenseArr) => {
+            return licenseArr.find((license) => {
+                return license.policyid === pickedUserLicense?.inheritfrom
+            })
+        })
+
+        props.setPickedLicenses(
+            foundLicenses
+        )
+
+        console.log('heh')
+
+    }, [pickedUserLicense])
+
 
     return (<>
         <Paper className="basis-[50%] p-[2%] flex flex-col  overflow-scroll">
@@ -33,7 +68,14 @@ export default function LaunchPage(props: any) {
                 renderInput={(params) => <TextField {...params} label="Users" variant="outlined" />
                 }
                 onChange={(e, choices) => {
+                    
                     setUser(users?.find((user) => user.id === choices?.value))
+                    if(!pickedUserLicense) props.setPickedLicenses(null)
+                     setPickedUserLicense(null)
+                    
+                    //@ts-ignore
+                    ref.current?.src = 'about:blank'
+                    
                 }}
             />
             <Paper className="basis-[50%] p-[2%] 
@@ -52,7 +94,7 @@ export default function LaunchPage(props: any) {
                             key={el.policyid}
                             style={
                                 {
-                                    borderBottom: pickedLicense?.policyid === el?.policyid ? '2px solid #3f51b5' : 'none',
+                                    borderBottom: pickedUserLicense?.policyid === el?.policyid ? '2px solid #3f51b5' : 'none',
 
                                 }
                             }
@@ -72,16 +114,18 @@ export default function LaunchPage(props: any) {
                                     backgroundRepeat: 'no-repeat',
                                     backgroundPosition: 'center center',
                                     backgroundSize: 'contain',
-                                    opacity: pickedLicense?.policyid === el.policyid ? 1 : 0.5,
+                                    opacity: pickedUserLicense?.policyid === el.policyid ? 1 : 0.5,
                                 }
                             }
                             className="hover:opacity-100 transition-all duration-300 cursor-pointer"
                             onClick={() => {
 
-                                if (pickedLicense === el) {
-                                    setPickedLicense(null)
+                                if (pickedUserLicense === el) {
+                                    setPickedUserLicense(null)
                                 } else {
-                                    setPickedLicense(el)
+                                    setPickedUserLicense(el)
+
+
                                 }
 
                             }}
@@ -108,13 +152,13 @@ export default function LaunchPage(props: any) {
                 <Button
                     className="mt-2"
                     variant="contained"
-                    disabled={!pickedLicense}
+                    disabled={!pickedUserLicense}
                     type="submit"
                     onClick={() => {
-                        setTimeout((()=>{
+                        setTimeout((() => {
                             fetchLicenseAssignments()
-                        }),800)
-                        
+                        }), 800)
+
                     }}
                 >
                     Launch

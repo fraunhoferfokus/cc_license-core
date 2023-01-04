@@ -57,7 +57,7 @@ function Home({ user }: { user: any }) {
   useEffect(() => {
     // @ts-ignore
     const ref: any = autoC.current
-    const cross = ref.getElementsByClassName('MuiAutocomplete-clearIndicator')[0]
+    const cross = ref?.getElementsByClassName('MuiAutocomplete-clearIndicator')[0]
     if (cross) {
       cross.click()
     }
@@ -183,9 +183,9 @@ function Home({ user }: { user: any }) {
               <h1>{pickedLicense?.metadata.general?.title?.value}</h1>
               <div>Product ID: <b>{pickedLicense?.permissions[0].target}</b></div>
 
-              <div>Anzahl: <b>{constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/count').rightoperand}</b></div>
+              <div>Anzahl: <b>{bilo.lizenzanzahl}</b></div>
 
-              <div>Lizenztyp: <b>{constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/purpose').rightoperand}</b></div>
+              <div>Lizenztyp: <b>{bilo.lizenztyp}</b></div>
 
               <div>
                 Aktivierung (von):<b> {bilo.gueltigkeitsbeginn}</b>
@@ -272,7 +272,7 @@ function Home({ user }: { user: any }) {
                   <p className='basis-[33%] text-center'>
                     Verfügbar:
                     <b>
-                      {!isNaN(bilo.lizenzanzahl) && bilo.lizenzanzahl - currentlyAssignedAmount}
+                      { bilo.lizenzanzahl - currentlyAssignedAmount}
                     </b>
                   </p>
                   :
@@ -445,7 +445,10 @@ function Home({ user }: { user: any }) {
             }
             {
               page === 'launch' &&
-              <LaunchPage />
+              <LaunchPage
+              setPickedLicenses={setPickedLicenses}
+              pickedLicenses={pickedLicenses}
+              />
             }
             {
               page === 'notification' &&

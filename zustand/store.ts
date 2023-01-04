@@ -4,7 +4,7 @@ import create from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface State {
-    licenseDefinitions: any[],
+    licenseDefinitions: (LicenseDefinitionModel& {metadata:any})[][],
     licenseAssignments: LicenseDefinitionModel[],
     fetchLicenseDefinitions: () => any,
     fetchLicenseAssignments: () => any,
