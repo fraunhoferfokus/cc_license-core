@@ -87,124 +87,106 @@ export default function NotificationPage() {
     }, [notification])
 
     return (<>
-        <Paper className="basis-[50%] p-[2%] overflow-scroll flex flex-col">
-            <div className="flex-1">
-                <div className='flex flex-row justify-center'>
+        <Paper className="basis-[50%] overflow-scroll flex flex-col">
+            <div className='flex flex-col justify-center flex-1 gap-2'>
 
-                    <div className="flex-1 flex">
-                        <div className="flex justify-center items-center w-[120px] break-all">
-                            <b>
-                                Produkt:
-                            </b>
-                        </div>
 
-                        <div className="flex-1 flex justify-end">
 
-                            <Autocomplete
-                                options={availableProductOptions}
-                                className='w-[100%] p-2 max-w-[250px]'
-                                value={availableProductOptions.find((option) => option.value === notification.product_id)}
-                                onChange={(event, value) => {
-                                    setNotification({ ...notification, product_id: value?.value! })
-                                }}
-                                //@ts-ignore
-                                renderInput={(params) => <TextField {...params} label="Wählen Sie ein Produkt aus" variant="outlined" />
-                                }
-                            />
-                        </div>
-                    </div>
+                <div className="flex justify-center gap-2">
+                    <Autocomplete
+                        options={availableProductOptions}
+                        className='w-[100%] max-w-[250px]'
+                        value={availableProductOptions.find((option) => option.value === notification.product_id)}
+                        onChange={(event, value) => {
+                            setNotification({ ...notification, product_id: value?.value! })
+                        }}
+                        //@ts-ignore
+                        renderInput={(params) => <TextField {...params} label="Wählen Sie ein Produkt aus" variant="outlined" />
+                        }
+                    />
 
-                    <div className="flex-1 flex justify-center">
-                        <div className="flex justify-center items-center w-[120px] break-normal">
-                            <b>
-                                Lizenztyp:
-                            </b>
-                        </div>
-                        <div className="flex-1 flex justify-end">
 
-                            <Autocomplete
-                                options={licenseTypeOptions}
-                                className='w-[100%] p-2 max-w-[250px]'
-                                value={type}
-                                onChange={(event, value) => {
-                                    if (value) setNotification({ ...notification, license_type: value?.value! })
-                                }}
-                                //@ts-ignore
-                                renderInput={(params) => <TextField {...params} label="Wählen Sie den Lizentypen aus" variant="outlined" />
-                                }
-                            />
-                        </div>
 
-                    </div>
-
+                    <Autocomplete
+                        options={licenseTypeOptions}
+                        className='w-[100%] max-w-[250px]'
+                        value={type}
+                        onChange={(event, value) => {
+                            if (value) setNotification({ ...notification, license_type: value?.value! })
+                        }}
+                        //@ts-ignore
+                        renderInput={(params) => <TextField {...params} label="Wählen Sie den Lizentypen aus" variant="outlined" />
+                        }
+                    />
                 </div>
 
 
 
-                <div className="flex items-center gap-2">
+                <div className="flex justify-center gap-2">
 
-                    <div className="flex-1 flex justify-center flex-row items-center text-center mt-[20px]">
+                    <div className="basis-[50%] flex flex-row justify-end">
+                        <div className="w-[135px] flex justify-start items-center ">
+                            <label>
+                                Anzahl:
 
-
-                        <div className="mb-[10px] mt-[5px] mr-[10px] w-[120px] break-all">
-                            {notification.license_type === 'Gruppenlizenz' ?
-                                <b>
-                                    Gleichzeitige Nutzende:
-
-                                </b> : <b>
-                                    Lizenzanzahl
-                                </b>}
+                            </label>
                         </div>
-                        <div className="flex-1 flex justify-end">
-                            <TextField
-                                className='w-[100px] text-center'
-                                type={'number'}
-                                value={notification.count}
 
-                                disabled={notification.license_type === 'Einzellizenz'}
+                        <TextField
+                            className='w-[100px] text-center'
+                            type={'number'}
+                            value={notification.count}
 
-                                onChange={(e) => {
-                                    const intVal = parseInt(e.target.value)
-                                    if (intVal > 0) setNotification({ ...notification, count: intVal })
-                                }}
-                            />
-                        </div>
+                            disabled={notification.license_type === 'Einzellizenz'}
+
+                            onChange={(e) => {
+                                const intVal = parseInt(e.target.value)
+                                if (intVal > 0) setNotification({ ...notification, count: intVal })
+                            }}
+                        />
                     </div>
-                    <div className="flex-1 flex justify-center flex-row items-center text-center mt-[20px]">
-                        <div className="mb-[10px] mt-[5px] mr-[10px] w-[120px] break-all">
-                            <b
-                            >
-                                Gültigskeitsdauer (in Tagen):
 
-                            </b>
 
+                    <div className="basis-[50%] flex flex-row justify-start gap-1">
+                        <div className="w-[135px] flex justify-start items-center break-all">
+                            <label>
+                                Gültigskeitsdauer
+
+                            </label>
+                            <label>
+                                :
+                            </label>
                         </div>
 
-                        <div className="flex-1 flex justify-end">
-                            <TextField
-                                onChange={(e) => {
-                                    const intVal = parseInt(e.target.value)
-                                    if (intVal > 0) {
 
-                                        setNotification({ ...notification, elapsed_time: intVal })
-                                    }
-                                }}
-                                className='w-[100px] text-center'
-                                type={'number'}
-                                value={notification.elapsed_time}
-                            />
-                        </div>
+                        <TextField
+                            onChange={(e) => {
+                                const intVal = parseInt(e.target.value)
+                                if (intVal > 0) {
 
+                                    setNotification({ ...notification, elapsed_time: intVal })
+                                }
+                            }}
+                            className='w-[100px] text-center'
+                            type={'number'}
+                            value={notification.elapsed_time}
+                        />
                     </div>
 
                 </div>
-                <LocalizationProvider dateAdapter={AdapterMoment} >
 
-                    <div className="text-center m-[20px]"><b>Aktivierungszeitraum:</b></div>
-                    <div className='flex flex-row p-2 gap-2 items-center justify-center'>
+                <div className="flex justify-center gap-2">
+                    <LocalizationProvider dateAdapter={AdapterMoment} >
 
 
-                        Von: <DatePicker
+                        <div className="flex justify-center items-center">
+                            <label>
+                                Von:
+                            </label>
+
+                        </div>
+
+                        <DatePicker
                             renderInput={(props) => {
                                 const defined = notification.start_date !== null && notification.end_date !== null
                                 return <TextField
@@ -225,8 +207,14 @@ export default function NotificationPage() {
                             disablePast={true}
 
                         />
+                        <div className="flex justify-center items-center">
+                            <label>
+                                Bis:
+                            </label>
 
-                        Bis: <DatePicker
+                        </div>
+
+                        <DatePicker
                             renderInput={(props) => {
                                 const defined = notification.start_date !== null && notification.end_date !== null
                                 return <TextField
@@ -247,11 +235,12 @@ export default function NotificationPage() {
 
 
 
-                    </div>
-                </LocalizationProvider>
+                    </LocalizationProvider>
+                </div>
+
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end p-2">
                 <Button variant="contained"
 
                     disabled={(() => {

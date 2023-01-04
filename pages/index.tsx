@@ -76,7 +76,7 @@ function Home({ user }: { user: any }) {
   return (
     <>
 
-      <div className={`w-full h-full bg-[#e7ebef] p-[2%] flex flex-col gap-[5%]
+      <div className={`w-full h-full bg-[#e7ebef] p-[2%] flex flex-col gap-[2%]
          ${open ? 'blur-3xl' : ''}
          `}>
 
@@ -89,9 +89,9 @@ function Home({ user }: { user: any }) {
             </Paper>
           </div>
 
-          <div className='flex gap-5 min-h-0 flex-1
+          <div className='flex gap-1 min-h-0 flex-1
           '>
-            <Paper className="basis-[50%] p-[2%] 
+            <Paper className="basis-[50%]
             grid grid-cols-[repeat(auto-fill,150px)]
             grid-rows-[repeat(auto-fill,150px)]
               overflow-scroll
@@ -263,8 +263,11 @@ function Home({ user }: { user: any }) {
 
         <div className='flex flex-col gap-2 flex-1 min-h-0'>
           <div className='flex gap-5'>
-            <Paper className="basis-[50%] p-4  border-box text-center flex justify-center items-center">
-              <Select defaultValue={'assignment'} className='flex-1'
+              <Select defaultValue={'assignment'} className='
+              flex-1
+              basis-[50%] p-4  border-box text-center flex justify-center items-center max-h-[60px]
+              bg-white
+              '
 
                 onChange={(e) => {
                   setPage(e.target.value)
@@ -286,8 +289,7 @@ function Home({ user }: { user: any }) {
                 </MenuItem>
 
               </Select>
-            </Paper>
-            <Paper className="basis-[50%] p-2 flex flex-row "
+            <Paper className="basis-[50%] p-2 flex flex-row max-h-[60px]"
 
               style={{
                 visibility: page !== 'notification' ? 'visible' : 'hidden'

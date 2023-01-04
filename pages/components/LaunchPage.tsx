@@ -60,10 +60,10 @@ export default function LaunchPage(props: any,) {
 
 
     return (<>
-        <Paper className="basis-[50%] p-[2%] flex flex-col  overflow-scroll">
+        <Paper className="basis-[50%] p-[1%] flex flex-col  overflow-scroll">
             <Autocomplete
                 options={users?.map((user: any) => { return { label: user.email, value: user.id } })}
-                className='w-[100%] p-2'
+                className='w-[100%]'
                 //@ts-ignore
                 renderInput={(params) => <TextField {...params} label="Users" variant="outlined" />
                 }
@@ -168,7 +168,7 @@ export default function LaunchPage(props: any,) {
             </form>
 
         </Paper>
-        <Paper className="basis-[50%] p-[5%] flex flex-row justify-center items-center overflow-scroll">
+        <Paper className="basis-[50%] p-[2%] flex flex-row justify-center items-center overflow-scroll">
             <iframe className="w-full h-full" ref={ref}
                 name="iframe"
 
