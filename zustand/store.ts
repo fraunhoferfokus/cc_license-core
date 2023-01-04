@@ -140,8 +140,9 @@ export const useStore = create<State>()(
                 })
             },
             fetchNotifications: async () => {
-                const resp = (await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/notifications`)).data
-                set({ notifications: resp.data })
+                const data= (await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/notifications`)).data
+                
+                set({ notifications: data })
             },
             notifications: []
 

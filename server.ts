@@ -9,6 +9,7 @@ import next from 'next'
 import launchCtrl from './express/controllers/launchCtrl'
 import licenseAssigmentsCtrl from './express/controllers/licenseAssigmentsCtrl'
 import { AuthHandler } from './express/handlers/AuthHandler'
+import notificationCtrl from './express/controllers/notificationCtrl'
 
 
 
@@ -87,6 +88,9 @@ app.prepare().then(() => {
         launchCtrl
     )
 
+    server.use('/notifications',
+        notificationCtrl
+    )
 
 
     server.all('*', (req, res) => {
@@ -97,6 +101,6 @@ app.prepare().then(() => {
         console.log(`> Ready on http://${hostname}:${port}`)
     })
 
-}).catch((err) =>{
+}).catch((err) => {
     console.log(err)
 })

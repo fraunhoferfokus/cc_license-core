@@ -1,28 +1,58 @@
-import { Autocomplete, Button, Paper, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Modal, Paper, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { useStore } from "../../zustand/store";
 
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { useEffect, useState } from "react";
 import { style } from "@mui/system";
-
-
+import { LicenseDefinitionModel } from "license_manager";
+import CancelIcon from '@mui/icons-material/Cancel';
+import InfoIcon from '@mui/icons-material/Info';
+import { toBILO } from "../../helper/helper";
 export default function NotificationPage() {
     const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsers, groups,
-        licenseAssignments, notification, setNotification
+        licenseAssignments, notification, setNotification, fetchNotifications, createNotification, notifications, deleteNotification
     } = useStore(state => state)
 
+    useEffect(() => {
+        fetchNotifications()
+
+    }, [])
+
+    const [dialogBoxProperties, setDialogBoxProperties] = useState<{
+        open: boolean,
+        title: string,
+        text: any,
+        disableFooter: boolean,
+        callback: () => void
+    }>({
+        open: false,
+        text: '',
+        title: '',
+        disableFooter: false,
+        callback: () => { }
+    })
+
+
+    const [modalProperties, setModalProperties] = useState<{ callback: () => void, open: boolean, id: any, ele: LicenseDefinitionModel | null, metadata: any }>({
+        callback: () => { },
+        open: false,
+        id: '',
+        ele: null,
+        metadata: null
+    })
 
 
     const productMap = {}
-
-    const availableProductOptions = licenseDefinitions.flat(10).filter((license) => {
+    const availabeProducts = licenseDefinitions.flat(10).filter((license) => {
         const product_id = license.permissions![0].target!
         if (product_id in productMap) {
             return false
         }
         return true
-    }).map((license) => {
+    })
+
+    const availableProductOptions = availabeProducts.map((license) => {
         const product_id = license.permissions![0].target!
         const label = license.metadata.general.title.value
         return { label: label, value: product_id }
@@ -47,6 +77,11 @@ export default function NotificationPage() {
 
     useEffect(() => {
         setType({ label: notification.license_type, value: notification.license_type })
+
+        if ((notification.count !== 1 && notification.license_type === 'Einzellizenz') || notification.count === 0) {
+            setNotification({ ...notification, count: 1 })
+        }
+
     }, [notification])
 
     return (<>
@@ -89,6 +124,9 @@ export default function NotificationPage() {
                                 options={licenseTypeOptions}
                                 className='w-[100%] p-2 max-w-[250px]'
                                 value={type}
+                                onChange={(event, value) => {
+                                    if (value) setNotification({ ...notification, license_type: value?.value! })
+                                }}
                                 //@ts-ignore
                                 renderInput={(params) => <TextField {...params} label="Wählen Sie den Lizentypen aus" variant="outlined" />
                                 }
@@ -107,17 +145,22 @@ export default function NotificationPage() {
 
 
                         <div className="mb-[10px] mt-[5px] mr-[10px] w-[120px] break-all">
-                            <b>
-                                Lizenzanzahl:
+                            {notification.license_type === 'Gruppenlizenz' ?
+                                <b>
+                                    Gleichzeitige Nutzende:
 
-                            </b>
-
+                                </b> : <b>
+                                    Lizenzanzahl
+                                </b>}
                         </div>
                         <div className="flex-1 flex justify-end">
                             <TextField
                                 className='w-[100px] text-center'
                                 type={'number'}
                                 value={notification.count}
+
+                                disabled={notification.license_type === 'Einzellizenz'}
+
                                 onChange={(e) => {
                                     const intVal = parseInt(e.target.value)
                                     if (intVal > 0) setNotification({ ...notification, count: intVal })
@@ -220,13 +263,209 @@ export default function NotificationPage() {
                         if (notification.count! <= 0) return true
                         if (notification.elapsed_time! <= 0) return true
                     })()}
+
+                    onClick={() => {
+                        createNotification(notification)
+                        setNotification(
+                            {
+                                product_id: null,
+                                license_type: null,
+                                start_date: null,
+                                end_date: null,
+                                elapsed_time: null,
+                                count: null
+                            }
+                        )
+
+                    }}
                 >
                     Anfrage senden
                 </Button>
 
             </div>
         </Paper>
-        <Paper className="basis-[50%] p-[2%] flex flex-row justify-center items-center overflow-scroll">
+        <Paper className="basis-[50%] p-[2%] flex flex-col items-center overflow-scroll gap-2">
+            {notifications?.map((notification: LicenseDefinitionModel) => {
+                const permissions = notification.permissions
+                const found = availabeProducts.find((licenseDefinition) => {
+                    return permissions![0].target === licenseDefinition.permissions![0]!.target
+                })
+
+                const title = found?.metadata.general?.title?.value
+
+                return <Paper className="w-full p-2 h-[50px] flex" variant="outlined">
+
+                    <b className="flex-1">
+                        {title}
+                    </b>
+                    <div>
+
+                        <InfoIcon
+                            style={{
+                                cursor: 'pointer',
+                                color: '#1565C0'
+                            }}
+                            onClick={() => {
+                                setModalProperties((props) => {
+                                    return { ...props, open: true, metadata: found?.metadata, ele: notification }
+                                })
+
+                            }}
+                        >
+
+                        </InfoIcon>
+                        <CancelIcon
+                            style={{
+                                cursor: 'pointer',
+                                color: 'red'
+                            }}
+                            onClick={
+                                () => {
+                                    setDialogBoxProperties((props) => ({
+                                        ...props, open: true, title: 'Lizenzanfrage löschen', disableFooter: false,
+                                        text: 'Möchten Sie die Lizenzanfrage wirklich löschen?',
+                                        callback: () => {
+                                            deleteNotification(notification.policyid)
+                                        }
+                                    }
+
+                                    )
+
+                                    )
+
+                                }
+
+                            }
+                        >
+
+                        </CancelIcon>
+
+                    </div>
+                </Paper>
+
+            })}
         </Paper>
+
+        <Dialog
+            open={dialogBoxProperties.open}
+            onClose={() => {
+            }}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+                {dialogBoxProperties.title}
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {dialogBoxProperties.text}
+                </DialogContentText>
+            </DialogContent>
+
+            {
+                !dialogBoxProperties.disableFooter && <DialogActions>
+                    <Button onClick={
+                        () => {
+                            dialogBoxProperties.callback()
+                            setDialogBoxProperties((props) => ({ ...props, open: false, value: null }))
+
+                        }
+                    }>Zustimmen</Button>
+                    <Button onClick={
+                        () => {
+                            setDialogBoxProperties((props) => ({ ...props, open: false, value: null }))
+                        }
+                    } autoFocus>
+                        Abbrechen
+                    </Button>
+                </DialogActions>
+            }
+
+        </Dialog>
+
+
+
+        <Dialog
+            open={modalProperties.open}
+            onClose={() => {
+            }}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+                Bedarfsmeldung für: <b>
+                    {modalProperties.metadata?.general?.title?.value}
+                </b>
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {(() => {
+                        const constraints = modalProperties.ele?.permissions![0]!.constraints!
+                        const gueltigkeitsbeginn = new Date(constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' && constraint.operator === 'http://www.w3.org/ns/odrl/2/gteq')?.rightoperand!)
+                        const gueltigkeitsende = new Date(constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' && constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq')?.rightoperand!)
+                        const anzahl = constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/count')?.rightoperand!
+                        const dauer = constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/elapsedTime')?.rightoperand!
+                        const lizenzart = constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose' && constraint.operator === 'http://www.w3.org/ns/odrl/2/eq')?.rightoperand
+
+                        const img = modalProperties.metadata?.annotation[1].description.value
+
+                        return <>
+                            <div>
+                                Lizenzart: <b>{lizenzart}</b>
+                            </div>
+                            <div>
+                                Gültigkeitsbeginn: <b>{gueltigkeitsbeginn.getDate()}-{gueltigkeitsbeginn.getMonth() + 1}-{gueltigkeitsbeginn.getFullYear()}</b>
+                            </div>
+                            <div>
+                                Gültigsende: <b>{gueltigkeitsende.getDate()}-{gueltigkeitsende.getMonth() + 1}-{gueltigkeitsende.getFullYear()}</b>
+                            </div>
+                            <div>
+                                {lizenzart !== 'Gruppenlizenz' ?
+
+                                    <>
+                                        Lizenzanzahl: <b>{anzahl}</b>
+
+                                    </> :
+                                    <>
+                                        Maximal gleichzeitige Nutzer: <b>{anzahl}</b>
+
+                                    </>
+
+                                }
+                            </div>
+                            <div>
+                                Lizenzdauer: <b>{dauer}</b>
+                            </div>
+                            <br>
+                            </br>
+                            <div
+                                style={{
+                                    margin: '0 auto',
+                                    backgroundImage: `url(${img})`,
+                                    width: '300px',
+                                    height: '300px',
+                                }}
+                            >
+                            </div>
+                        </>
+                    })()}
+                </DialogContentText>
+            </DialogContent>
+
+
+            <DialogActions>
+                <Button onClick={
+                    () => {
+                        setModalProperties((props) => ({ ...props, open: false, value: null }))
+                    }
+                } autoFocus>
+                    Schließen
+                </Button>
+            </DialogActions>
+
+
+        </Dialog>
+
+
     </>)
 }
