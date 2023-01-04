@@ -51,7 +51,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                             }}
                         >
                             <MenuItem value="1">Import über DownloadID</MenuItem>
-                            <MenuItem value="2">Import über Datei Upload (ODRL) </MenuItem>
+                            <MenuItem value="2" disabled={true}>Import über Datei Upload (ODRL) </MenuItem>
                         </Select>
 
                         {
