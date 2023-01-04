@@ -43,20 +43,22 @@ export default function NotificationPage() {
     })
 
 
-    const productMap = {}
+    const productMap: any = {}
     const availabeProducts = licenseDefinitions.flat(10).filter((license) => {
         const product_id = license.permissions![0].target!
         if (product_id in productMap) {
             return false
         }
+        productMap[product_id] = true
         return true
     })
-
     const availableProductOptions = availabeProducts.map((license) => {
         const product_id = license.permissions![0].target!
         const label = license?.metadata?.general?.title?.value
         return { label: label, value: product_id }
     })
+
+    console.log({ availableProductOptions })
 
     const licenseTypeOptions = [
         {
