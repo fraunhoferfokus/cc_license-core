@@ -54,7 +54,7 @@ export default function NotificationPage() {
 
     const availableProductOptions = availabeProducts.map((license) => {
         const product_id = license.permissions![0].target!
-        const label = license.metadata.general.title.value
+        const label = license?.metadata?.general?.title?.value
         return { label: label, value: product_id }
     })
 
