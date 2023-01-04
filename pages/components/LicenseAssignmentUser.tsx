@@ -2,7 +2,7 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper } from "@mui/material"
 import { LicenseDefinitionModel } from "license_manager"
 import { useState } from "react"
-import { useStore } from "../zustand/store"
+import { useStore } from "../../zustand/store"
 
 export default function LicenseAssignmentUser({
     selectedUsers,

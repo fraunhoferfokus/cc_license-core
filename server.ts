@@ -76,8 +76,6 @@ app.prepare().then(() => {
             req.session.access_token = access_token
             return res.send()
         } catch (err: any) {
-            console.log(err)
-            console.log(err.response.data)
             return res.status(err.response.statusCode).send(err.response.data)
         }
 
@@ -94,8 +92,6 @@ app.prepare().then(() => {
     server.all('*', (req, res) => {
         return handle(req, res)
     })
-
-    console.log('hello')
 
     server.listen(port, () => {
         console.log(`> Ready on http://${hostname}:${port}`)

@@ -1,5 +1,5 @@
 import { RequestContext } from "next/dist/server/base-server";
-import { requireSession } from "./auth-mw/auth";
+import { requireSession } from "../auth-mw/auth";
 import Core from "./components/core";
 
 export default function LizenzImport({ props }: any) {

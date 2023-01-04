@@ -1,7 +1,7 @@
 import { Autocomplete, Button, Paper, TextField } from "@mui/material";
 import { LicenseDefinitionModel } from "license_manager";
 import { useRef, useState } from "react";
-import { useStore } from "../zustand/store";
+import { useStore } from "../../zustand/store";
 
 
 export default function LaunchPage(props: any) {

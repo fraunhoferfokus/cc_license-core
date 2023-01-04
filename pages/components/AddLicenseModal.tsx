@@ -4,7 +4,7 @@ import { Button, MenuItem, Paper, Select, TextField, Tooltip } from "@mui/materi
 import axios from 'axios';
 import { useState } from "react";
 import CustomModal from "./CustomModal";
-import { useStore } from "../zustand/store";
+import { useStore } from "../../zustand/store";
 export default function AddLicenseModal({ open, setOpen }: any) {
 
     const { fetchLicenseDefinitions } = useStore(state => state)

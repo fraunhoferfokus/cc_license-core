@@ -1,5 +1,5 @@
 import { Autocomplete, Paper, TextField} from "@mui/material";
-import { useStore } from "../zustand/store";
+import { useStore } from "../../zustand/store";
 
 
 export default function NotificationPage(props: any) {

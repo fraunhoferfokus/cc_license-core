@@ -4,14 +4,14 @@ import { RequestContext } from 'next/dist/server/base-server'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { isTemplateExpression } from 'typescript'
-import { requireSession } from './auth-mw/auth'
+import { requireSession } from '../auth-mw/auth'
 import AddLicenseModal from './components/AddLicenseModal'
 import LaunchPage from './components/LaunchPage'
 import LicenseAssignmentGroup from './components/LicenseAssigmentGroup'
 import LicenseAssignmentUser from './components/LicenseAssignmentUser'
 import NotificationPage from './components/NotificationPage'
-import { toBILO } from './helper/helper'
-import { useStore } from './zustand/store'
+import { toBILO } from '../helper/helper'
+import { useStore } from '../zustand/store'
 
 
 export default dynamic(() => Promise.resolve(Home), {
