@@ -53,6 +53,14 @@ function Home({ user }: { user: any }) {
     fetchUsers()
     fetchLicenseAssignments()
 
+    const interval = setInterval(() => {
+      fetchLicenseAssignments()
+    }, 1000 * 5)
+
+    return () => {
+      clearInterval(interval)
+    }
+
   }, [])
 
   useEffect(() => {
@@ -70,6 +78,8 @@ function Home({ user }: { user: any }) {
   useEffect(() => {
     if (bilo.lizenztyp === 'Gruppenlizenz') setPickedSelect('group')
   }, [bilo])
+
+
 
 
 
@@ -263,32 +273,32 @@ function Home({ user }: { user: any }) {
 
         <div className='flex flex-col gap-2 flex-1 min-h-0'>
           <div className='flex gap-5'>
-              <Select defaultValue={'assignment'} className='
+            <Select defaultValue={'assignment'} className='
               flex-1
               basis-[50%] p-4  border-box text-center flex justify-center items-center max-h-[60px]
               bg-white
               '
 
-                onChange={(e) => {
-                  setPage(e.target.value)
-                }}
+              onChange={(e) => {
+                setPage(e.target.value)
+              }}
+            >
+
+              <MenuItem value={'assignment'}
+
               >
+                Zuweisung Verwalten
+              </MenuItem>
+              <MenuItem value={'launch'}
+              >
+                Launch Test
+              </MenuItem>
+              <MenuItem value={'notification'}
+              >
+                Bedarfsmeldung äußern
+              </MenuItem>
 
-                <MenuItem value={'assignment'}
-
-                >
-                  Zuweisung Verwalten
-                </MenuItem>
-                <MenuItem value={'launch'}
-                >
-                  Launch Test
-                </MenuItem>
-                <MenuItem value={'notification'}
-                >
-                  Bedarfsmeldung äußern
-                </MenuItem>
-
-              </Select>
+            </Select>
             <Paper className="basis-[50%] p-2 flex flex-row max-h-[60px]"
 
               style={{
@@ -331,7 +341,7 @@ function Home({ user }: { user: any }) {
                     Derzeit aktive:
                     <b>
                       {(() => {
-                        const userLicenses = licenseAssignments.filter((assignment) => {
+                        const assignmentsForDefinition = licenseAssignments.filter((assignment) => {
                           const permissions = assignment.permissions![0]!
                           const isGroup = permissions.constraints!.find((item) => item.name === 'http://www.w3.org/ns/odrl/2/recipient')
 
@@ -343,16 +353,17 @@ function Home({ user }: { user: any }) {
                           }
                         })
 
-                        return userLicenses.filter((assignment) => {
+                        return assignmentsForDefinition.filter((assignment) => {
                           const permissions = assignment.permissions![0]!
                           const constraints = permissions.constraints!
 
                           const hatDatum = constraints.find((item) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/lteq')?.rightoperand
+                          
+
                           if (hatDatum) {
                             const gueltigBis = new Date(hatDatum)
                             const pickedLicensePermissions = pickedLicense?.permissions[0]!
-
-                            const underBoundDate = new Date(pickedLicensePermissions.constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/gteq').rightoperand)
+                            const underBoundDate = new Date()
                             const upperBoundDate = new Date(pickedLicensePermissions.constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/lteq').rightoperand)
 
                             if (gueltigBis >= underBoundDate && gueltigBis <= upperBoundDate) {
@@ -448,7 +459,6 @@ function Home({ user }: { user: any }) {
                       )
                     }
                     onChange={(e, value) => {
-                      console.log(value.length)
                       if (pickedSelect === 'user') {
                         // if array empty
                         if (value.length === 0) {

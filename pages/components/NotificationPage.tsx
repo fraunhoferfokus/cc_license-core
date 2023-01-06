@@ -385,7 +385,7 @@ export default function NotificationPage() {
         >
             <DialogTitle id="alert-dialog-title">
                 Bedarfsmeldung für: <b>
-                    {modalProperties.metadata?.general?.title?.value}
+                    {modalProperties?.metadata?.general?.title?.value}
                 </b>
             </DialogTitle>
             <DialogContent>
@@ -398,7 +398,7 @@ export default function NotificationPage() {
                         const dauer = constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/elapsedTime')?.rightoperand!
                         const lizenzart = constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose' && constraint.operator === 'http://www.w3.org/ns/odrl/2/eq')?.rightoperand
 
-                        const img = modalProperties.metadata?.annotation[1].description.value
+                        const img = modalProperties?.metadata?.annotation[1].description.value
 
                         return <>
                             <div>

@@ -73,7 +73,6 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                             "Not valid DownloadID..."
                                         }
                                         onChange={(e) => {
-                                            console.log(e.target.value)
                                             setElement((el) => ({ ...el, downloadID: e.target.value }))
 
                                         }}
@@ -100,7 +99,6 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                     let element = el[0]
                                     let metadata = element.metadata
                                     let image = metadata.annotation[1].description.value
-                                    console.log(image)
                                     return (
 
                                         <Tooltip title={(() => {

@@ -110,7 +110,7 @@ export default function LaunchPage(props: any,) {
                                     height: '90px',
                                     border: '1px solid #e7ebef',
                                     position: 'relative',
-                                    backgroundImage: `url(${metadata.annotation[1].description.value})`,
+                                    backgroundImage: `url(${metadata?.annotation[1].description.value})`,
                                     backgroundRepeat: 'no-repeat',
                                     backgroundPosition: 'center center',
                                     backgroundSize: 'contain',

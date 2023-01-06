@@ -24,7 +24,7 @@ class LicenseAssignmentController {
 
     launchLicenseAssignmentForUser: express.Handler = async (req, res, next) => {
         try {
-            
+
             // get access token from authorization header
             const authorization = req.headers.authorization
             if (!authorization) {
@@ -119,6 +119,7 @@ class LicenseAssignmentController {
 
                     if (hatSession && (new Date(hatSession) > activationLowerBoundary && new Date(hatSession) < activationHigherBoundary)) {
                         console.log('skip license check')
+
                     } else {
                         console.log('check if user can acquire temp license')
                         // check if user can temp  license
@@ -139,7 +140,11 @@ class LicenseAssignmentController {
                         }
                     }
 
-                    endDate.setDate(endDate.getDate() + 1)
+
+                    // endDate.setDate(endDate.getDate() + 1)
+                    console.log(today.toISOString())
+                    endDate.setDate(today.getSeconds() + 10)
+
 
                     if (endDate > activationHigherBoundary) {
                         endDate.setDate(activationHigherBoundary.getDate())
@@ -250,29 +255,30 @@ class LicenseAssignmentController {
                         constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
                     )?.rightoperand
 
-                    if (hatSession && (new Date(hatSession) > activationLowerBoundary && new Date(hatSession) < activationHigherBoundary)) {
+                    if (hatSession && new Date(hatSession) > (new Date())) {
                         console.log('skip license check')
                     } else {
-                        console.log('check if user can acquire temp license')
-                        // check if user can temp  license
-                        const counter = currAssignForDefinition.filter((assignment) => {
-                            // get date of assignment and check if it is within the activation period
-                            const assignmentDate = new Date(assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
-                                && constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-                            )?.rightoperand!)
-
-                            // this assignment is actiavted
-                            if (today < assignmentDate) {
-                                return true
+                        // check how many active sessions are currently running for this license definition
+                        const activeAssignments = currAssignForDefinition.filter((assignment) => {
+                            const hatSession = assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
+                                constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+                            )?.rightoperand
+                            if (hatSession) {
+                                const newDate = new Date(hatSession)
+                                if (newDate > (new Date())) {
+                                    return true
+                                }
                             }
                         }).length
 
-                        if (counter >= lizenzanzahl) {
+                        if (activeAssignments >= lizenzanzahl) {
                             return res.status(403).send('Maximale Anzahl an Gleichzeitigen Lizenzen erreicht')
                         }
                     }
 
-                    endDate.setDate(endDate.getDate() + 1)
+
+                    // endDate.setDate(endDate.getDate() + 1)
+                    endDate.setMinutes(today.getMinutes() + 1)
 
                     if (endDate > activationHigherBoundary) {
                         endDate.setDate(activationHigherBoundary.getDate())
