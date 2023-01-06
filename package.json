@@ -5,6 +5,12 @@
   "scripts": {
     "dev": "npx nodemon server.ts",
     "build": "next build",
+    "create:reports": "license-checker && npm run report:licenses:summary && npm run report:licenses:json && npm run report:licenses:csv && npm run report:dependencies:graph",
+    "report:licenses:unknown": "license-checker --onlyunknown",
+    "report:licenses:json": "license-checker --relativeLicensePath --json --out ./reports/dependency_licenses.json",
+    "report:licenses:csv": "license-checker --relativeLicensePath --csv --csvComponentPrefix --customPath ./configs/config.license-checker.json --out ./reports/dependency_licenses.csv",
+    "report:licenses:summary": "license-checker --summary --out ./reports/dependency_licenses.summary.txt",
+    "report:dependencies:graph": "npm list --depth=2 > ./reports/dependencies.graph.txt",
     "start": "npx ts-node server.ts",
     "lint": "next lint"
   },
@@ -51,5 +57,8 @@
       "**/helper/**"
     ],
     "delay": 2500
+  },
+  "optionalDependencies": {
+    "license-checker": "^25.0.1"
   }
 }
