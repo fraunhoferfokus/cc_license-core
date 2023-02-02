@@ -1,19 +1,24 @@
 import LicenseAssignmentDAO from '../express/models/LicenseAssignmentDAO'
-import { LicenseDefinitionDAO, LicenseDefinitionModel } from 'license_manager'
+import NotificationDAO from '../express/models/NotificationDAO'
+import { LicenseDefinitionDAO, LicenseDefinitionModel, LicenseInformationDAO, LicenseInformationModel } from 'license_manager'
 import schedule from 'node-schedule'
 
 const definitionDAOInstance = new LicenseDefinitionDAO('licenseDefinitions', LicenseDefinitionModel)
+const licenseInformationDAOInstance = LicenseInformationDAO
+const notificationDAOInstance = NotificationDAO
 const assignmentDAOInstance = LicenseAssignmentDAO
 
 export function scheduleEveryDay() {
     console.log('-------Setting up Scheduler ---------')
-    const job = schedule.scheduleJob('0 0 * * *', async () => {
+    const job = schedule.scheduleJob('* * * * *', async () => {
         const date = new Date()
         console.log('-----------------')
         console.log(`Deleting on: ${('0' + date.getDate().toString()).slice(-2)}-${('0' + date.getMonth().toString()).slice(-2)} ${date.getHours()}:${date.getMinutes()}`)
-        const [definitions, assignments] = await Promise.all([
+        const [definitions, assignments, informations, notifications] = await Promise.all([
             definitionDAOInstance.findAll(),
-            assignmentDAOInstance.findAll()
+            assignmentDAOInstance.findAll(),
+            licenseInformationDAOInstance.findAll(),
+            notificationDAOInstance.findAll()
         ])
 
         const deleteOperations: Promise<any>[] = []
@@ -24,6 +29,14 @@ export function scheduleEveryDay() {
         for (const assignment of assignments) {
             deleteOperations.push(assignmentDAOInstance.deleteById(assignment._id))
         }
+        for (const information of informations) {
+            deleteOperations.push(licenseInformationDAOInstance.deleteById(information._id))
+        }
+
+        for (const notification of notifications) {
+            deleteOperations.push(notificationDAOInstance.deleteById(notification._id))
+        }
+
 
         try {
             await Promise.all(deleteOperations)
