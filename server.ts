@@ -10,6 +10,7 @@ import launchCtrl from './express/controllers/launchCtrl'
 import licenseAssigmentsCtrl from './express/controllers/licenseAssigmentsCtrl'
 import { AuthHandler } from './express/handlers/AuthHandler'
 import notificationCtrl from './express/controllers/notificationCtrl'
+import { scheduleEveryDay } from './helper/scheduler'
 
 
 
@@ -39,6 +40,9 @@ declare module 'express-session' {
         }
     }
 }
+
+scheduleEveryDay()
+
 
 app.prepare().then(() => {
     console.log('hw')
