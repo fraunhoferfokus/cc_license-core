@@ -40,12 +40,12 @@ declare module 'express-session' {
         }
     }
 }
+console.log()
 
 scheduleEveryDay()
 
 
 app.prepare().then(() => {
-    console.log('hw')
     const server = express()
 
     server.use(express.json())
@@ -107,6 +107,5 @@ app.prepare().then(() => {
     })
 
 }).catch((err) => {
-    console.log('HIHI')
-    console.log(err)
+    console.log('some error occured')
 })
