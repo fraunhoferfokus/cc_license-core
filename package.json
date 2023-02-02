@@ -33,7 +33,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "license_manager": "git+https://glpat-Kbm17Z6sMq6HDUExdZ6y:glpat-Kbm17Z6sMq6HDUExdZ6y@gitlab.fokus.fraunhofer.de/learning-technologies/projects/control-connect/licenseDefinition-manager.git#v0.1.5",
+    "license_manager": "git+https://glpat-qbDoddTpe_Rfyxi9Qvab:glpat-qbDoddTpe_Rfyxi9Qvab@gitlab.fokus.fraunhofer.de/learning-technologies/projects/control-connect/licenseDefinition-manager.git#main",
     "moment": "^2.29.4",
     "moment-jalaali": "^0.9.6",
     "next": "13.0.6",
