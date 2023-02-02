@@ -6,9 +6,10 @@ const definitionDAOInstance = new LicenseDefinitionDAO('licenseDefinitions', Lic
 const assignmentDAOInstance = LicenseAssignmentDAO
 
 export function scheduleEveryDay() {
-
+    console.log('-------Setting up Scheduler ---------')
     const job = schedule.scheduleJob('0 0 * * *', async () => {
         const date = new Date()
+        console.log('-----------------')
         console.log(`Deleting on: ${('0' + date.getDate().toString()).slice(-2)}-${('0' + date.getMonth().toString()).slice(-2)} ${date.getHours()}:${date.getMinutes()}`)
         const [definitions, assignments] = await Promise.all([
             definitionDAOInstance.findAll(),
@@ -27,6 +28,9 @@ export function scheduleEveryDay() {
         try {
             await Promise.all(deleteOperations)
             console.log('succesfully deleted all dependencies')
+
+            console.log('-----------------')
+
         } catch (err) {
             console.error(err)
             console.error('some error occured')
