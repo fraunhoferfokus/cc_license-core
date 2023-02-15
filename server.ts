@@ -82,7 +82,8 @@ app.prepare().then(() => {
             req.session.access_token = access_token
             return res.send()
         } catch (err: any) {
-            return res.status(err.response.statusCode).send(err.response.data)
+            console.log(err.response.data)
+            return res.status(err.response.statusCode || 500).send(err.response.data)
         }
 
     })

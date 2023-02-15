@@ -11,6 +11,7 @@ interface State {
     users: any[],
     groups: any[],
     fetchUsers: () => any,
+    fetchGroups: () => any,
     createLicenseAssignment: (licenseDefinitionID: string, targetID: string) => any,
     deleteLicenseAssignment: (licenseAssignmentID: string) => any,
     notification: {
@@ -89,21 +90,11 @@ export const useStore = create<State>()(
             fetchUsers: async () => {
                 const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`)
                 set({ users: resp.data })
-
-                let groups: any[] = []
-                for (const user of resp.data) {
-                    for (const group of user.gruppen) {
-                        if (!groups.find((item: any) => item.id === group.id)) {
-                            groups.push(group)
-                        }
-                    }
-
-                }
-
-
-                set({ groups })
-
-
+                get().fetchGroups()
+            },
+            fetchGroups: async () => {
+                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`)
+                set({ groups: resp.data })
             },
             createLicenseAssignment(licenseDefinitionID: string, targetID: string) {
                 axios.post(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`, {
@@ -140,8 +131,8 @@ export const useStore = create<State>()(
                 })
             },
             fetchNotifications: async () => {
-                const data= (await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/notifications`)).data
-                
+                const data = (await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/notifications`)).data
+
                 set({ notifications: data })
             },
             notifications: []
@@ -150,6 +141,7 @@ export const useStore = create<State>()(
         }),
         {
             name: 'license-storage',
+            partialize: (state) => ({ notifications: state.notifications }),
         }
     )
 )

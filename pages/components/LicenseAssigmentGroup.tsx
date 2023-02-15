@@ -40,9 +40,11 @@ export default function LicenseAssignmentGroup({
 
     return (
         <>
-            {selectedGroups.map((group: any) => {
+            {selectedGroups.map((selected: any) => {
+                const realGroup = groups.find((group) => group.id === selected.id)
+                console.log({realGroup})
                 const groupLicenseAssignments = licenseAssignments.filter((assignment) => {
-                    return assignment.permissions![0].assignee === group.id
+                    return assignment.permissions![0].assignee === selected.id
                 })
 
                 const groupHasThatParticularLicense =
@@ -50,14 +52,14 @@ export default function LicenseAssignmentGroup({
                         return pickedLicenses.find((license) => license.policyid === groupAssignment.inheritfrom)
                     })
 
-                const usersInGroup = users.filter((user) => user.gruppen.map((group: any) => group.id).includes(group.id))
+                const usersInGroup = users.filter((user) => realGroup.users.includes(user.id))
                 return (<Paper className="flex min-h-[42px] p-1 overflow-scroll flex-1
                 "
-                    key={group.id}
+                    key={selected.id}
                     square
                     variant="outlined"
                 >
-                    {bilo.lizenztyp === 'Gruppenlizenz' &&
+                    {bilo.lizenztyp === 'Groupslizenz' &&
                         <Checkbox
                             disabled={
                                 currentlyAssignedAmount >= bilo.lizenzanzahl && !groupHasThatParticularLicense
@@ -65,7 +67,7 @@ export default function LicenseAssignmentGroup({
                             checked={
                                 groupHasThatParticularLicense ? true : false
                             }
-                            value={group.id}
+                            value={selected.id}
                             onChange={
                                 (e) => {
                                     if (!e.target.checked) {
@@ -87,14 +89,14 @@ export default function LicenseAssignmentGroup({
                         <div className="flex flex-1 flex-col w-full">
                             <div>
                                 <b className="p-2">
-                                    {group.displayName}
+                                    {selected.displayName}
                                 </b>
                             </div>
 
                             <div className="p-3">
                                 {
                                     usersInGroup.map((user) => {
-
+                                        
                                         const userLicenseAssignments = licenseAssignments.filter((assignment) => {
                                             return assignment.permissions![0].assignee === user.id
                                         })
@@ -110,8 +112,8 @@ export default function LicenseAssignmentGroup({
                                             >
                                                 <Checkbox
                                                     disabled={
-                                                        bilo.lizenztyp === 'Gruppenlizenz' ||
-                                                        role && !user?.gruppen.find((gruppe: any) => gruppe.rolle === role)
+                                                        bilo.lizenztyp === 'Groupslizenz' ||
+                                                        role && !user?.groups.find((gruppe: any) => gruppe.rolle === role)
                                                         ||
                                                         currentlyAssignedAmount === bilo.lizenzanzahl && !userHasThisParticularLicense
                                                     }

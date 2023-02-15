@@ -9,7 +9,6 @@ export async function requireSession(context: RequestContext) {
             url: `${process.env.DEPLOY_URL}/user-info`,
             headers: req.headers,
         })
-
         return {
             props: {
                 user: resp.data,
