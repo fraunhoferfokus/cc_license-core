@@ -16,6 +16,7 @@ export default function LicenseAssignmentUser({
     bilo: any,
     currentlyAssignedAmount: any
 }) {
+    
     const { users, groups, licenseAssignments, createLicenseAssignment, deleteLicenseAssignment } = useStore(state => state)
 
     const [dialogBoxProperties, setDialogBoxProperties] = useState<{

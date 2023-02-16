@@ -10,7 +10,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import InfoIcon from '@mui/icons-material/Info';
 import { toBILO } from "../../helper/helper";
 export default function NotificationPage() {
-    const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsers, groups,
+    const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsersAndGroups: fetchUsers, groups,
         licenseAssignments, notification, setNotification, fetchNotifications, createNotification, notifications, deleteNotification
     } = useStore(state => state)
 

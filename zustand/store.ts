@@ -10,8 +10,7 @@ interface State {
     fetchLicenseAssignments: () => any,
     users: any[],
     groups: any[],
-    fetchUsers: () => any,
-    fetchGroups: () => any,
+    fetchUsersAndGroups: () => any,
     createLicenseAssignment: (licenseDefinitionID: string, targetID: string) => any,
     deleteLicenseAssignment: (licenseAssignmentID: string) => any,
     notification: {
@@ -34,11 +33,14 @@ interface State {
     deleteNotification: (notficationID: string) => any,
     fetchNotifications: () => any,
     notifications: any[],
+    fetchAccessToken: () => any,
+    config: any
 }
 
 export const useStore = create<State>()(
     persist(
-        (set, get, props) => ({
+        (set, get) => ({
+            config: null,
             licenseDefinitions: [],
             licenseAssignments: [],
             fetchLicenseDefinitions: async () => {
@@ -87,25 +89,34 @@ export const useStore = create<State>()(
             },
             users: [],
             groups: [],
-            fetchUsers: async () => {
-                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`)
-                set({ users: resp.data })
-                get().fetchGroups()
+            fetchAccessToken: async () => {
+                const access_token = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/access_token`)
+                const config = {
+                    headers: { Authorization: `Bearer ${access_token.data}` }
+                }
+                set({ config })
+                return config
             },
-            fetchGroups: async () => {
-                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`)
-                set({ groups: resp.data })
+            fetchUsersAndGroups: async () => {
+                const config = get().config
+                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`, config)
+                const resp2 = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`, config)
+                set({ groups: resp2.data, users: resp.data })
             },
             createLicenseAssignment(licenseDefinitionID: string, targetID: string) {
+                const config = get().config
                 axios.post(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`, {
                     licenseDefinitionID,
                     targetID
-                }).then(async () => {
+                },
+                    config
+                ).then(async () => {
                     get().fetchLicenseAssignments()
                 })
             },
             deleteLicenseAssignment(licenseAssignmentID: string) {
-                axios.delete(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments/${licenseAssignmentID}`).then(async () => {
+                const config = get().config
+                axios.delete(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments/${licenseAssignmentID}`, config).then(async () => {
                     get().fetchLicenseAssignments()
                 })
             },

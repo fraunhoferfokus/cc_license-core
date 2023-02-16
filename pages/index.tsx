@@ -21,8 +21,16 @@ export default dynamic(() => Promise.resolve(Home), {
 
 function Home({ user }: { user: any }) {
   const [open, setOpen] = useState(false);
-  const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsers, groups,
-    setNotification, notification,
+  const {
+    licenseDefinitions,
+    fetchLicenseDefinitions,
+    fetchLicenseAssignments,
+    users,
+    fetchUsersAndGroups: fetchUsers,
+    groups,
+    setNotification,
+    notification,
+    fetchAccessToken,
     licenseAssignments
   } = useStore(state => state)
   const [pickedLicenses, setPickedLicenses] = useState<any>(null)
@@ -47,11 +55,17 @@ function Home({ user }: { user: any }) {
 
   const autoC = useRef(null);
 
+
   const [page, setPage] = useState('assignment')
   useEffect(() => {
-    fetchLicenseDefinitions()
-    fetchUsers()
-    fetchLicenseAssignments()
+
+    fetchAccessToken().then((config: any) => {
+      console.log({ config })
+      fetchLicenseDefinitions()
+      fetchUsers()
+      fetchLicenseAssignments()
+
+    })
 
     const interval = setInterval(() => {
       fetchLicenseAssignments()
@@ -358,7 +372,7 @@ function Home({ user }: { user: any }) {
                           const constraints = permissions.constraints!
 
                           const hatDatum = constraints.find((item) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/lteq')?.rightoperand
-                          
+
 
                           if (hatDatum) {
                             const gueltigBis = new Date(hatDatum)

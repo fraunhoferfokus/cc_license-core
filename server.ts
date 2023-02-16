@@ -59,6 +59,10 @@ app.prepare().then(() => {
         return res.send(req.session.user)
     })
 
+    server.get('/access_token', AuthHandler.requireSessison, (req, res) => {
+        return res.send(req.session.access_token)
+    })
+
     server.get('/oidc-auth/:code', async (req, res, next) => {
         // get access token from code
         const code = req.params.code
@@ -88,7 +92,7 @@ app.prepare().then(() => {
 
     })
 
-    server.use('/license-assignments', licenseAssigmentsCtrl)
+    server.use('/license-assignments',AuthHandler.requireSessison, licenseAssigmentsCtrl)
 
     server.use('/launch',
         launchCtrl

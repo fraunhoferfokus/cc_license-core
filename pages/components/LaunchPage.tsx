@@ -5,7 +5,7 @@ import { useStore } from "../../zustand/store";
 
 
 export default function LaunchPage(props: any,) {
-    const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsers, groups,
+    const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsersAndGroups: fetchUsers, groups,
         licenseAssignments
     } = useStore(state => state)
 
