@@ -7,6 +7,148 @@ import LicenseAssignmentDAO from "../models/LicenseAssignmentDAO";
 import { v4 as uuid } from 'uuid'
 import { userAgent } from "next/server";
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Constraint:
+ *       type: object
+ *       required:
+ *         - name
+ *         - operator
+ *         - rightoperand
+ *       properties:
+ *         name:
+ *           type: string
+ *         operator:
+ *           type: string
+ *         rightoperand:
+ *           type: string
+ *         rightoperanddatatype:
+ *           type: string
+ *         rightoperandunit:
+ *           type: string
+ *         status:
+ *           type: string
+ *       xml:
+ *         name: Constraint
+ *       additionalProperties: false
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Prohibdutytype:
+ *       type: object
+ *       required:
+ *         - action
+ *       properties:
+ *         assigner:
+ *           type: string
+ *         assignee:
+ *           type: string
+ *         assignee_scope:
+ *           type: string
+ *         target:
+ *           type: string
+ *         output:
+ *           type: string
+ *         action:
+ *           type: string
+ *         constraints:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Constraint'
+ *       xml:
+ *         name: Prohibdutytype
+ *       additionalProperties: false
+ */
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Permission:
+ *       type: object
+ *       required:
+ *         - action
+ *       properties:
+ *         assigner:
+ *           type: string
+ *         assigner_scope:
+ *           type: string
+ *         assignee:
+ *           type: string
+ *         target:
+ *           type: string
+ *         output:
+ *           type: string
+ *         action:
+ *           type: string
+ *         constraints:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Constraint'
+ *         duties:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Prohibdutytype'
+ *       xml:
+ *         name: Permission
+ *       additionalProperties: false
+ */
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     LicenseDefinition:
+ *       type: object
+ *       required:
+ *         - policyid
+ *         - policytype
+ *         - policyid
+ *         - policyid
+ *       properties:
+ *         _is:
+ *           type: string
+ *         policyid:
+ *           type: string
+ *         policytype:
+ *           type: string
+ *         conflict:
+ *           type: string
+ *           enum:
+ *             - 'perm'
+ *             - 'prohibit'
+ *             - 'invalid'
+ *         undefined:
+ *           type: string
+ *           enum:
+ *             - 'invalid'
+ *             - 'support'
+ *             - 'ignore'
+ *         inheritallowed:
+ *           type: boolean
+ *         inheritfrom:
+ *           type: string
+ *         inheritrelation:
+ *           type: string
+ *         policyprofile:
+ *           type: string
+ *         permissions:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Permission'
+ *         prohibitions:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Prohibdutytype'
+ *       xml:
+ *         name: LicenseDefinition
+ *       additionalProperties: false
+ */
+
+
 
 class LicenseAssignmentController {
 
@@ -18,6 +160,8 @@ class LicenseAssignmentController {
     }
 
     configRouters() {
+
+
         this.router.get('/users', this.getLicenseAssingmentForUser)
         this.router.get('/', this.getLicenseAssignments);
         this.router.get('/:id', this.getLicenseAssignment);

@@ -11,6 +11,7 @@ import licenseAssigmentsCtrl from './express/controllers/licenseAssigmentsCtrl'
 import { AuthHandler } from './express/handlers/AuthHandler'
 import notificationCtrl from './express/controllers/notificationCtrl'
 import { scheduleEveryDay } from './helper/scheduler'
+import swaggerJSDoc from 'swagger-jsdoc'
 
 
 
@@ -46,10 +47,32 @@ scheduleEveryDay()
 
 
 app.prepare().then(() => {
+
+
+    const options = {
+        definition: {
+            openapi: '3.0.0',
+            info: {
+                title: 'Auth-Manager',
+                version: '1.0.0',
+            },
+        },
+        apis: ['./server.ts', './express/controllers/*'], // files containing annotations as above
+    };
+
+
+    const openApiSpecification = swaggerJSDoc(options)
     const server = express()
 
     server.use(express.json())
     server.use(express.urlencoded({ extended: true }))
+
+
+    server.get('/api-docs', (req, res, next) => {
+        return res.json(openApiSpecification)
+    })
+
+
 
     server.use(session({
         secret: 'keyboard cat',
@@ -92,7 +115,7 @@ app.prepare().then(() => {
 
     })
 
-    server.use('/license-assignments',AuthHandler.requireSessison, licenseAssigmentsCtrl)
+    server.use('/license-assignments', AuthHandler.requireSessison, licenseAssigmentsCtrl)
 
     server.use('/launch',
         launchCtrl
@@ -112,5 +135,6 @@ app.prepare().then(() => {
     })
 
 }).catch((err) => {
+    console.log({ err })
     console.log('some error occured')
 })
