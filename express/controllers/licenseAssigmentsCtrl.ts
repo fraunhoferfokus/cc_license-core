@@ -148,6 +148,15 @@ import { userAgent } from "next/server";
  *       additionalProperties: false
  */
 
+/**
+ * @openapi
+ * components:
+ *  securitySchemes:
+ *      bearerAuth:
+ *          type: http
+ *          scheme: bearer
+ *          bearerFormat: JWT
+ */
 
 
 class LicenseAssignmentController {
@@ -161,7 +170,28 @@ class LicenseAssignmentController {
 
     configRouters() {
 
-
+        /**
+         * @openapi
+         * 
+         * /license-assignments/users:
+         *      
+         *      get:
+         *          tags: 
+         *              - core
+         *          description: Get the license-assignments of a user
+         *          responses:
+         *              200: 
+         *                  description: Returns an array of ODRL license-assignments
+         *                  content:
+         *                      application/json:
+         *                          schema:
+         *                              type: array
+         *                              items:
+         *                                  $ref: '#/components/schemas/LicenseDefinition'
+         *          security: 
+         *              - bearerAuth: [] 
+         *  
+         */
         this.router.get('/users', this.getLicenseAssingmentForUser)
         this.router.get('/', this.getLicenseAssignments);
         this.router.get('/:id', this.getLicenseAssignment);

@@ -13,7 +13,7 @@ import notificationCtrl from './express/controllers/notificationCtrl'
 import { scheduleEveryDay } from './helper/scheduler'
 import swaggerJSDoc from 'swagger-jsdoc'
 
-
+import cors from 'cors'
 
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -67,6 +67,7 @@ app.prepare().then(() => {
     server.use(express.json())
     server.use(express.urlencoded({ extended: true }))
 
+    server.use(cors())
 
     server.get('/api-docs', (req, res, next) => {
         return res.json(openApiSpecification)
