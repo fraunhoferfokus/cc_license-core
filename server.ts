@@ -37,17 +37,16 @@ declare module 'express-session' {
             preferred_username: string,
             given_name: string,
             family_name: string,
-            email: string
+            email: string,
+            username: string
         }
     }
 }
-console.log()
 
 scheduleEveryDay()
 
 
 app.prepare().then(() => {
-
 
     const options = {
         definition: {
@@ -60,7 +59,6 @@ app.prepare().then(() => {
         apis: ['./server.ts', './express/controllers/*'], // files containing annotations as above
     };
 
-
     const openApiSpecification = swaggerJSDoc(options)
     const server = express()
 
@@ -72,8 +70,6 @@ app.prepare().then(() => {
     server.get('/api-docs', (req, res, next) => {
         return res.json(openApiSpecification)
     })
-
-
 
     server.use(session({
         secret: 'keyboard cat',
@@ -92,7 +88,6 @@ app.prepare().then(() => {
         const code = req.params.code
         const url = token_endpoint
         try {
-
             const resp = await axios(url, {
                 method: 'POST',
                 data: {
@@ -107,16 +102,16 @@ app.prepare().then(() => {
                 }
             })
             const access_token = resp.data.access_token
+            console.log({ access_token })
             req.session.access_token = access_token
             return res.send()
         } catch (err: any) {
-            console.log(err.response.data)
+            console.log('no valid user session')
             return res.status(err.response.statusCode || 500).send(err.response.data)
         }
-
     })
 
-    server.use('/license-assignments', AuthHandler.requireSessison, licenseAssigmentsCtrl)
+    server.use('/license-assignments', licenseAssigmentsCtrl)
 
     server.use('/launch',
         launchCtrl

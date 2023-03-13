@@ -15,13 +15,12 @@ export async function requireSession(context: RequestContext) {
             }
         }
 
-    } catch (err) {
-        console.log(err)
+    } catch (err: any) {
         return {
             redirect: {
                 destination: '/signIn',
                 permanent: false,
             },
         }
-    }       
+    }
 }

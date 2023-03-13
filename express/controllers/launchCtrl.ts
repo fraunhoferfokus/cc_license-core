@@ -40,7 +40,7 @@ class LicenseAssignmentController {
             }
             )).data
 
-            const userID = me.email
+            const userID = me.username || me.preferred_username
             const licenseDefinitionID = req.body.licenseDefinitionID
             const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseDefinitionID}`)).data
 

@@ -197,26 +197,30 @@ class LicenseAssignmentController {
         this.router.get('/:id', this.getLicenseAssignment);
         this.router.post('/', this.createLicenseAssignment);
         this.router.delete('/:id', this.deleteLicenseAssignment);
+        
     }
 
     getLicenseAssingmentForUser: express.Handler = async (req, res, next) => {
         try {
+
+            const requestingUser = req.session.user
+            // const authorization = req.headers.authorization
+            // if (!authorization) {
+            //     return res.status(401).send('Authorization header not found')
+            // }
+            // const access_token = authorization.split(' ')[1]
+            // // get user id from access token
+
+            // const me = (await axios.get(`${process.env.OIDC_USERINFO_ENDPOINT}`, {
+            //     headers: {
+            //         Authorization: `Bearer ${access_token}`
+            //     }
+            // }
+            // )).data
+
             const licenseAssignments = await LicenseAssignmentDAO.findAll()
-            const authorization = req.headers.authorization
-            if (!authorization) {
-                return res.status(401).send('Authorization header not found')
-            }
-            const access_token = authorization.split(' ')[1]
-            // get user id from access token
-
-            const me = (await axios.get(`${process.env.OIDC_USERINFO_ENDPOINT}`, {
-                headers: {
-                    Authorization: `Bearer ${access_token}`
-                }
-            }
-            )).data
-
-            const userID = me.email
+            console.log( licenseAssignments[0].permissions![0] )
+            const userID = requestingUser!.username || requestingUser?.preferred_username
             const userLicenseAssignments = licenseAssignments.filter(licenseAssignment => licenseAssignment.permissions![0]!.assignee === userID)
             return res.json(userLicenseAssignments)
         } catch (err: any) {
@@ -228,7 +232,14 @@ class LicenseAssignmentController {
 
     getLicenseAssignments: express.Handler = async (req, res, next) => {
         try {
-            const licenseAssignments = await LicenseAssignmentDAO.findAll()
+            let licenseAssignments = await LicenseAssignmentDAO.findAll()
+
+            if(req.query.schema ==='urn:bilo:assignment'){
+                for(let licenseAssignment of licenseAssignments) {
+                    
+                } 
+            }
+
             return res.json(licenseAssignments)
         } catch (err: any) {
             return res.status(err?.response?.statusCode || 500).json(err)
