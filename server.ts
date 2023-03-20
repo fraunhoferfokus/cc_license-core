@@ -111,7 +111,7 @@ app.prepare().then(() => {
         }
     })
 
-    server.use('/license-assignments', licenseAssigmentsCtrl)
+    server.use('/license-assignments', AuthHandler.requireSessison, licenseAssigmentsCtrl)
 
     server.use('/launch',
         launchCtrl
