@@ -7,6 +7,8 @@ interface State {
     licenseDefinitions: (LicenseDefinitionModel & { metadata: any })[][],
     licenseAssignments: LicenseDefinitionModel[],
     fetchLicenseDefinitions: () => any,
+    fetchLicenseDefinitionsV2: () => any,
+
     fetchLicenseAssignments: () => any,
     users: any[],
     groups: any[],
@@ -80,6 +82,53 @@ export const useStore = create<State>()(
                 }
 
 
+                set({ licenseDefinitions: data })
+            },
+            fetchLicenseDefinitionsV2: async () => {
+                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseDefinitions`)
+                let data = resp.data
+                const volLizenzen = data.filter((item: any) => item.permissions[0].constraints.find((item: any) => {
+                    return item.rightoperand === 'Volumenlizenz'
+                }))
+                data = data.filter((item: any) => item.permissions[0].constraints.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/purpose' && item.rightoperand !== 'Volumenlizenz')).map(
+                    (item: any) => ([item])
+                )
+
+
+                const volumenMapper: any = {}
+
+                for (const vol of volLizenzen) {
+                    const constraints = vol.permissions[0].constraints
+                    const product_id = vol.permissions[0].target
+                    const kaufreferenz = constraints.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/eq').rightoperand
+                    if (!volumenMapper[kaufreferenz + product_id]) {
+                        volumenMapper[kaufreferenz + product_id] = [
+                            vol
+                        ]
+                    } else {
+                        volumenMapper[kaufreferenz + product_id].push(vol)
+                    }
+                }
+
+                for (const key in volumenMapper) {
+                    data.push(volumenMapper[key])
+                }
+
+                const product_ids = []
+
+                for (const el of data) {
+                    const ele = el[0]
+                    const product_id = ele.permissions[0].target
+                    product_ids.push({id: product_id})
+                }
+
+                const resp2 = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById?product_id=${JSON.stringify(product_ids)}`)
+
+                for (const el of resp2.data) {
+                    const ele = el[0]
+                    const product_id = ele.permissions[0].target
+                    ele.metadata = el[1].data.lom
+                }
                 set({ licenseDefinitions: data })
             },
             fetchLicenseAssignments: async () => {

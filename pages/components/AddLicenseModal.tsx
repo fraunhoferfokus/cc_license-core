@@ -7,7 +7,7 @@ import CustomModal from "./CustomModal";
 import { useStore } from "../../zustand/store";
 export default function AddLicenseModal({ open, setOpen }: any) {
 
-    const { fetchLicenseDefinitions } = useStore(state => state)
+    const { fetchLicenseDefinitionsV2 } = useStore(state => state)
 
     const [users, setUsers] = useState([])
 
@@ -18,9 +18,6 @@ export default function AddLicenseModal({ open, setOpen }: any) {
     })
 
     const [licenseDefinitions, setLicenseDefinitions] = useState([])
-
-
-
 
     return (
         <>
@@ -162,7 +159,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                                     // import via downloadID
                                     if (element.isDownloadID) {
-                                        axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseInformations/import/${element.downloadID}`)
+                                        axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseInformations/import2/${element.downloadID}`)
                                             .then(async (resp) => {
                                                 setElement((el) => ({ ...el, isValidDownloadID: true }))
 
@@ -186,12 +183,24 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                     data.push(volumenMapper[key])
                                                 }
 
+                                                const product_ids = []
+
                                                 for (const el of data) {
-                                                    const resp = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/${el[0].data.product_id}`)
-                                                    el[0].metadata = resp.data.data.lom
+                                                    const ele = el[0]
+                                                    const product_id = ele.permissions[0].target
+                                                    product_ids.push({id: product_id})
+                                                }
+                                
+                                                const resp2 = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById?product_id=${JSON.stringify(product_ids)}`)
+                                
+                                                for (const el of resp2.data) {
+                                                    const ele = el[0]
+                                                    const product_id = ele.permissions[0].target
+                                                    ele.metadata = el[1].data.lom
                                                 }
                                                 setLicenseDefinitions(data)
-                                                fetchLicenseDefinitions()
+                                                
+                                                fetchLicenseDefinitionsV2()
                                             })
                                             .catch((e) => {
                                                 setElement((el) => ({ ...el, isValidDownloadID: false }))
