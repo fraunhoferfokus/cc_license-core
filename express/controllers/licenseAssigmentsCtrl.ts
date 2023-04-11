@@ -197,33 +197,64 @@ class LicenseAssignmentController {
         this.router.get('/:id', this.getLicenseAssignment);
         this.router.post('/', this.createLicenseAssignment);
         this.router.delete('/:id', this.deleteLicenseAssignment);
-        
+
     }
 
     getLicenseAssingmentForUser: express.Handler = async (req, res, next) => {
         try {
+            const schema = req.query.schema
+
 
             const requestingUser = req.session.user
-            // const authorization = req.headers.authorization
-            // if (!authorization) {
-            //     return res.status(401).send('Authorization header not found')
-            // }
-            // const access_token = authorization.split(' ')[1]
-            // // get user id from access token
+            const [sanisUserPromise, licenseAssignments] = await Promise.all([(
+                axios.get(`${process.env.DEPLOY_URL}/user_manager/users/${requestingUser?.preferred_username}`, {
+                    headers: {
+                        Authorization: `Bearer ${req.session.access_token}`
+                    }
+                })),
+            LicenseAssignmentDAO.findAll()
+            ])
 
-            // const me = (await axios.get(`${process.env.OIDC_USERINFO_ENDPOINT}`, {
-            //     headers: {
-            //         Authorization: `Bearer ${access_token}`
-            //     }
-            // }
-            // )).data
+            const sanisUser = sanisUserPromise.data
 
-            const licenseAssignments = await LicenseAssignmentDAO.findAll()
-            console.log( licenseAssignments[0].permissions![0] )
-            const userID = requestingUser!.username || requestingUser?.preferred_username
-            const userLicenseAssignments = licenseAssignments.filter(licenseAssignment => licenseAssignment.permissions![0]!.assignee === userID)
+            const userID = sanisUser.id
+            let userLicenseAssignments = licenseAssignments.filter(licenseAssignment => licenseAssignment.permissions![0]!.assignee === userID)
+
+            if (schema === 'urn:bilo:assignment') {
+                const { orgs, groups, email } = sanisUser
+                const [first_name, last_name] = email.split(' ')
+                let context: { [key: string]: any } = {}
+                for (const org of orgs) {
+                    context[org.id] = {
+                        school_name: org.name,
+                        roles: []
+                    }
+                }
+
+                for (const group of groups) {
+                    context[group.orgid]['roles'] = new Set([...context[group.orgid]['roles'], group.role])
+                }
+
+                let licenses = userLicenseAssignments.map((assignment) => assignment.inheritfrom?.split('/').pop())
+
+
+                return res.json({
+                    id: userID,
+                    first_name,
+                    last_name,
+                    context,
+                    licenses
+                })
+
+
+
+
+            }
+
+
             return res.json(userLicenseAssignments)
         } catch (err: any) {
+            console.log(err)
             return res.status(err?.response?.statusCode || 500).json(err)
         }
 
@@ -233,13 +264,6 @@ class LicenseAssignmentController {
     getLicenseAssignments: express.Handler = async (req, res, next) => {
         try {
             let licenseAssignments = await LicenseAssignmentDAO.findAll()
-
-            if(req.query.schema ==='urn:bilo:assignment'){
-                for(let licenseAssignment of licenseAssignments) {
-                    
-                } 
-            }
-
             return res.json(licenseAssignments)
         } catch (err: any) {
             return res.status(err?.response?.statusCode || 500).json(err)
