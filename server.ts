@@ -12,8 +12,33 @@ import { AuthHandler } from './express/handlers/AuthHandler'
 import notificationCtrl from './express/controllers/notificationCtrl'
 import { scheduleEveryDay } from './helper/scheduler'
 import swaggerJSDoc from 'swagger-jsdoc'
-
 import cors from 'cors'
+import { createClient } from "redis"
+import RedisStore from 'connect-redis'
+
+
+// use RedisStore for express-session
+
+let redisClient = createClient(
+    {
+        url: `redis://${process.env.REDIS_HOST || "redis"}:${process.env.REDIS_PORT || "6379"}`
+    }
+)
+
+
+redisClient.connect().catch((err) => {
+    console.log(err)
+})
+
+// @ts-ignore
+let redisStore = new RedisStore({
+    // @ts-ignore
+    client: redisClient,
+    prefix: "myapp:",
+})
+
+
+
 
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -71,9 +96,14 @@ app.prepare().then(() => {
         return res.json(openApiSpecification)
     })
 
-    server.use(session({
-        secret: 'keyboard cat',
-    }))
+    server.use(
+        session({
+            store: redisStore,
+            resave: false, // required: force lightweight session keep alive (touch)
+            saveUninitialized: false, // recommended: only save session when data exists
+            secret: "keyboard cat",
+        })
+    )
 
     server.get('/user-info', AuthHandler.requireSessison, (req, res) => {
         return res.send(req.session.user)
@@ -106,6 +136,7 @@ app.prepare().then(() => {
             req.session.access_token = access_token
             return res.send()
         } catch (err: any) {
+            console.log(err)
             console.log('no valid user session')
             return res.status(err.response.statusCode || 500).send(err.response.data)
         }

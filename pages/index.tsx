@@ -59,13 +59,10 @@ function Home({ user }: { user: any }) {
   const [page, setPage] = useState('assignment')
   useEffect(() => {
 
-    fetchAccessToken().then((config: any) => {
-      console.log({ config })
-      fetchLicenseDefinitions()
-      fetchUsers()
-      fetchLicenseAssignments()
+    fetchLicenseDefinitions()
+    fetchUsers()
+    fetchLicenseAssignments()
 
-    })
 
     const interval = setInterval(() => {
       fetchLicenseAssignments()

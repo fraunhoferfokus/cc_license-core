@@ -33,7 +33,6 @@ interface State {
     deleteNotification: (notficationID: string) => any,
     fetchNotifications: () => any,
     notifications: any[],
-    fetchAccessToken: () => any,
     config: any
 }
 
@@ -89,18 +88,18 @@ export const useStore = create<State>()(
             },
             users: [],
             groups: [],
-            fetchAccessToken: async () => {
-                const access_token = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/access_token`)
-                const config = {
-                    headers: { Authorization: `Bearer ${access_token.data}` }
-                }
-                set({ config })
-                return config
-            },
+            // fetchAccessToken: async () => {
+            //     const access_token = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/access_token`)
+            //     const config = {
+            //         headers: { Authorization: `Bearer ${access_token.data}` }
+            //     }
+            //     set({ config })
+            //     return config
+            // },
             fetchUsersAndGroups: async () => {
                 const config = get().config
-                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`, config)
-                const resp2 = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`, config)
+                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`, { withCredentials: true })
+                const resp2 = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`, { withCredentials: true })
                 set({ groups: resp2.data, users: resp.data })
             },
             createLicenseAssignment(licenseDefinitionID: string, targetID: string) {
