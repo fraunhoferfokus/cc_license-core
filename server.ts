@@ -105,15 +105,11 @@ app.prepare().then(() => {
         })
     )
 
-    server.get('/user-info', AuthHandler.requireSessison, (req, res) => {
+    server.get('/api/user-info', AuthHandler.requireSessison, (req, res) => {
         return res.send(req.session.user)
     })
 
-    server.get('/access_token', AuthHandler.requireSessison, (req, res) => {
-        return res.send(req.session.access_token)
-    })
-
-    server.get('/oidc-auth/:code', async (req, res, next) => {
+    server.get('/api/oidc-auth/:code', async (req, res, next) => {
         // get access token from code
         const code = req.params.code
         const url = token_endpoint
@@ -125,7 +121,7 @@ app.prepare().then(() => {
                     client_id,
                     client_secret,
                     code,
-                    redirect_uri: `${process.env.DEPLOY_URL}/signIn`
+                    redirect_uri: `${process.env.OIDC_REDIRECT_URI}`
                 },
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -142,13 +138,17 @@ app.prepare().then(() => {
         }
     })
 
-    server.use('/license-assignments', AuthHandler.requireSessison, licenseAssigmentsCtrl)
+    server.get('/access_token', AuthHandler.requireSessison, (req, res) => {
+        return res.send(req.session.access_token)
+    })
 
-    server.use('/launch',
+    server.use('/api/license-assignments', AuthHandler.requireSessison, licenseAssigmentsCtrl)
+
+    server.use('/api/launch',
         launchCtrl
     )
 
-    server.use('/notifications',
+    server.use('/api/notifications',
         notificationCtrl
     )
 

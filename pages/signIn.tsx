@@ -10,7 +10,7 @@ export default function SignIn() {
 
     useEffect(() => {
         if (code) {
-            axios.get(`oidc-auth/${code}`, {
+            axios.get(`/api/oidc-auth/${code}`, {
                 withCredentials: true
             }).then((resp) => {
                 router.push("/")

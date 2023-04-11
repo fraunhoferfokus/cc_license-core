@@ -204,10 +204,10 @@ class LicenseAssignmentController {
         try {
             const schema = req.query.schema
 
-
             const requestingUser = req.session.user
+            console.log({ requestingUser })
             const [sanisUserPromise, licenseAssignments] = await Promise.all([(
-                axios.get(`${process.env.DEPLOY_URL}/user_manager/users/${requestingUser?.preferred_username}`, {
+                axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${requestingUser?.preferred_username}`, {
                     headers: {
                         Authorization: `Bearer ${req.session.access_token}`
                     }
@@ -286,13 +286,13 @@ class LicenseAssignmentController {
 
             const config = {
                 headers: {
-                    authorization
+                    authorization: `Bearer ${req.session.access_token}`
                 }
             }
 
 
             const { licenseDefinitionID, targetID } = req.body
-
+            console.log({ licenseDefinitionID })
             const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseDefinitionID}`)).data
             const licenseAssignments = await LicenseAssignmentDAO.findAll()
 
@@ -336,7 +336,7 @@ class LicenseAssignmentController {
                 case 'Einzellizenz':
                 case 'Volumenlizenz':
                     const found = licenseAssignments.find((assignment) => assignment.inheritfrom === licenseDefinitionID)
-                    const user = (await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users/${targetID}`, config)).data
+                    const user = (await axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${targetID}`, config)).data
                     if (found) return res.status(400).json({ message: 'Single-License already assigned' })
                     if (role && !user.gruppen.find((gruppe: any) => gruppe.rolle === role)) {
                         return res.status(400).json({ message: 'User has no role to use this license' })
@@ -364,7 +364,7 @@ class LicenseAssignmentController {
                     }
 
                     // create for every user 
-                    const group: any = (await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups/${targetID}`, config)).data
+                    const group: any = (await axios.get(`${process.env.GATEWAY_URL}/user_manager/groups/${targetID}`, config)).data
                     for (const user of group.users) {
 
                         // check whether already assignment for that user exist and skip
@@ -431,7 +431,7 @@ class LicenseAssignmentController {
                 case 'Gruppenlizenz':
                     // create for every user 
                     const promiseArr: any[] = []
-                    const group: any = (await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups/${licenseAssignment.permissions![0].assignee}`, config)).data
+                    const group: any = (await axios.get(`${process.env.GATEWAY_URL}/user_manager/groups/${licenseAssignment.permissions![0].assignee}`, config)).data
                     for (const user of group.users) {
                         const userLicenseAssignment = licenseAssignments.find((item) =>
                             item.permissions![0].assignee === user.id

@@ -19,11 +19,7 @@ export class AuthHandler {
                 req.session.user = resp.data
                 return next()
             } catch (err: any) {
-                console.log(err)
-                if (err instanceof AxiosError) {
-                    return res.status(err?.status || 500).send(err.response?.data)
-                }
-                return res.status(500).send(err)
+                return next(err)
             }
         }
         return res.status(403).send('Not session available')

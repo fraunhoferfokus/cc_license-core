@@ -59,7 +59,7 @@ class LicenseAssignmentController {
                 return res.status(404).send('Keine Lizenz für User und Lizenzdefinition gefunden')
             }
 
-            const url = `${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/${permissions![0].target}`
+            const url = `${process.env.GATEWAY_URL}/metadata_manager/${permissions![0].target}`
             const metadata = (await axios.get(`${url}`)).data.data.lom
 
             // check if date is within license period
@@ -197,7 +197,7 @@ class LicenseAssignmentController {
                 return res.status(404).send('Keine Lizenz für User und Lizenzdefinition gefunden')
             }
 
-            const url = `${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/${permissions![0].target}`
+            const url = `${process.env.GATEWAY_URL}/metadata_manager/${permissions![0].target}`
             const metadata = (await axios.get(`${url}`)).data.data.lom
 
             // check if date is within license period
