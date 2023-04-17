@@ -95,7 +95,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                 {licenseDefinitions.map((el: any, index) => {
                                     let element = el[0]
                                     let metadata = element.metadata
-                                    let image = metadata.annotation[1].description.value
+                                    let image = metadata?.annotation[1]?.description?.value
                                     return (
 
                                         <Tooltip title={(() => {
@@ -105,9 +105,9 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                     <h1 className="text-[red]">Already Imported!</h1>
 
                                                 }
-                                                <h1>{metadata.general.title.value}</h1>
+                                                <h1>{metadata?.general?.title?.value}</h1>
                                                 <br></br>
-                                                <h1>{metadata.general.description.value}</h1>
+                                                <h1>{metadata?.general?.description?.value}</h1>
                                             </>)
                                         })()
                                         }>
@@ -123,7 +123,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                         height: '100px',
                                                         border: '1px solid #e7ebef',
                                                         position: 'relative',
-                                                        backgroundImage: `url(${metadata.annotation[1].description.value})`,
+                                                        backgroundImage: `url(${metadata?.annotation[1]?.description.value})`,
                                                         backgroundRepeat: 'no-repeat',
                                                         backgroundPosition: 'center center',
                                                         backgroundSize: 'contain',
@@ -185,24 +185,27 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                                                 const product_ids = []
 
-                                                for (const el of data) {
-                                                    const ele = el[0]
-                                                    const product_id = ele.permissions[0].target
-                                                    product_ids.push({id: product_id})
-                                                }
+                                                // for (const el of data) {
+                                                //     const ele = el[0]
+                                                //     const product_id = ele.permissions[0].target
+                                                //     product_ids.push({id: product_id})
+                                                // }
                                 
-                                                const resp2 = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById?product_id=${JSON.stringify(product_ids)}`)
+                                                // const resp2 = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById?product_id=${JSON.stringify(product_ids)}`)
                                 
-                                                for (const el of resp2.data) {
-                                                    const ele = el[0]
-                                                    const product_id = ele.permissions[0].target
-                                                    ele.metadata = el[1].data.lom
-                                                }
+                                                // for (const el of resp2.data) {
+                                                //     const ele = el[0]
+                                                //     const product_id = ele.permissions[0].target
+                                                //     ele.metadata = el[1].data.lom
+                                                // }
                                                 setLicenseDefinitions(data)
                                                 
                                                 fetchLicenseDefinitionsV2()
                                             })
                                             .catch((e) => {
+                                                console.log('JOJOJOJO')
+                                                console.log(e)
+
                                                 setElement((el) => ({ ...el, isValidDownloadID: false }))
                                             })
 

@@ -404,10 +404,9 @@ class LicenseAssignmentController {
 
     deleteLicenseAssignment: express.Handler = async (req, res, next) => {
         try {
-            const authorization = req.headers.authorization
             const config = {
                 headers: {
-                    authorization
+                    authorization: `Bearer ${req.session.access_token}`
                 }
             }
 
@@ -453,7 +452,6 @@ class LicenseAssignmentController {
             return res.status(204).send()
 
         } catch (err: any) {
-            console.log(err)
             return res.status(err?.response?.statusCode || 500).json(err)
         }
     }

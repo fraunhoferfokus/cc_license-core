@@ -30,7 +30,8 @@ function Home({ user }: { user: any }) {
     groups,
     setNotification,
     notification,
-    fetchAccessToken,
+    fetchLicenseDefinitionsV2,
+
     licenseAssignments
   } = useStore(state => state)
   const [pickedLicenses, setPickedLicenses] = useState<any>(null)
@@ -59,7 +60,8 @@ function Home({ user }: { user: any }) {
   const [page, setPage] = useState('assignment')
   useEffect(() => {
 
-    fetchLicenseDefinitions()
+    // fetchLicenseDefinitions()
+    fetchLicenseDefinitionsV2()
     fetchUsers()
     fetchLicenseAssignments()
 
@@ -175,7 +177,7 @@ function Home({ user }: { user: any }) {
                         height: '135px',
                         border: '1px solid #e7ebef',
                         position: 'relative',
-                        backgroundImage: `url(${metadata.annotation[1].description.value})`,
+                        backgroundImage: `url(${metadata?.annotation[1]?.description?.value})`,
                         backgroundRepeat: 'no-repeat',
                         backgroundPosition: 'center center',
                         backgroundSize: 'contain',
@@ -213,7 +215,7 @@ function Home({ user }: { user: any }) {
 
             <Paper className="basis-[50%] p-[2%] overflow-scroll flex flex-col">
 
-              <h1>{pickedLicense?.metadata.general?.title?.value || 'Title'}</h1>
+              <h1>{pickedLicense?.metadata?.general?.title?.value || 'Title'}</h1>
               <div className='flex-1'>
                 <div>Product ID: <b>{pickedLicense?.permissions[0].target}</b></div>
 

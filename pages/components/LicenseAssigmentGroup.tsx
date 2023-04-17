@@ -59,7 +59,7 @@ export default function LicenseAssignmentGroup({
                     square
                     variant="outlined"
                 >
-                    {bilo.lizenztyp === 'Groupslizenz' &&
+                    {bilo.lizenztyp === 'Gruppenlizenz' &&
                         <Checkbox
                             disabled={
                                 currentlyAssignedAmount >= bilo.lizenzanzahl && !groupHasThatParticularLicense
@@ -103,8 +103,11 @@ export default function LicenseAssignmentGroup({
 
                                         const userHasThisParticularLicense =
                                             userLicenseAssignments.find((userAssignment) => {
+                                                console.log(userAssignment.inheritfrom)
                                                 return pickedLicenses.find((license) => license.policyid === userAssignment.inheritfrom)
                                             })
+
+                                            
 
                                         return (
                                             <Paper className="min-h-[42px] flex "
@@ -112,7 +115,7 @@ export default function LicenseAssignmentGroup({
                                             >
                                                 <Checkbox
                                                     disabled={
-                                                        bilo.lizenztyp === 'Groupslizenz' ||
+                                                        bilo.lizenztyp === 'Gruppenlizenz' ||
                                                         role && !user?.groups.find((gruppe: any) => gruppe.rolle === role)
                                                         ||
                                                         currentlyAssignedAmount === bilo.lizenzanzahl && !userHasThisParticularLicense
