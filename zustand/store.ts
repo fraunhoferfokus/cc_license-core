@@ -119,25 +119,28 @@ export const useStore = create<State>()(
                 }
 
 
+                if (data.length > 0) {
+                    const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById`,
+                        product_ids
+                        ,
+                        {
+                            withCredentials: true,
 
-                const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById`,
-                    product_ids
-                    ,
-                    {
-                        withCredentials: true,
+                        }
+
+                    )
+
+
+                    for (let i = 0; i < resp2.data.length; i++) {
+                        let ele = data[i][0]
+                        let metadata = resp2.data[i].data.lom
+                        ele.metadata = metadata
+
 
                     }
-
-                )
-
-
-                for (let i = 0; i < resp2.data.length; i++) {
-                    let ele = data[i][0]
-                    let metadata = resp2.data[i].data.lom
-                    ele.metadata = metadata
-
-
                 }
+
+
 
                 // for (const el of resp2.data) {
                 //     const ele = el[0]
