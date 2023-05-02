@@ -56,6 +56,7 @@ const deployURL = process.env.DEPLOY_URL!
 declare module 'express-session' {
     export interface SessionData {
         access_token: string,
+        refresh_token: string,
         user?: {
             sub: string,
             name: string,
@@ -128,19 +129,18 @@ app.prepare().then(() => {
                 }
             })
             const access_token = resp.data.access_token
-            console.log({ access_token })
             req.session.access_token = access_token
+            req.session.refresh_token = resp.data.refresh_token
             return res.send()
         } catch (err: any) {
-            console.log(err)
             console.log('no valid user session')
             return res.status(err.response.statusCode || 500).send(err.response.data)
         }
     })
 
-    server.get('/access_token', AuthHandler.requireSessison, (req, res) => {
-        return res.send(req.session.access_token)
-    })
+    // server.get('/access_token', AuthHandler.requireSessison, (req, res) => {
+    //     return res.send(req.session.access_token)
+    // })
 
     server.use('/api/license-assignments', AuthHandler.requireSessison, licenseAssigmentsCtrl)
 

@@ -19,6 +19,36 @@ export class AuthHandler {
                 req.session.user = resp.data
                 return next()
             } catch (err: any) {
+                // if response status of err is 401, then try refresh token
+                if (err.response.status === 401) {
+                    console.log('refresh old access token')
+                    try {
+                        const refresh_token = req.session.refresh_token
+                        // get new access token from refresh token
+                        const resp2 = await axios.post(`${process.env.OIDC_TOKEN_ENDPOINT}`, {
+                            grant_type: 'refresh_token',
+                            client_id: process.env.OIDC_CLIENT_ID,
+                            client_secret: process.env.OIDC_CLIENT_SECRET,
+                            refresh_token
+                        },
+                            {
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }
+                            }
+
+                        )
+                        const new_access_token = resp2.data.access_token
+                        req.session.access_token = new_access_token
+                        return next()
+                    } catch (err: any) {
+
+                        console.log(err)
+
+                        return next(err)
+                    }
+                }
+
                 return next(err)
             }
         }
