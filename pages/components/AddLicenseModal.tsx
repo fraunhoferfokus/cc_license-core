@@ -185,21 +185,31 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                                                 const product_ids = []
 
-                                                // for (const el of data) {
-                                                //     const ele = el[0]
-                                                //     const product_id = ele.permissions[0].target
-                                                //     product_ids.push({id: product_id})
-                                                // }
-                                
-                                                // const resp2 = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById?product_id=${JSON.stringify(product_ids)}`)
-                                
-                                                // for (const el of resp2.data) {
-                                                //     const ele = el[0]
-                                                //     const product_id = ele.permissions[0].target
-                                                //     ele.metadata = el[1].data.lom
-                                                // }
+                                                for (const el of data) {
+                                                    const ele = el[0].data
+                                                    const product_id = ele.product_id
+                                                    product_ids.push({ id: product_id })
+                                                }
+
+
+
+                                                if (data.length > 0) {
+                                                    const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById`,
+                                                        product_ids
+                                                        ,
+                                                        {
+                                                            withCredentials: true,
+                                                        }
+                                                    )
+
+                                                    for (let i = 0; i < resp2.data.length; i++) {
+                                                        let ele = data[i][0]
+                                                        let metadata = resp2.data[i].data.lom
+                                                        ele.metadata = metadata
+                                                    }
+
+                                                }
                                                 setLicenseDefinitions(data)
-                                                
                                                 fetchLicenseDefinitionsV2()
                                             })
                                             .catch((e) => {

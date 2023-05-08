@@ -155,7 +155,6 @@ function Home({ user }: { user: any }) {
               {licenseDefinitions.map((el, i) => {
                 const ele = el[0]
                 const metadata = ele.metadata
-                console.log({metadata})
                 return (
                   <div
                     key={ele.policyid}
