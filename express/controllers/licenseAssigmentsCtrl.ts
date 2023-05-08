@@ -282,7 +282,7 @@ class LicenseAssignmentController {
 
     createLicenseAssignment: express.Handler = async (req, res, next) => {
         try {
-            const authorization = req.headers.authorization
+            // const authorization = req.headers.authorization
 
             const config = {
                 headers: {
@@ -290,13 +290,9 @@ class LicenseAssignmentController {
                 }
             }
 
-
             const { licenseDefinitionID, targetID } = req.body
-            console.log({ licenseDefinitionID })
             const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseDefinitionID}`)).data
             const licenseAssignments = await LicenseAssignmentDAO.findAll()
-
-            // check if licenseDefinition is a for group or for user
             const permissions = licenseDefinition.permissions!
             const licenseType = permissions[0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose')!.rightoperand
 
@@ -376,7 +372,7 @@ class LicenseAssignmentController {
                         if (!found) {
                             const unique = uuid()
                             const userAssingment: LicenseDefinitionModel = JSON.parse(JSON.stringify({ ...toBeCreated, _id: unique, policyid: unique })) as LicenseDefinitionModel
-                            userAssingment.permissions![0].assignee = curr.id
+                            userAssingment.permissions![0].assignee = curr
                             promiseArr.push(LicenseAssignmentDAO.create(userAssingment))
                         }
                     }
@@ -388,7 +384,6 @@ class LicenseAssignmentController {
                         "rightoperand": "group"
                     })
 
-                    console.log(toBeCreated.permissions![0].assignee)
                     promiseArr.push(LicenseAssignmentDAO.create(toBeCreated))
                     await Promise.all(promiseArr)
                     break;
@@ -431,9 +426,9 @@ class LicenseAssignmentController {
                     // create for every user 
                     const promiseArr: any[] = []
                     const group: any = (await axios.get(`${process.env.GATEWAY_URL}/user_manager/groups/${licenseAssignment.permissions![0].assignee}`, config)).data
-                    for (const user of group.users) {
+                    for (const userId of group.users) {
                         const userLicenseAssignment = licenseAssignments.find((item) =>
-                            item.permissions![0].assignee === user.id
+                            item.permissions![0].assignee === userId
                         )!
 
                         // check whether one has already been activated!
@@ -452,6 +447,7 @@ class LicenseAssignmentController {
             return res.status(204).send()
 
         } catch (err: any) {
+            console.log(err)
             return res.status(err?.response?.statusCode || 500).json(err)
         }
     }
