@@ -439,13 +439,13 @@ function Home({ user }: { user: any }) {
                 </Paper>
               </>
             }
-            {
+            {/* {
               page === 'launch' &&
               <LaunchPage
                 setPickedLicenses={setPickedLicenses}
                 pickedLicenses={pickedLicenses}
               />
-            }
+            } */}
             {
               page === 'notification' &&
               <NotificationPage
