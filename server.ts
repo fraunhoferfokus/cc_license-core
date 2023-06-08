@@ -111,9 +111,13 @@ app.prepare().then(() => {
     })
 
     server.get('/api/oidc-auth/:code', async (req, res, next) => {
+
+
         // get access token from code
         const code = req.params.code
         const url = token_endpoint
+
+
         try {
             const resp = await axios(url, {
                 method: 'POST',
@@ -130,6 +134,9 @@ app.prepare().then(() => {
             })
             const access_token = resp.data.access_token
             req.session.access_token = access_token
+            console.log('access_token', req.session.access_token)
+
+
             req.session.refresh_token = resp.data.refresh_token
             return res.send()
         } catch (err: any) {

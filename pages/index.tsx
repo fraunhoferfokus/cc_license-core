@@ -3,15 +3,14 @@ import { Autocomplete, Box, Button, MenuItem, Paper, Select, TextField } from '@
 import { RequestContext } from 'next/dist/server/base-server'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
-import { isTemplateExpression } from 'typescript'
 import { requireSession } from '../auth-mw/auth'
+import { toBILO } from '../helper/helper'
+import { useStore } from '../zustand/store'
 import AddLicenseModal from './components/AddLicenseModal'
 import LaunchPage from './components/LaunchPage'
 import LicenseAssignmentGroup from './components/LicenseAssigmentGroup'
 import LicenseAssignmentUser from './components/LicenseAssignmentUser'
 import NotificationPage from './components/NotificationPage'
-import { toBILO } from '../helper/helper'
-import { useStore } from '../zustand/store'
 
 
 export default dynamic(() => Promise.resolve(Home), {
@@ -23,7 +22,6 @@ function Home({ user }: { user: any }) {
   const [open, setOpen] = useState(false);
   const {
     licenseDefinitions,
-    fetchLicenseDefinitions,
     fetchLicenseAssignments,
     users,
     fetchUsersAndGroups: fetchUsers,
@@ -59,12 +57,9 @@ function Home({ user }: { user: any }) {
 
   const [page, setPage] = useState('assignment')
   useEffect(() => {
-
-    // fetchLicenseDefinitions()
     fetchLicenseDefinitionsV2()
     fetchUsers()
     fetchLicenseAssignments()
-
 
     const interval = setInterval(() => {
       fetchLicenseAssignments()
@@ -77,32 +72,22 @@ function Home({ user }: { user: any }) {
   }, [])
 
   useEffect(() => {
-    // @ts-ignore
     const ref: any = autoC.current
     const cross = ref?.getElementsByClassName('MuiAutocomplete-clearIndicator')[0]
     if (cross) {
       cross.click()
     }
-
-
-
   }, [pickedSelect])
 
   useEffect(() => {
     if (bilo.lizenztyp === 'Gruppenlizenz') setPickedSelect('group')
   }, [bilo])
 
-
-
-
-
   return (
     <>
-
       <div className={`w-full h-full bg-[#e7ebef] p-[2%] flex flex-col gap-[2%]
          ${open ? 'blur-3xl' : ''}
          `}>
-
         <div className='flex flex-col gap-2 flex-1 min-h-0'>
           <div className='flex gap-5'>
             <Paper className="basis-[50%] p-4 text-center">
@@ -120,7 +105,6 @@ function Home({ user }: { user: any }) {
               overflow-scroll
               
              gap-2">
-
               <div className='flex justify-center items-center'>
                 <Box
                   sx={
@@ -146,12 +130,9 @@ function Home({ user }: { user: any }) {
                       }
                     }
                   >
-
                   </AddOutlinedIcon>
-
                 </Box>
               </div>
-
               {licenseDefinitions.map((el, i) => {
                 const ele = el[0]
                 const metadata = ele.metadata
@@ -161,7 +142,6 @@ function Home({ user }: { user: any }) {
                     style={
                       {
                         borderBottom: pickedLicense?.policyid === ele.policyid ? '2px solid #3f51b5' : 'none',
-
                       }
                     }
                     className="flex justify-center items-center w-[150px] h-[150px]"
@@ -194,48 +174,30 @@ function Home({ user }: { user: any }) {
                         setPickedLicenses(el)
 
                       }
-
                     }}
                   >
-
-
                     </Paper></div>
-
                 )
-
               })}
-
-
-
-
               <AddLicenseModal open={open} setOpen={setOpen} />
-
             </Paper>
-
             <Paper className="basis-[50%] p-[2%] overflow-scroll flex flex-col">
-
               <h1>{pickedLicense?.metadata?.general?.title?.value || 'Title'}</h1>
               <div className='flex-1'>
                 <div>Product ID: <b>{pickedLicense?.permissions[0].target}</b></div>
-
                 <div>Anzahl: <b>{bilo.lizenzanzahl}</b></div>
-
                 <div>Lizenztyp: <b>{bilo.lizenztyp}</b></div>
-
                 <div>
                   Aktivierung (von):<b> {bilo.gueltigkeitsbeginn}</b>
                 </div>
-
                 <div>
                   Aktivierung (bis):   <b>{bilo.gueltigkeitsende}</b>
                 </div>
-
                 <div>
                   Gültigskeitsdauer: <b>{constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/elapsedTime').rightoperand}</b>
                 </div>
                 {
                   constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/recipient') &&
-
                   <div
                   >Sonderlizenz:
                     <b>
@@ -247,24 +209,18 @@ function Home({ user }: { user: any }) {
                   ID der Lizendefintion:   <b>{pickedLicense?.policyid}</b>
                 </div>
               </div>
-
               <div className='flex justify-end'>
                 <Button variant="outlined"
                   disabled={!pickedLicense}
                   onClick={() => {
                     setPage('notification')
-
                     const constraints = pickedLicense?.permissions[0].constraints
-
                     let one = new Date(constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime'
                       && item.operator === 'http://www.w3.org/ns/odrl/2/gteq'
                     ).rightoperand)
-
                     let two = new Date(constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime'
                       && item.operator === 'http://www.w3.org/ns/odrl/2/lteq'
                     ).rightoperand)
-
-
                     setNotification({
                       product_id: bilo.productid,
                       license_type: bilo.lizenztyp,
@@ -273,17 +229,12 @@ function Home({ user }: { user: any }) {
                       start_date: one,
                       end_date: two,
                     })
-
                   }}
-
                 >Bedarf melden</Button>
               </div>
-
             </Paper>
           </div>
-
         </div>
-
         <div className='flex flex-col gap-2 flex-1 min-h-0'>
           <div className='flex gap-5'>
             <Select defaultValue={'assignment'} className='
@@ -291,21 +242,18 @@ function Home({ user }: { user: any }) {
               basis-[50%] p-4  border-box text-center flex justify-center items-center max-h-[60px]
               bg-white
               '
-
               onChange={(e) => {
                 setPage(e.target.value)
               }}
             >
-
               <MenuItem value={'assignment'}
-
               >
                 Zuweisung Verwalten
               </MenuItem>
-              <MenuItem value={'launch'}
+              {/* <MenuItem value={'launch'}
               >
                 Launch Test
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem value={'notification'}
               >
                 Bedarfsmeldung äußern
@@ -336,9 +284,7 @@ function Home({ user }: { user: any }) {
                     </b>
 
                   </p>
-
               }
-
               {
                 (bilo.lizenztyp === 'Einzellizenz' ||
                   bilo.lizenztyp === 'Volumenlizenz'
@@ -357,11 +303,8 @@ function Home({ user }: { user: any }) {
                         const assignmentsForDefinition = licenseAssignments.filter((assignment) => {
                           const permissions = assignment.permissions![0]!
                           const isGroup = permissions.constraints!.find((item) => item.name === 'http://www.w3.org/ns/odrl/2/recipient')
-
                           if (assignment.inheritfrom === pickedLicense?.policyid
-                            && !isGroup
-
-                          ) {
+                            && !isGroup) {
                             return true
                           }
                         })
@@ -383,26 +326,16 @@ function Home({ user }: { user: any }) {
                               return true
                             }
                           }
-
-
                           return false
-
-
-
-
                         }).length
-
                       })()}
                     </b>
                   </p>
-
               }
-
               <p className='basis-[33%] text-center '
                 style={{
                   color: bilo.lizenztyp === 'Gruppenlizenz' ? 'grey' : '',
                   opacity: bilo.lizenztyp === 'Gruppenlizenz' ? '0.5' : '1.0'
-
                 }}
               >
                 Activated:
@@ -432,12 +365,8 @@ function Home({ user }: { user: any }) {
 
                     }}
                     value={pickedSelect}
-
-
-
                   >
                     <MenuItem value={'user'}
-
                       disabled={bilo.lizenztyp === 'Gruppenlizenz'}
                     >
                       Nutzer
@@ -468,7 +397,6 @@ function Home({ user }: { user: any }) {
                       }) : groups.map((group) => {
                         return { label: group.displayName, value: group.id }
                       }
-
                       )
                     }
                     onChange={(e, value) => {
@@ -489,15 +417,6 @@ function Home({ user }: { user: any }) {
                       }
                     }}
                   />
-
-
-
-
-
-
-
-
-
                 </Paper>
                 <Paper className="basis-[50%] p-[2%] flex flex-col min-h-0 overflow-scroll">
                   {pickedSelect === 'user' &&
@@ -508,7 +427,6 @@ function Home({ user }: { user: any }) {
                       bilo={bilo}
                     />
                   }
-
                   {pickedSelect === 'group' &&
                     <LicenseAssignmentGroup
                       currentlyAssignedAmount={currentlyAssignedAmount}
@@ -520,7 +438,6 @@ function Home({ user }: { user: any }) {
                   }
                 </Paper>
               </>
-
             }
             {
               page === 'launch' &&
@@ -547,11 +464,7 @@ function Home({ user }: { user: any }) {
 
 export async function getServerSideProps(context: RequestContext) {
   return requireSession(context).then((props) => {
-    // fetch users with axios
-    // axios.get('http://localhost:3000/api/users').then((res) => {
-    // })
     return props
-
   })
 }
 
