@@ -16,8 +16,8 @@ export default function LicenseAssignmentUser({
     bilo: any,
     currentlyAssignedAmount: any
 }) {
-    
-    const { users, groups, licenseAssignments, createLicenseAssignment, deleteLicenseAssignment } = useStore(state => state)
+
+    const { licenseAssignments, createLicenseAssignment, deleteLicenseAssignment } = useStore(state => state)
 
     const [dialogBoxProperties, setDialogBoxProperties] = useState<{
         open: boolean,
@@ -61,7 +61,7 @@ export default function LicenseAssignmentUser({
                             ||
                             isActivated
                         }
-                       
+
 
                         checked={
                             userHasThisParticularLicense ? true : false
