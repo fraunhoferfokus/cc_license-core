@@ -4,7 +4,7 @@ COPY . /usr/src/app
 
 WORKDIR /usr/src/app
 
-RUN npm ci
+RUN npm i
 
 
 
