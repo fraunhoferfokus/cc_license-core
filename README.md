@@ -1,6 +1,8 @@
 # Requirements:
 * Docker Version 20x
 * Node.js Version 14x
+* Setting up the microservices as instructed here: [MICROSERVICE_DEPENDENCIES](https://gitlab.fokus.fraunhofer.de/learning-technologies/projects/control-connect/cc_deployment)
+
 
 # Quick Start:
 
