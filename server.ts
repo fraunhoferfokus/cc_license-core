@@ -19,7 +19,7 @@ import RedisStore from 'connect-redis'
 
 // use RedisStore for express-session
 
-let url = `redis://${process.env.REDIS_USERNAME || ''}:${process.env.REDIS_PASSWORD || '12345'}@${process.env.REDIS_HOST || "redis"}:${process.env.REDIS_PORT || "6379"}`
+let url = process.env.REDIS_URL
 
 let redisClient = createClient(
     {
