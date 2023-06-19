@@ -21,7 +21,8 @@ import RedisStore from 'connect-redis'
 
 let redisClient = createClient(
     {
-        url: `redis://:${process.env.REDIS_PASSWORD || '12345'}@${process.env.REDIS_HOST || "redis"}:${process.env.REDIS_PORT || "6379"}`    }
+        url: `redis://${process.env.REDIS_HOST || "redis"}:${process.env.REDIS_PORT || "6379"}`
+    }
 )
 
 
