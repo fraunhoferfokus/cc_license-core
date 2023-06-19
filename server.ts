@@ -19,14 +19,20 @@ import RedisStore from 'connect-redis'
 
 // use RedisStore for express-session
 
+let url = `redis://${process.env.REDIS_USERNAME || ''}:${process.env.REDIS_PASSWORD || '12345'}@${process.env.REDIS_HOST || "redis"}:${process.env.REDIS_PORT || "6379"}`
+
 let redisClient = createClient(
     {
-        url: `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD || '12345'}@${process.env.REDIS_HOST || "redis"}:${process.env.REDIS_PORT || "6379"}`
+        url
     }
 )
 
 
-redisClient.connect().catch((err) => {
+redisClient.connect().then(()=>{
+    console.log('redis connected')
+})
+
+.catch((err) => {
     console.log(err)
 })
 
