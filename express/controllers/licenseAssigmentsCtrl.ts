@@ -223,14 +223,8 @@ class LicenseAssignmentController {
             if (schema === 'urn:bilo:assignment') {
                 const { orgs, groups, email } = sanisUser
                 const [first_name, last_name] = email.split(' ')
-                let context: { [key: string]: any } = {}
-                for (const org of orgs) {
-                    context[org.id] = {
-                        school_name: org.name,
-                        roles: []
-                    }
-                }
-
+                let context: { [key: string]: any } = orgs
+                
                 for (const group of groups) {
                     context[group.orgid]['roles'] = new Set([...context[group.orgid]['roles'], group.role])
                 }
