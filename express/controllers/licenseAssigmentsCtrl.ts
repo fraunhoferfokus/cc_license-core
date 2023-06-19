@@ -216,7 +216,7 @@ class LicenseAssignmentController {
             ])
 
             const sanisUser = sanisUserPromise.data
-
+            console.log('hehe')
             const userID = sanisUser.id
             let userLicenseAssignments = licenseAssignments.filter(licenseAssignment => licenseAssignment.permissions![0]!.assignee === userID)
 
