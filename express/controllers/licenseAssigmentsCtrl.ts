@@ -217,7 +217,6 @@ class LicenseAssignmentController {
             ])
 
             const user = sanisUserPromise.data
-            console.log('hehe')
             const userID = user.id
             let userLicenseAssignments = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === userID)
 
@@ -229,19 +228,46 @@ class LicenseAssignmentController {
                 })
 
                 const [first_name, last_name] = email.split(' ')
-                let context: { [key: string]: any } = orgs
+                let context: { [key: string]: any } = {}
+
 
                 for (const group of groups) {
-                    if (context[group.orgid] === undefined) context[group.orgid] = { roles: new Set() }
-                    context[group.orgid]['roles'] = new Set([...context[group.orgid]['roles'], group.role])
+                    const org = orgs.find((org:any) => org.id === group.orgid)
+                    let groupLicenses = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === group.id)
+                    .map((assignment) =>( assignment.inheritFrom as string)?.split('/').pop())
+
+                    console.log({org})
+                    if (context[group.orgid] === undefined) {
+                        context[group.orgid] = {
+                            school_name:org.school_name,
+                            classes: [],
+                            workgroups: [],
+                            roles: org.roles,
+                            licenses: []
+                        }
+                    }else{
+                        if(group.type ==='Klasse') {
+                            context[group.orgid]['classes'].push({
+                                name: group.name,
+                                id: group.id,
+                                licenses: groupLicenses
+                            })
+                        }
+                    }
                 }
+
+
+                // for (const group of groups) {
+                //     if (context[group.orgid] === undefined) context[group.orgid] = { roles: new Set() }
+                //     context[group.orgid]['roles'] = new Set([...context[group.orgid]['roles'], group.role])
+                // }
 
                 // userLicenseAssignments = userLicenseAssignments.filter((assignment) => {
                 //     assignment.
 
                 // })
 
-                // let licenses = userLicenseAssignments.map((assignment) => assignment.inheritFrom?.split('/').pop())
+                let licenses = userLicenseAssignments.map((assignment) => (assignment.inheritFrom as string).split('/').pop())
 
 
                 return res.json({
@@ -249,7 +275,7 @@ class LicenseAssignmentController {
                     first_name,
                     last_name,
                     context,
-                    // licenses,
+                    licenses,
                 })
 
 
