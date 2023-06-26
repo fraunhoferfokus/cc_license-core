@@ -42,46 +42,46 @@ class NotificationCtrl {
     createNotification: express.Handler = async (req, res) => {
         const notifcation: Notification = req.body
         const id = uuid()
-        const notificationModel = new LicenseDefinitionModel({
-            _id: id,
-            policyid: id,
-            policytype: 'http://www.w3.org/ns/odrl/2/Request',
-            permissions: [
-                {
-                    target: notifcation.product_id!,
-                    action: 'http://www.w3.org/ns/odrl/2/use',
-                    constraints: [
-                        {
-                            name: 'http://www.w3.org/ns/odrl/2/dateTime',
-                            operator: 'http://www.w3.org/ns/odrl/2/gteq',
-                            rightoperand: notifcation.start_date?.toString()!
-                        },
-                        {
-                            name: 'http://www.w3.org/ns/odrl/2/dateTime',
-                            operator: 'http://www.w3.org/ns/odrl/2/lteq',
-                            rightoperand: notifcation.end_date?.toString()!
-                        },
-                        {
-                            name: 'http://www.w3.org/ns/odrl/2/elapsedTime',
-                            operator: 'http://www.w3.org/ns/odrl/2/eq',
-                            rightoperand: notifcation.elapsed_time!.toString()
-                        },
-                        {
-                            name: 'http://www.w3.org/ns/odrl/2/count',
-                            operator: 'http://www.w3.org/ns/odrl/2/eq',
-                            rightoperand: notifcation.count!.toString()
-                        },
-                        {
-                            name: 'http://www.w3.org/ns/odrl/2/purpose',
-                            operator: 'http://www.w3.org/ns/odrl/2/eq',
-                            rightoperand: notifcation.license_type!
-                        }
-                    ]
-                }
-            ]
+        // const notificationModel = new LicenseDefinitionModel({
+        //     _id: id,
+        //     policyid: id,
+        //     policytype: 'http://www.w3.org/ns/odrl/2/Request',
+        //     permissions: [
+        //         {
+        //             target: notifcation.product_id!,
+        //             action: 'http://www.w3.org/ns/odrl/2/use',
+        //             constraints: [
+        //                 {
+        //                     name: 'http://www.w3.org/ns/odrl/2/dateTime',
+        //                     operator: 'http://www.w3.org/ns/odrl/2/gteq',
+        //                     rightoperand: notifcation.start_date?.toString()!
+        //                 },
+        //                 {
+        //                     name: 'http://www.w3.org/ns/odrl/2/dateTime',
+        //                     operator: 'http://www.w3.org/ns/odrl/2/lteq',
+        //                     rightoperand: notifcation.end_date?.toString()!
+        //                 },
+        //                 {
+        //                     name: 'http://www.w3.org/ns/odrl/2/elapsedTime',
+        //                     operator: 'http://www.w3.org/ns/odrl/2/eq',
+        //                     rightoperand: notifcation.elapsed_time!.toString()
+        //                 },
+        //                 {
+        //                     name: 'http://www.w3.org/ns/odrl/2/count',
+        //                     operator: 'http://www.w3.org/ns/odrl/2/eq',
+        //                     rightoperand: notifcation.count!.toString()
+        //                 },
+        //                 {
+        //                     name: 'http://www.w3.org/ns/odrl/2/purpose',
+        //                     operator: 'http://www.w3.org/ns/odrl/2/eq',
+        //                     rightoperand: notifcation.license_type!
+        //                 }
+        //             ]
+        //         }
+        //     ]
 
-        })
-        await NotificationDAO.insert(notificationModel)
+        // })
+        // await NotificationDAO.insert(notificationModel)
         return res.send()
     }
 

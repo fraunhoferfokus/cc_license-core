@@ -1,8 +1,9 @@
 
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper } from "@mui/material"
-import { LicenseDefinitionModel } from "license_manager"
+import { LicenseDefinitionModel, Policy } from "license_manager"
 import { useState } from "react"
 import { useStore } from "../../zustand/store"
+import { PolicyWithMetadata } from "../../zustand/licenseDefinitionSlice"
 
 export default function LicenseAssignmentUser({
     selectedUsers,
@@ -12,7 +13,7 @@ export default function LicenseAssignmentUser({
 
 }: {
     selectedUsers: any,
-    pickedLicenses: LicenseDefinitionModel[],
+    pickedLicenses: PolicyWithMetadata[],
     bilo: any,
     currentlyAssignedAmount: any
 }) {
@@ -22,7 +23,7 @@ export default function LicenseAssignmentUser({
     const [dialogBoxProperties, setDialogBoxProperties] = useState<{
         open: boolean,
         value: string | null,
-        userHasThisParticularLicense: any,
+        userHasThisParticularLicense: Policy | null,
     }>({
         open: false,
         value: null,
@@ -35,17 +36,18 @@ export default function LicenseAssignmentUser({
         <>
             {selectedUsers.map((user: any) => {
                 const userLicenseAssignments = licenseAssignments.filter((assignment) => {
-                    return assignment.permissions![0].assignee === user.id
+                    return assignment.assignee === user.id
                 })
 
                 const userHasThisParticularLicense =
                     userLicenseAssignments.find((userAssignment) => {
-                        return pickedLicenses.find((license) => license.policyid === userAssignment.inheritfrom)
+                        return pickedLicenses.find((license) => license._id === userAssignment.inheritFrom)
                     })
 
                 const isActivated =
                     userHasThisParticularLicense &&
-                    !userHasThisParticularLicense?.permissions![0].constraints?.find((constraint) => constraint.rightoperand === 'deactivated')
+                    userHasThisParticularLicense.action![0].refinement.find((item) => 
+                    item.uid === 'aktivierungsstatus' && item.rightOperand === 'true')
 
                 return (<Paper className="flex"
                     key={user.id}
@@ -72,7 +74,7 @@ export default function LicenseAssignmentUser({
                                 if (!e.target.checked) {
                                     setDialogBoxProperties(() => ({
                                         open: true, value: e.target.value,
-                                        userHasThisParticularLicense
+                                        userHasThisParticularLicense: userHasThisParticularLicense!
                                     }))
                                 } else {
                                     if (bilo.lizenzTyp === 'Einzellizenz') {
@@ -81,7 +83,7 @@ export default function LicenseAssignmentUser({
                                     } else {
                                         // volumelizenz
                                         let tempLicense = pickedLicenses.find((license) =>
-                                            !licenseAssignments.find((assignment) => assignment.inheritfrom === license.policyid)
+                                            !licenseAssignments.find((assignment) => assignment.inheritFrom === license._id)
 
                                         )!
                                         createLicenseAssignment(tempLicense._id, e.target.value)
@@ -121,7 +123,7 @@ export default function LicenseAssignmentUser({
                 <DialogActions>
                     <Button onClick={
                         () => {
-                            deleteLicenseAssignment(dialogBoxProperties.userHasThisParticularLicense.policyid)
+                            deleteLicenseAssignment(dialogBoxProperties.userHasThisParticularLicense!._id)
                             setDialogBoxProperties((props) => ({ ...props, open: false, value: null }))
                         }
                     }>Zustimmen</Button>

@@ -1,20 +1,18 @@
 import axios from 'axios'
-import { LicenseDefinitionModel } from 'license_manager'
+import { LicenseDefinitionModel, Policy } from 'license_manager'
+import { Constraint } from 'license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2'
+import { ActionObject, ActionVerb } from 'license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
+import { LicenseDefinitionState, licenseDefinitionSlice } from './licenseDefinitionSlice'
+import { LicenseAssignmentState, licenseAssignmentSlice} from './licenseAssignmentSlice'
 
-interface State {
-    licenseDefinitions: (LicenseDefinitionModel & { metadata: any })[][],
-    licenseAssignments: LicenseDefinitionModel[],
-    fetchLicenseDefinitions: () => any,
+export interface GeneralState {
     fetchLicenseDefinitionsV2: () => any,
-
-    fetchLicenseAssignments: () => any,
+    
     users: any[],
     groups: any[],
     fetchUsersAndGroups: () => any,
-    createLicenseAssignment: (licenseDefinitionID: string, targetID: string) => any,
-    deleteLicenseAssignment: (licenseAssignmentID: string) => any,
     notification: {
         product_id: string | null,
         license_type: string | null,
@@ -39,156 +37,24 @@ interface State {
 
 }
 
-export const useStore = create<State>()(
+export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignmentState
+
+export const useStore = create<MergedState>()(
     persist(
-        (set, get) => ({
+        (set, get, props) => ({
+            ...licenseDefinitionSlice(set, get, props),
+            ...licenseAssignmentSlice(set, get, props),
             config: null,
-            licenseDefinitions: [],
-            licenseAssignments: [],
-            fetchLicenseDefinitions: async () => {
-                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseDefinitions`)
-                let data = resp.data
-                const volLizenzen = data.filter((item: any) => item.permissions[0].constraints.find((item: any) => {
-                    return item.rightoperand === 'Volumenlizenz'
-                }))
-                data = data.filter((item: any) => item.permissions[0].constraints.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/purpose' && item.rightoperand !== 'Volumenlizenz')).map(
-                    (item: any) => ([item])
-                )
-
-
-                const volumenMapper: any = {}
-
-                for (const vol of volLizenzen) {
-                    const constraints = vol.permissions[0].constraints
-                    const product_id = vol.permissions[0].target
-                    const kaufreferenz = constraints.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/eq').rightoperand
-                    if (!volumenMapper[kaufreferenz + product_id]) {
-                        volumenMapper[kaufreferenz + product_id] = [
-                            vol
-                        ]
-                    } else {
-                        volumenMapper[kaufreferenz + product_id].push(vol)
-                    }
-                }
-
-                for (const key in volumenMapper) {
-                    data.push(volumenMapper[key])
-                }
-
-                for (const el of data) {
-                    const ele = el[0]
-                    const product_id = ele.permissions[0].target
-                    const resp = await axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/${product_id}`)
-                    ele.metadata = resp.data.data.lom
-                }
-
-                set({ licenseDefinitions: data })
-            },
-            fetchLicenseDefinitionsV2: async () => {
-                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseDefinitions`)
-                let data = resp.data
-                const volLizenzen = data.filter((item: any) => item.permissions[0].constraints.find((item: any) => {
-                    return item.rightoperand === 'Volumenlizenz'
-                }))
-                data = data.filter((item: any) => item.permissions[0].constraints.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/purpose' && item.rightoperand !== 'Volumenlizenz')).map(
-                    (item: any) => ([item])
-                )
-
-
-                const volumenMapper: any = {}
-
-                for (const vol of volLizenzen) {
-                    const constraints = vol.permissions[0].constraints
-                    const product_id = vol.permissions[0].target
-                    const kaufreferenz = constraints.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime' && item.operator === 'http://www.w3.org/ns/odrl/2/eq').rightoperand
-                    if (!volumenMapper[kaufreferenz + product_id]) {
-                        volumenMapper[kaufreferenz + product_id] = [
-                            vol
-                        ]
-                    } else {
-                        volumenMapper[kaufreferenz + product_id].push(vol)
-                    }
-                }
-
-                const product_ids = []
-
-                for (const el of data) {
-                    const ele = el[0]
-                    const product_id = ele.permissions[0].target
-                    product_ids.push({ id: product_id })
-                }
-
-
-                if (data.length > 0) {
-                    const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById`,
-                        product_ids
-                        ,
-                        {
-                            withCredentials: true,
-
-                        }
-
-                    )
-
-
-                    for (let i = 0; i < resp2.data.length; i++) {
-                        let ele = data[i][0]
-                        let metadata = resp2.data[i].data.lom
-                        ele.metadata = metadata
-
-
-                    }
-                }
-
-
-
-                // for (const el of resp2.data) {
-                //     const ele = el[0]
-                //     const product_id = ele.permissions[0].target
-                //     ele.metadata = el[1].data.lom
-                // }
-
-                set({ licenseDefinitions: data })
-            },
-            fetchLicenseAssignments: async () => {
-                const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`)
-                set({ licenseAssignments: resp.data })
-            },
+         
             users: [],
             groups: [],
-            // fetchAccessToken: async () => {
-            //     const access_token = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/access_token`)
-            //     const config = {
-            //         headers: { Authorization: `Bearer ${access_token.data}` }
-            //     }
-            //     set({ config })
-            //     return config
-            // },
             fetchUsersAndGroups: async () => {
                 const config = get().config
                 const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`, { withCredentials: true })
                 const resp2 = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`, { withCredentials: true })
                 set({ groups: resp2.data, users: resp.data })
             },
-            createLicenseAssignment(licenseDefinitionID: string, targetID: string) {
-                const config = get().config
-                axios.post(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`, {
-                    licenseDefinitionID,
-                    targetID
-                },
-                    config
-                ).then(async () => {
-                    get().fetchLicenseAssignments()
-                })
-            },
-            deleteLicenseAssignment(licenseAssignmentID: string) {
-                const config = get().config
-                axios.delete(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments/${licenseAssignmentID}`, {
-                    withCredentials: true
-                }).then(async () => {
-                    get().fetchLicenseAssignments()
-                })
-            },
+        
             notification: {
                 product_id: null,
                 license_type: null,

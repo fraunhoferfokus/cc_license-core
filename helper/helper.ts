@@ -1,35 +1,40 @@
+import { Policy } from "license_manager"
+import { ActionObject, Constraint } from "license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2"
 
 
 
-export const toBILO = (license?: any) => {
-    const constraints = license?.permissions[0].constraints
+export const toBILO = (license?: Policy) => {
+    if(!license) return null
 
-    let one = constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime'
-        && item.operator === 'http://www.w3.org/ns/odrl/2/gteq'
-    ).rightoperand
+    console.log({license})
 
-    let two = new Date(constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime'
-        && item.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-    ).rightoperand)
-
+    const constraints = (license.action![0] as ActionObject).refinement as Constraint[]
+    const one = constraints.find((item) => item.uid === 'gueltigkeitsbeginn')!.rightOperand!
+    const two = constraints.find((item) => item.uid === 'gueltigkeitsende')!.rightOperand!
 
     let gueltigkeitsbeginn = new Date(one)
     let gueltigkeitsende = new Date(two)
-    let anzahl = constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/count').rightoperand
+    let anzahl = constraints.find((item) => item.uid === 'lizenzanzahl')!.rightOperand!
+    let gueltigkeitsdauer = constraints.find((item) => item.uid === 'gueltigkeitsdauer')!.rightOperand!
+    let nutzungssysteme = constraints.find((item) => item.uid === 'nutzungssysteme')!.rightOperand!
+    let lizenztyp = constraints.find((item) => item.uid === 'lizenztyp')!.rightOperand!
+    let kaufreferenz = constraints.find((item) => item.uid === 'kaufreferenz')!.rightOperand!
+    let sonderlizenz = constraints.find((item) => item.uid === 'sonderlizenz')?.rightOperand!
+    let productid = license.target
 
     return {
-        sonderlizenz: constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/recipient')?.rightoperand,
+        sonderlizenz,
         lizenzanzahl: anzahl ? parseInt(anzahl) : 0,
         gueltigkeitsbeginn:
             gueltigkeitsbeginn.getDate() ? gueltigkeitsbeginn.getDate() + '-' + (gueltigkeitsbeginn.getMonth() + 1) + '-' + gueltigkeitsbeginn.getFullYear() : '',
         gueltigkeitsende:
             gueltigkeitsende.getDate() ? gueltigkeitsende.getDate() + '-' + (gueltigkeitsende.getMonth() + 1) + '-' + gueltigkeitsende.getFullYear() : ''
         ,
-        gueltigkeitsdauer: parseInt(constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/elapsedTime').rightoperand),
-        nutzungssysteme: constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/product').rightoperand,
-        lizenztyp: constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/purpose').rightoperand,
-        kaufreferenz: constraints?.find((item: any) => item.name === 'http://www.w3.org/ns/odrl/2/dateTime').rightoperand,
-        productid: license?.permissions[0].target,
+        gueltigkeitsdauer: parseInt(gueltigkeitsdauer),
+        nutzungssysteme,
+        lizenztyp,
+        kaufreferenz,
+        productid,
     }
 
 }

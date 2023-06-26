@@ -1,5 +1,5 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper } from "@mui/material"
-import { LicenseDefinitionModel } from "license_manager"
+import { LicenseDefinitionModel, Policy } from "license_manager"
 import { useState } from "react"
 import { useStore } from "../../zustand/store"
 
@@ -14,7 +14,7 @@ export default function LicenseAssignmentGroup({
 
     {
         selectedGroups: any,
-        pickedLicenses: LicenseDefinitionModel[],
+        pickedLicenses: Policy[],
         bilo: any,
         currentlyAssignedAmount: any
     }) {
@@ -24,7 +24,7 @@ export default function LicenseAssignmentGroup({
     const [dialogBoxProperties, setDialogBoxProperties] = useState<{
         open: boolean,
         value: string | null,
-        particularLicense: any,
+        particularLicense: Policy | null,
     }>({
         open: false,
         value: null,
@@ -44,12 +44,12 @@ export default function LicenseAssignmentGroup({
                 const realGroup = groups.find((group) => group.id === selected.id)
                 console.log({realGroup})
                 const groupLicenseAssignments = licenseAssignments.filter((assignment) => {
-                    return assignment.permissions![0].assignee === selected.id
+                    return assignment.assignee! === selected.id
                 })
 
                 const groupHasThatParticularLicense =
                     groupLicenseAssignments.find((groupAssignment) => {
-                        return pickedLicenses.find((license) => license.policyid === groupAssignment.inheritfrom)
+                        return pickedLicenses.find((license) => license._id === groupAssignment.inheritFrom)
                     })
 
                 const usersInGroup = users.filter((user) => realGroup.users.includes(user.id))
@@ -73,7 +73,7 @@ export default function LicenseAssignmentGroup({
                                     if (!e.target.checked) {
                                         setDialogBoxProperties(() => ({
                                             open: true, value: e.target.value,
-                                            particularLicense: groupHasThatParticularLicense
+                                            particularLicense: groupHasThatParticularLicense!
                                         }))
                                     } else {
                                         let tempLicense = pickedLicenses[0]
@@ -98,13 +98,13 @@ export default function LicenseAssignmentGroup({
                                     usersInGroup.map((user) => {
                                         
                                         const userLicenseAssignments = licenseAssignments.filter((assignment) => {
-                                            return assignment.permissions![0].assignee === user.id
+                                            return assignment.assignee === user.id
                                         })
 
                                         const userHasThisParticularLicense =
                                             userLicenseAssignments.find((userAssignment) => {
-                                                console.log(userAssignment.inheritfrom)
-                                                return pickedLicenses.find((license) => license.policyid === userAssignment.inheritfrom)
+                                                console.log(userAssignment.inheritFrom)
+                                                return pickedLicenses.find((license) => license._id === userAssignment.inheritFrom)
                                             })
 
                                             
@@ -129,7 +129,7 @@ export default function LicenseAssignmentGroup({
                                                             if (!e.target.checked) {
                                                                 setDialogBoxProperties(() => ({
                                                                     open: true, value: e.target.value,
-                                                                    particularLicense: userHasThisParticularLicense
+                                                                    particularLicense: userHasThisParticularLicense!
                                                                 }))
                                                             } else {
                                                                 if (bilo.lizenzTyp === 'Einzellizenz') {
@@ -138,7 +138,7 @@ export default function LicenseAssignmentGroup({
                                                                 } else {
                                                                     // volumelizenz
                                                                     let tempLicense = pickedLicenses.find((license) =>
-                                                                        !licenseAssignments.find((assignment) => assignment.inheritfrom === license.policyid)
+                                                                        !licenseAssignments.find((assignment) => assignment.inheritFrom === license._id)
 
                                                                     )!
                                                                     createLicenseAssignment(tempLicense._id, e.target.value)
@@ -194,7 +194,7 @@ export default function LicenseAssignmentGroup({
                 <DialogActions>
                     <Button onClick={
                         () => {
-                            deleteLicenseAssignment(dialogBoxProperties.particularLicense.policyid)
+                            deleteLicenseAssignment(dialogBoxProperties.particularLicense?._id!)
                             setDialogBoxProperties((props) => ({ ...props, open: false, value: null }))
                         }
                     }>Zustimmen</Button>

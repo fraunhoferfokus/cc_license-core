@@ -1,9 +1,9 @@
 import LicenseAssignmentDAO from '../express/models/LicenseAssignmentDAO'
 import NotificationDAO from '../express/models/NotificationDAO'
-import { LicenseDefinitionDAO, LicenseDefinitionModel, LicenseInformationDAO, LicenseInformationModel } from 'license_manager'
+import { LicenseDefinitionDAO, LicenseDefinitionModel, LicenseInformationDAO, LicenseInformationModel, Policy } from 'license_manager'
 import schedule from 'node-schedule'
 
-const definitionDAOInstance = new LicenseDefinitionDAO('licenseDefinitions', LicenseDefinitionModel)
+const definitionDAOInstance = new LicenseDefinitionDAO('licenseDefinitions', Policy)
 const licenseInformationDAOInstance = LicenseInformationDAO
 const notificationDAOInstance = NotificationDAO
 const assignmentDAOInstance = LicenseAssignmentDAO

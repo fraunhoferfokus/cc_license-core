@@ -23,288 +23,288 @@ class LicenseAssignmentController {
     }
 
     launchLicenseAssignmentForUser: express.Handler = async (req, res, next) => {
-        try {
+        // try {
 
-            // get access token from authorization header
-            const authorization = req.headers.authorization
-            if (!authorization) {
-                return res.status(401).send('Authorization header not found')
-            }
-            const access_token = authorization.split(' ')[1]
-            // get user id from access token
+        //     // get access token from authorization header
+        //     const authorization = req.headers.authorization
+        //     if (!authorization) {
+        //         return res.status(401).send('Authorization header not found')
+        //     }
+        //     const access_token = authorization.split(' ')[1]
+        //     // get user id from access token
 
-            const me = (await axios.get(`${process.env.OIDC_USERINFO_ENDPOINT}`, {
-                headers: {
-                    Authorization: `Bearer ${access_token}`
-                }
-            }
-            )).data
+        //     const me = (await axios.get(`${process.env.OIDC_USERINFO_ENDPOINT}`, {
+        //         headers: {
+        //             Authorization: `Bearer ${access_token}`
+        //         }
+        //     }
+        //     )).data
 
-            const userID = me.username || me.preferred_username
-            const licenseDefinitionID = req.body.licenseDefinitionID
-            const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseDefinitionID}`)).data
-
-
-            const licenseAssignments = await LicenseAssignmentDAO.findAll()
-            const userLicense = licenseAssignments.find(((licenseAssignment) => licenseAssignment.inheritfrom === licenseDefinitionID && licenseAssignment.permissions![0].assignee === userID))
+        //     const userID = me.username || me.preferred_username
+        //     const licenseDefinitionID = req.body.licenseDefinitionID
+        //     const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseDefinitionID}`)).data
 
 
-            const permissions = licenseDefinition.permissions!
-            const lizenzanzahl = parseInt(permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/count')?.rightoperand!)
-            const licenseType = permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose')?.rightoperand
+        //     const licenseAssignments = await LicenseAssignmentDAO.findAll()
+        //     const userLicense = licenseAssignments.find(((licenseAssignment) => licenseAssignment.inheritfrom === licenseDefinitionID && licenseAssignment.permissions![0].assignee === userID))
+
+
+        //     const permissions = licenseDefinition.permissions!
+        //     const lizenzanzahl = parseInt(permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/count')?.rightoperand!)
+        //     const licenseType = permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose')?.rightoperand
 
 
 
-            if (!userLicense) {
-                return res.status(404).send('Keine Lizenz für User und Lizenzdefinition gefunden')
-            }
+        //     if (!userLicense) {
+        //         return res.status(404).send('Keine Lizenz für User und Lizenzdefinition gefunden')
+        //     }
 
-            const url = `${process.env.GATEWAY_URL}/metadata_manager/${permissions![0].target}`
-            const metadata = (await axios.get(`${url}`)).data.data.lom
+        //     const url = `${process.env.GATEWAY_URL}/metadata_manager/${permissions![0].target}`
+        //     const metadata = (await axios.get(`${url}`)).data.data.lom
 
-            // check if date is within license period
-            const activationLowerBoundary = new Date(licenseDefinition?.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
-                && constraint.operator === 'http://www.w3.org/ns/odrl/2/gteq'
-            )?.rightoperand!)
-            const activationHigherBoundary = new Date(licenseDefinition?.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
-                && constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-            )?.rightoperand!)
+        //     // check if date is within license period
+        //     const activationLowerBoundary = new Date(licenseDefinition?.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
+        //         && constraint.operator === 'http://www.w3.org/ns/odrl/2/gteq'
+        //     )?.rightoperand!)
+        //     const activationHigherBoundary = new Date(licenseDefinition?.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
+        //         && constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+        //     )?.rightoperand!)
 
-            const userPermissions = userLicense.permissions![0]!
-
-
-            const today = new Date()
-            let endDate = new Date()
-
-            if (today < activationLowerBoundary || today > activationHigherBoundary) {
-                return res.status(403).send(`Lizenz kann nicht geladen werden. Lizenzzeitraum ist von ${activationLowerBoundary} nis ${activationHigherBoundary}`)
-            }
+        //     const userPermissions = userLicense.permissions![0]!
 
 
-            switch (licenseType) {
-                case 'Einzellizenz':
-                case 'Volumenlizenz':
-                    userPermissions.constraints = userPermissions.constraints?.filter((constraint) => constraint.name !== 'http://www.w3.org/ns/odrl/2/event')
+        //     const today = new Date()
+        //     let endDate = new Date()
 
-                    // if already activated
-                    const hatSession1 = userPermissions.constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
-                        constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-                    )?.rightoperand
-
-                    if (hatSession1) {
-                        const gueltigBis = new Date(hatSession1)
-                        endDate = gueltigBis
-                    } else {
-                        // get elapsed time from definition
-                        const elapsedTime = parseInt(permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/elapsedTime')?.rightoperand!)
-                        // add days of elapsed time to today
-                        endDate.setDate(today.getDate() + elapsedTime)
-                        // check if endDate is bigger than activationHigherBoundary
-                        if (endDate > activationHigherBoundary) {
-                            endDate.setDate(activationHigherBoundary.getDate())
-                        }
-                    }
-                    break;
-                case 'Gruppenlizenz':
-                    // get all license-assignments for this licensedefinition
-                    const currAssignForDefinition = licenseAssignments.filter((assignment) => assignment.inheritfrom === licenseDefinition.policyid
-                        &&
-                        !assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')
-                    )
-
-                    // check if user currently in session via date
-                    const hatSession = userPermissions.constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
-                        constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-                    )?.rightoperand
-
-                    if (hatSession && (new Date(hatSession) > activationLowerBoundary && new Date(hatSession) < activationHigherBoundary)) {
-                        console.log('skip license check')
-
-                    } else {
-                        console.log('check if user can acquire temp license')
-                        // check if user can temp  license
-                        const counter = currAssignForDefinition.filter((assignment) => {
-                            // get date of assignment and check if it is within the activation period
-                            const assignmentDate = new Date(assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
-                                && constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-                            )?.rightoperand!)
-
-                            // this assignment is actiavted
-                            if (today < assignmentDate) {
-                                return true
-                            }
-                        }).length
-
-                        if (counter >= lizenzanzahl) {
-                            return res.status(403).send('Maximale Anzahl an Gleichzeitigen Lizenzen erreicht')
-                        }
-                    }
+        //     if (today < activationLowerBoundary || today > activationHigherBoundary) {
+        //         return res.status(403).send(`Lizenz kann nicht geladen werden. Lizenzzeitraum ist von ${activationLowerBoundary} nis ${activationHigherBoundary}`)
+        //     }
 
 
-                    // endDate.setDate(endDate.getDate() + 1)
-                    console.log(today.toISOString())
-                    endDate.setDate(today.getSeconds() + 10)
+        //     switch (licenseType) {
+        //         case 'Einzellizenz':
+        //         case 'Volumenlizenz':
+        //             userPermissions.constraints = userPermissions.constraints?.filter((constraint) => constraint.name !== 'http://www.w3.org/ns/odrl/2/event')
+
+        //             // if already activated
+        //             const hatSession1 = userPermissions.constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
+        //                 constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+        //             )?.rightoperand
+
+        //             if (hatSession1) {
+        //                 const gueltigBis = new Date(hatSession1)
+        //                 endDate = gueltigBis
+        //             } else {
+        //                 // get elapsed time from definition
+        //                 const elapsedTime = parseInt(permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/elapsedTime')?.rightoperand!)
+        //                 // add days of elapsed time to today
+        //                 endDate.setDate(today.getDate() + elapsedTime)
+        //                 // check if endDate is bigger than activationHigherBoundary
+        //                 if (endDate > activationHigherBoundary) {
+        //                     endDate.setDate(activationHigherBoundary.getDate())
+        //                 }
+        //             }
+        //             break;
+        //         case 'Gruppenlizenz':
+        //             // get all license-assignments for this licensedefinition
+        //             const currAssignForDefinition = licenseAssignments.filter((assignment) => assignment.inheritfrom === licenseDefinition.policyid
+        //                 &&
+        //                 !assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')
+        //             )
+
+        //             // check if user currently in session via date
+        //             const hatSession = userPermissions.constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
+        //                 constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+        //             )?.rightoperand
+
+        //             if (hatSession && (new Date(hatSession) > activationLowerBoundary && new Date(hatSession) < activationHigherBoundary)) {
+        //                 console.log('skip license check')
+
+        //             } else {
+        //                 console.log('check if user can acquire temp license')
+        //                 // check if user can temp  license
+        //                 const counter = currAssignForDefinition.filter((assignment) => {
+        //                     // get date of assignment and check if it is within the activation period
+        //                     const assignmentDate = new Date(assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
+        //                         && constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+        //                     )?.rightoperand!)
+
+        //                     // this assignment is actiavted
+        //                     if (today < assignmentDate) {
+        //                         return true
+        //                     }
+        //                 }).length
+
+        //                 if (counter >= lizenzanzahl) {
+        //                     return res.status(403).send('Maximale Anzahl an Gleichzeitigen Lizenzen erreicht')
+        //                 }
+        //             }
 
 
-                    if (endDate > activationHigherBoundary) {
-                        endDate.setDate(activationHigherBoundary.getDate())
-                    }
-            }
+        //             // endDate.setDate(endDate.getDate() + 1)
+        //             console.log(today.toISOString())
+        //             endDate.setDate(today.getSeconds() + 10)
 
-            userPermissions.constraints = []
 
-            userPermissions.constraints?.push({
-                name: 'http://www.w3.org/ns/odrl/2/dateTime',
-                operator: 'http://www.w3.org/ns/odrl/2/gteq',
-                rightoperand: today.toISOString()
-            })
-            userPermissions.constraints?.push({
-                name: 'http://www.w3.org/ns/odrl/2/dateTime',
-                operator: 'http://www.w3.org/ns/odrl/2/lteq',
-                rightoperand: endDate.toISOString()
-            })
+        //             if (endDate > activationHigherBoundary) {
+        //                 endDate.setDate(activationHigherBoundary.getDate())
+        //             }
+        //     }
 
-            await LicenseAssignmentDAO.updateById(userLicense.policyid, userLicense)
-            const redirect_uri = metadata?.technical.location[0]
+        //     userPermissions.constraints = []
 
-            return res.redirect(redirect_uri)
-        } catch (err: any) {
-            console.log(err.response.data)
-            return res.status(err?.response?.statusCode || 500).json(err)
-        }
+        //     userPermissions.constraints?.push({
+        //         name: 'http://www.w3.org/ns/odrl/2/dateTime',
+        //         operator: 'http://www.w3.org/ns/odrl/2/gteq',
+        //         rightoperand: today.toISOString()
+        //     })
+        //     userPermissions.constraints?.push({
+        //         name: 'http://www.w3.org/ns/odrl/2/dateTime',
+        //         operator: 'http://www.w3.org/ns/odrl/2/lteq',
+        //         rightoperand: endDate.toISOString()
+        //     })
+
+        //     await LicenseAssignmentDAO.updateById(userLicense.policyid, userLicense)
+        //     const redirect_uri = metadata?.technical.location[0]
+
+        //     return res.redirect(redirect_uri)
+        // } catch (err: any) {
+        //     console.log(err.response.data)
+        //     return res.status(err?.response?.statusCode || 500).json(err)
+        // }
     }
 
     launchLicenseAssignment: express.Handler = async (req, res, next) => {
-        try {
-            // const metadataID = req.params.metadataID
-            // TODO: later extract from access token of user!
-            const userID = req.body.userID
-            const licenseDefinitionID = req.body.licenseDefinitionID
-            const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseDefinitionID}`)).data
+        // try {
+        //     // const metadataID = req.params.metadataID
+        //     // TODO: later extract from access token of user!
+        //     const userID = req.body.userID
+        //     const licenseDefinitionID = req.body.licenseDefinitionID
+        //     const licenseDefinition: LicenseDefinitionModel = (await axios.get(`${licenseDefinitionID}`)).data
 
 
-            const licenseAssignments = await LicenseAssignmentDAO.findAll()
-            const userLicense = licenseAssignments.find(((licenseAssignment) => licenseAssignment.inheritfrom === licenseDefinitionID && licenseAssignment.permissions![0].assignee === userID))
+        //     const licenseAssignments = await LicenseAssignmentDAO.findAll()
+        //     const userLicense = licenseAssignments.find(((licenseAssignment) => licenseAssignment.inheritfrom === licenseDefinitionID && licenseAssignment.permissions![0].assignee === userID))
 
 
-            const permissions = licenseDefinition.permissions!
-            const lizenzanzahl = parseInt(permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/count')?.rightoperand!)
-            const licenseType = permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose')?.rightoperand
+        //     const permissions = licenseDefinition.permissions!
+        //     const lizenzanzahl = parseInt(permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/count')?.rightoperand!)
+        //     const licenseType = permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/purpose')?.rightoperand
 
 
 
-            if (!userLicense) {
-                return res.status(404).send('Keine Lizenz für User und Lizenzdefinition gefunden')
-            }
+        //     if (!userLicense) {
+        //         return res.status(404).send('Keine Lizenz für User und Lizenzdefinition gefunden')
+        //     }
 
-            const url = `${process.env.GATEWAY_URL}/metadata_manager/${permissions![0].target}`
-            const metadata = (await axios.get(`${url}`)).data.data.lom
+        //     const url = `${process.env.GATEWAY_URL}/metadata_manager/${permissions![0].target}`
+        //     const metadata = (await axios.get(`${url}`)).data.data.lom
 
-            // check if date is within license period
-            const activationLowerBoundary = new Date(licenseDefinition?.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
-                && constraint.operator === 'http://www.w3.org/ns/odrl/2/gteq'
-            )?.rightoperand!)
-            const activationHigherBoundary = new Date(licenseDefinition?.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
-                && constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-            )?.rightoperand!)
+        //     // check if date is within license period
+        //     const activationLowerBoundary = new Date(licenseDefinition?.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
+        //         && constraint.operator === 'http://www.w3.org/ns/odrl/2/gteq'
+        //     )?.rightoperand!)
+        //     const activationHigherBoundary = new Date(licenseDefinition?.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime'
+        //         && constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+        //     )?.rightoperand!)
 
-            const userPermissions = userLicense.permissions![0]!
-
-
-            const today = new Date()
-            let endDate = new Date()
-
-            if (today < activationLowerBoundary || today > activationHigherBoundary) {
-                return res.status(403).send(`Lizenz kann nicht geladen werden. Lizenzzeitraum ist von ${activationLowerBoundary} nis ${activationHigherBoundary}`)
-            }
+        //     const userPermissions = userLicense.permissions![0]!
 
 
-            switch (licenseType) {
-                case 'Einzellizenz':
-                case 'Volumenlizenz':
-                    userPermissions.constraints = userPermissions.constraints?.filter((constraint) => constraint.name !== 'http://www.w3.org/ns/odrl/2/event')
+        //     const today = new Date()
+        //     let endDate = new Date()
 
-                    // if already activated
-                    const hatSession1 = userPermissions.constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
-                        constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-                    )?.rightoperand
-
-                    if (hatSession1) {
-                        const gueltigBis = new Date(hatSession1)
-                        endDate = gueltigBis
-                    } else {
-                        // get elapsed time from definition
-                        const elapsedTime = parseInt(permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/elapsedTime')?.rightoperand!)
-                        // add days of elapsed time to today
-                        endDate.setDate(today.getDate() + elapsedTime)
-                        // check if endDate is bigger than activationHigherBoundary
-                        if (endDate > activationHigherBoundary) {
-                            endDate.setDate(activationHigherBoundary.getDate())
-                        }
-                    }
-                    break;
-                case 'Gruppenlizenz':
-                    // get all license-assignments for this licensedefinition
-                    const currAssignForDefinition = licenseAssignments.filter((assignment) => assignment.inheritfrom === licenseDefinition.policyid
-                        &&
-                        !assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')
-                    )
-
-                    // check if user currently in session via date
-                    const hatSession = userPermissions.constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
-                        constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-                    )?.rightoperand
-
-                    if (hatSession && new Date(hatSession) > (new Date())) {
-                        console.log('skip license check')
-                    } else {
-                        // check how many active sessions are currently running for this license definition
-                        const activeAssignments = currAssignForDefinition.filter((assignment) => {
-                            const hatSession = assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
-                                constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
-                            )?.rightoperand
-                            if (hatSession) {
-                                const newDate = new Date(hatSession)
-                                if (newDate > (new Date())) {
-                                    return true
-                                }
-                            }
-                        }).length
-
-                        if (activeAssignments >= lizenzanzahl) {
-                            return res.status(403).send('Maximale Anzahl an Gleichzeitigen Lizenzen erreicht')
-                        }
-                    }
+        //     if (today < activationLowerBoundary || today > activationHigherBoundary) {
+        //         return res.status(403).send(`Lizenz kann nicht geladen werden. Lizenzzeitraum ist von ${activationLowerBoundary} nis ${activationHigherBoundary}`)
+        //     }
 
 
-                    // endDate.setDate(endDate.getDate() + 1)
-                    endDate.setMinutes(today.getMinutes() + 1)
+        //     switch (licenseType) {
+        //         case 'Einzellizenz':
+        //         case 'Volumenlizenz':
+        //             userPermissions.constraints = userPermissions.constraints?.filter((constraint) => constraint.name !== 'http://www.w3.org/ns/odrl/2/event')
 
-                    if (endDate > activationHigherBoundary) {
-                        endDate.setDate(activationHigherBoundary.getDate())
-                    }
-            }
+        //             // if already activated
+        //             const hatSession1 = userPermissions.constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
+        //                 constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+        //             )?.rightoperand
 
-            userPermissions.constraints = []
+        //             if (hatSession1) {
+        //                 const gueltigBis = new Date(hatSession1)
+        //                 endDate = gueltigBis
+        //             } else {
+        //                 // get elapsed time from definition
+        //                 const elapsedTime = parseInt(permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/elapsedTime')?.rightoperand!)
+        //                 // add days of elapsed time to today
+        //                 endDate.setDate(today.getDate() + elapsedTime)
+        //                 // check if endDate is bigger than activationHigherBoundary
+        //                 if (endDate > activationHigherBoundary) {
+        //                     endDate.setDate(activationHigherBoundary.getDate())
+        //                 }
+        //             }
+        //             break;
+        //         case 'Gruppenlizenz':
+        //             // get all license-assignments for this licensedefinition
+        //             const currAssignForDefinition = licenseAssignments.filter((assignment) => assignment.inheritfrom === licenseDefinition.policyid
+        //                 &&
+        //                 !assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/recipient')
+        //             )
 
-            userPermissions.constraints?.push({
-                name: 'http://www.w3.org/ns/odrl/2/dateTime',
-                operator: 'http://www.w3.org/ns/odrl/2/gteq',
-                rightoperand: today.toISOString()
-            })
-            userPermissions.constraints?.push({
-                name: 'http://www.w3.org/ns/odrl/2/dateTime',
-                operator: 'http://www.w3.org/ns/odrl/2/lteq',
-                rightoperand: endDate.toISOString()
-            })
+        //             // check if user currently in session via date
+        //             const hatSession = userPermissions.constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
+        //                 constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+        //             )?.rightoperand
 
-            await LicenseAssignmentDAO.updateById(userLicense.policyid, userLicense)
-            const redirect_uri = metadata?.technical.location[0]
+        //             if (hatSession && new Date(hatSession) > (new Date())) {
+        //                 console.log('skip license check')
+        //             } else {
+        //                 // check how many active sessions are currently running for this license definition
+        //                 const activeAssignments = currAssignForDefinition.filter((assignment) => {
+        //                     const hatSession = assignment.permissions![0].constraints?.find((constraint) => constraint.name === 'http://www.w3.org/ns/odrl/2/dateTime' &&
+        //                         constraint.operator === 'http://www.w3.org/ns/odrl/2/lteq'
+        //                     )?.rightoperand
+        //                     if (hatSession) {
+        //                         const newDate = new Date(hatSession)
+        //                         if (newDate > (new Date())) {
+        //                             return true
+        //                         }
+        //                     }
+        //                 }).length
 
-            return res.redirect(redirect_uri)
-        } catch (err: any) {
-            return res.status(err?.response?.statusCode || 500).json(err)
-        }
+        //                 if (activeAssignments >= lizenzanzahl) {
+        //                     return res.status(403).send('Maximale Anzahl an Gleichzeitigen Lizenzen erreicht')
+        //                 }
+        //             }
+
+
+        //             // endDate.setDate(endDate.getDate() + 1)
+        //             endDate.setMinutes(today.getMinutes() + 1)
+
+        //             if (endDate > activationHigherBoundary) {
+        //                 endDate.setDate(activationHigherBoundary.getDate())
+        //             }
+        //     }
+
+        //     userPermissions.constraints = []
+
+        //     userPermissions.constraints?.push({
+        //         name: 'http://www.w3.org/ns/odrl/2/dateTime',
+        //         operator: 'http://www.w3.org/ns/odrl/2/gteq',
+        //         rightoperand: today.toISOString()
+        //     })
+        //     userPermissions.constraints?.push({
+        //         name: 'http://www.w3.org/ns/odrl/2/dateTime',
+        //         operator: 'http://www.w3.org/ns/odrl/2/lteq',
+        //         rightoperand: endDate.toISOString()
+        //     })
+
+        //     await LicenseAssignmentDAO.updateById(userLicense.policyid, userLicense)
+        //     const redirect_uri = metadata?.technical.location[0]
+
+        //     return res.redirect(redirect_uri)
+        // } catch (err: any) {
+        //     return res.status(err?.response?.statusCode || 500).json(err)
+        // }
 
     }
 

@@ -10,7 +10,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import InfoIcon from '@mui/icons-material/Info';
 import { toBILO } from "../../helper/helper";
 export default function NotificationPage() {
-    const { licenseDefinitions, fetchLicenseDefinitions, fetchLicenseAssignments, users, fetchUsersAndGroups: fetchUsers, groups,
+    const { licenseDefinitions,  fetchLicenseAssignments, users, fetchUsersAndGroups: fetchUsers, groups,
         licenseAssignments, notification, setNotification, fetchNotifications, createNotification, notifications, deleteNotification
     } = useStore(state => state)
 
@@ -45,7 +45,7 @@ export default function NotificationPage() {
 
     const productMap: any = {}
     const availabeProducts = licenseDefinitions.flat(10).filter((license) => {
-        const product_id = license.permissions![0].target!
+        const product_id = license.target
         if (product_id in productMap) {
             return false
         }
@@ -53,7 +53,7 @@ export default function NotificationPage() {
         return true
     })
     const availableProductOptions = availabeProducts.map((license) => {
-        const product_id = license.permissions![0].target!
+        const product_id = license.target!
         const label = license?.metadata?.general?.title?.value
         return { label: label, value: product_id }
     })
@@ -279,7 +279,7 @@ export default function NotificationPage() {
             {notifications?.map((notification: LicenseDefinitionModel) => {
                 const permissions = notification.permissions
                 const found = availabeProducts.find((licenseDefinition) => {
-                    return permissions![0].target === licenseDefinition.permissions![0]!.target
+                    return permissions![0].target === licenseDefinition.target
                 })
 
                 const title = found?.metadata.general?.title?.value
