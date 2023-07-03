@@ -12,6 +12,9 @@ import AssignmentTableContainer from "./Table/AssignmentTalbeContainer";
 
 export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
 
+
+    console.log('hello world')
+
     const [pickedLicenseType, setPickedLicenseType] = useState('placeholder')
 
 
