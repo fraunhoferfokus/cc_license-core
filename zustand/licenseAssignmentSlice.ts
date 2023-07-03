@@ -9,6 +9,10 @@ export interface LicenseAssignmentState {
     createLicenseAssignment: (licenseDefinitionID: string, targetID: string) => any,
     deleteLicenseAssignment: (licenseAssignmentID: string) => any,
     licenseAssignments: Policy[],
+    setPickedUserIds: (userIds: string[]) => any,
+    pickedUserIds: string[],
+    setStepper: (step: number) => any,
+    stepper: number
 }
 
 export const licenseAssignmentSlice: StateCreator<MergedState,
@@ -38,5 +42,13 @@ export const licenseAssignmentSlice: StateCreator<MergedState,
 
 
         },
-        licenseAssignments: []
+        licenseAssignments: [],
+        setPickedUserIds(userIds: string[]) {
+            set({ pickedUserIds: userIds })
+        },
+        pickedUserIds: [],
+        setStepper(step: number) {
+            set({ stepper: step })
+        },
+        stepper: 0
     }))

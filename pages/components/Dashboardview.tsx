@@ -1,5 +1,6 @@
 import { Divider, Link, MenuItem, MenuList, Paper } from "@mui/material"
 import { useState } from "react"
+import FunctionButton from "./Buttons/FunctionButton"
 
 
 export default function Dashboardview({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
@@ -22,122 +23,47 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
 
             <div className="Funktionen flex items-center flex-wrap">
 
+                <FunctionButton
+                    infoText={'Medienlizenzen in den Lizenzmanager importieren'}
+                    buttonTitle={'Lizenzen importieren'}
+                    iconPath={'/plusicon.svg'}
+                    callback={async() => {
+                        setLicenseModal(true)
+                    }}
+                    color="#F0B3AB"
+                />
 
-                <div className="w-[372px] mr-[23px]">
-
-                    <div className="flex items-center h-[58px] bg-[#F0B3AB] bg-opacity-[50%] rounded-[10px] cursor-pointer"
-
-                        onClick={() => setLicenseModal(true)}
-                    >
-                        <div className="IconContainer w-[40px] h-[40px] flex items-center justify-center
-                         bg-[#F0B3AB]
-                         ml-[10px]
-                            rounded-[10px]
-                        ">
-                            <img src="/plusicon.svg" alt=""
-                                width={30}
-                                height={30}
-                            />
-                        </div>
-                        <p className="ml-[13px] font-bold text-[24px] "
-                        >
-                            Lizenzen importieren
-                        </p>
-                    </div>
-
-                    <div className="flex items-center justify-center text-center">
-                        <img
-                            src="/infoicon.svg"
-                            width={18}
-                            height={18}
-                        />
-                        <p
-                            className="mt-[10px] text-[#404045] text-[15px] ml-[10px]"
-                        >
-                            Medienlizenzen in den Lizenzmanager importieren
-                        </p>
-                    </div>
-
-
-                </div>
-
-                <div className="mr-[23px] w-[372px]">
-
-                    <div className="flex items-center h-[58px] bg-[#EAF3F8] bg-opacity-[50%] rounded-[10px] cursor-pointer"
-                    
-                    onClick={() => {
+                <FunctionButton
+                    infoText={'Medienlizenzen im Lizenzmanager zuweisen'}
+                    buttonTitle={'Lizenzen zuweisen'}
+                    iconPath={'/usericon.svg'}
+                    callback={() => {
                         setView('assignment')
                     }}
-                    >
-                        <div className="IconContainer w-[40px] h-[40px] flex items-center justify-center
-                         bg-[#EAF3F8]
-                         ml-[10px]
-                            rounded-[10px]
-                        "
-                           
+                    color="#EAF3F8"
+                />
 
-                        >
-                            <img src="/usericon.svg" alt=""
-                                width={30}
-                                height={30}
-                            />
-                        </div>
-                        <p className="ml-[13px] font-bold text-[24px] "
-                        >
-                            Lizenzen zuweisen
-                        </p>
-                    </div>
+                <FunctionButton
+                    infoText={'Lizenzierte Medien im Lizenzmanager anzeigen und durchsuchen'}
+                    buttonTitle={'Medien'}
+                    iconPath={'/medienicon.svg'}
+                    callback={() => {
+                        setView('media')
+                    }}
+                    color="#B7DEB0"
+                />
 
-                    <div className="flex items-center justify-center text-center">
-                        <img
-                            src="/infoicon.svg"
-                            width={18}
-                            height={18}
-                        />
-                        <p
-                            className="mt-[10px] text-[#404045] text-[15px] ml-[10px]"
-                        >
-                            Medianlizenzen im Lizenzmanger zuweisen                        </p>
-                    </div>
+                <FunctionButton
+                    infoText={'Medienlizenzen im Lizenzmanager anzeigen, suchen und entziehen'}
+                    buttonTitle={'Lizenz Übersicht'}
+                    iconPath={'/lizenzübersichticon.svg'}
+                    callback={() => {
+                        setView('license')
+                    }}
+                    color="#FFEED7"
+                />
 
-
-                </div>
-
-                <div className="mr-[23px] w-[372px]">
-
-                    <div className="flex items-center h-[58px] bg-[#B7DEB0] bg-opacity-[50%] rounded-[10px] cursor-pointer">
-                        <div className="IconContainer w-[40px] h-[40px] flex items-center justify-center
-                         bg-[#B7DEB0]
-                         ml-[10px]
-                            rounded-[10px]
-                        ">
-                            <img src="/medienicon.svg" alt=""
-                                width={30}
-                                height={30}
-                            />
-                        </div>
-                        <p className="ml-[13px] font-bold text-[24px] "
-                        >
-                            Medien
-                        </p>
-                    </div>
-
-                    <div className="flex items-center justify-center text-center">
-                        <img
-                            src="/infoicon.svg"
-                            width={18}
-                            height={18}
-                        />
-                        <p
-                            className="mt-[10px] text-[#404045] text-[15px] ml-[10px]"
-                        >
-                            Lizenzierte Medien im Lizenzmanager anzeigen und durchsuchen.                        </p>
-                    </div>
-
-
-                </div>
-
-                <div className="w-[372px]">
+                {/* <div className="w-[372px]">
 
                     <div className="flex items-center h-[58px] bg-[#FFEED7] bg-opacity-[50%] rounded-[10px] cursor-pointer">
                         <div className="IconContainer w-[40px] h-[40px] flex items-center justify-center
@@ -170,7 +96,7 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                     </div>
 
 
-                </div>
+                </div> */}
 
             </div>
 

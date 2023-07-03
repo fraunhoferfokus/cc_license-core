@@ -1,21 +1,15 @@
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
-import { Autocomplete, Box, Button, MenuItem, Paper, Select, TextField } from '@mui/material'
+import { Policy } from 'license_manager'
+import { ActionObject, Constraint } from 'license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2'
 import { RequestContext } from 'next/dist/server/base-server'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { requireSession } from '../auth-mw/auth'
 import { toBILO } from '../helper/helper'
+import { PolicyWithMetadata } from '../zustand/licenseDefinitionSlice'
 import { useStore } from '../zustand/store'
 import AddLicenseModal from './components/AddLicenseModal'
-import LaunchPage from './components/LaunchPage'
-import LicenseAssignmentGroup from './components/LicenseAssigmentGroup'
-import LicenseAssignmentUser from './components/LicenseAssignmentUser'
-import NotificationPage from './components/NotificationPage'
-import { Policy } from 'license_manager'
-import { ActionObject, Constraint } from 'license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2'
-import { PolicyWithMetadata } from '../zustand/licenseDefinitionSlice'
 import Dashboardview from './components/Dashboardview'
-import LizenzZuweisung from './components/LizenzZuweisung'
+import LizenzZuweisungV2 from './components/LizenzZuweisungV2'
 
 
 export default dynamic(() => Promise.resolve(Home), {
@@ -96,8 +90,8 @@ function Home({ user }: { user: any }) {
   return (
     <>
       <div className="flex h-full">
-        <div className="flex w-[280px] bg-white">
-          <div className='mt-[20px] flex-1 flex flex-col'>
+        <div className="flex max-w-[280px] h-full">
+          <div className='mt-[20px] flex-1 flex flex-col w-[280px]'>
             {/* border bottom with E0E0EB 1px*/}
             <div className='uppertPart flex-1'>
 
@@ -292,7 +286,7 @@ function Home({ user }: { user: any }) {
 
           </div>
         </div>
-        <div className="flex-grow bg-[#e7ebef] pl-[26px] pt-[50px]">
+        <div className="flex-grow bg-[#F0F0F9] pl-[26px] pt-[50px] h-full flex flex-col pr-[26px] pb-[26px]">
 
           {
             view === 'dashboard' &&
@@ -303,7 +297,7 @@ function Home({ user }: { user: any }) {
           }
           {
             view === 'assignment' &&
-            <LizenzZuweisung
+            <LizenzZuweisungV2
               setLicenseModal={setLicenseModal}
               setView={setView}
             />
