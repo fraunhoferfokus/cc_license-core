@@ -1,15 +1,11 @@
-import { Autocomplete, Box, Button, Divider, Link, MenuItem, MenuList, Paper, Select, TextField } from "@mui/material"
-import { useEffect, useRef, useState } from "react"
-import { useStore } from '../../zustand/store'
-import { PolicyWithMetadata } from "../../zustand/licenseDefinitionSlice";
-import { toBILO } from "../../helper/helper";
+// Hello Fraunhofer
+import { Button } from "@mui/material";
 import { Policy } from "license_manager";
 import { ActionObject, Constraint } from "license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2";
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
-import AddLicenseModal from "./AddLicenseModal";
-import LicenseAssignmentUser from "./LicenseAssignmentUser";
-import LicenseAssignmentGroup from "./LicenseAssigmentGroup";
-import NotificationPage from "./NotificationPage";
+import { useEffect, useRef, useState } from "react";
+import { toBILO } from "../../helper/helper";
+import { PolicyWithMetadata } from "../../zustand/licenseDefinitionSlice";
+import { useStore } from '../../zustand/store';
 import FunctionButton from "./Buttons/FunctionButton";
 import AssignmentTableContainer from "./Table/AssignmentTalbeContainer";
 
@@ -162,7 +158,9 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
             {
                 stepper === 1 &&
                 <>
-                    <div>
+                    <div
+                        className=""
+                    >
                         <p
                             className="mt-[67px] font-bold text-[#404045] text-[20px]"
                         >
