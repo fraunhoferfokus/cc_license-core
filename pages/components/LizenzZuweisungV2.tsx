@@ -12,12 +12,6 @@ import AssignmentTableContainer from "./Table/AssignmentTalbeContainer";
 
 export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
 
-
-    console.log('hello world')
-
-    const [pickedLicenseType, setPickedLicenseType] = useState('placeholder')
-
-
     const {
         licenseDefinitions,
         fetchLicenseAssignments,
@@ -30,7 +24,9 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         pickedUserIds,
         stepper,
         setStepper,
-        licenseAssignments
+        licenseAssignments,
+        pickedLicenseType,
+        setPickedLicenseType,
     } = useStore(state => state)
     const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
 
@@ -151,7 +147,10 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                     >
                         2. Lerngruppe oder Klasse auswählen
                     </p>
-                    <AssignmentTableContainer />
+                    <AssignmentTableContainer 
+
+                    
+                    />
                 </>
 
             }

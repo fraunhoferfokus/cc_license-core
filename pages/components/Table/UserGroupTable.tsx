@@ -3,6 +3,7 @@ import { TableData } from "./AssignmentTalbeContainer";
 import { useEffect, useState } from "react";
 import { useStore } from "../../../zustand/store";
 import Select from 'react-select'
+import TableComponent from "./TableComponent";
 
 function transformUserToData(user: any) {
     let [nachname, vorname] = user.email.split(' ')
@@ -12,76 +13,41 @@ function transformUserToData(user: any) {
         klasse: user.groups.filter((group: any) => group.type === 'Klasse').map((group: any) => group.displayName).join(', '),
         arbeitsgruppe: user.groups.filter((group: any) => group.type !== 'Klasse').map((group: any) => group.displayName).join(', '),
         nutzerId: user.id,
+        groupIds: user.groups.map((group: any) => group.id)
     }
 }
 
 
 export default function UserGroupTable() {
+
+    const [triggerChild, setTriggerChild] = useState(false)
+
+
     const {
-        licenseDefinitions,
-        fetchLicenseAssignments,
         users,
+        pickedLicenseType,
+        setPickedLicenseType,
         fetchUsersAndGroups: fetchUsers,
         groups,
-        setNotification,
-        notification,
-        fetchLicenseDefinitionsV2,
-        setPickedUserIds,
         pickedUserIds,
-        licenseAssignments
+        setPickedUserIds
     } = useStore(state => state)
 
-
-    let [userRows, setUserRows] = useState<TableData[]>(users.map((user: any) => transformUserToData(user)))
-
-    let [page, setPage] = useState(0)
-    let [userRowsPerPage, setUserRowsPerPage] = useState(5)
     let [groupOptions, setGroupOptions] = useState<any[]>(groups.map((group: any) => ({ value: group.id, label: group.displayName })))
 
-    let [filteredUsers, setFilteredUsers] = useState<any[]>(users)
+    let [filteredEntries, setFilteredEntries] = useState<any[]>([])
 
     let [selectedValue, setSelectedValue] = useState<any>([])
 
-
-    let [checked, setChecked] = useState({})
-
-    useEffect(() => {
-        setPage(0)
-        const rows = filteredUsers.map((user: any) => transformUserToData(user)).slice(0, userRowsPerPage)
-        setUserRows(rows)
-    }, [userRowsPerPage])
+    let [selectedUser, setSelectedUser] = useState<any>([])
 
 
     useEffect(() => {
-        const rows = filteredUsers.map((user: any) => transformUserToData(user)).slice(0, userRowsPerPage)
-        setUserRows(rows)
-    }, [filteredUsers])
-
-    useEffect(
-        () => {
-            setUserRows(filteredUsers.map((user: any) => transformUserToData(user)).slice(page * userRowsPerPage, page * userRowsPerPage + userRowsPerPage))
-
-        },
-
-        [page]
+        setTriggerChild(true)
+    },
+        [selectedValue, selectedUser]
     )
 
-    useEffect(() => {
-
-        if (selectedValue.length > 0) {
-            let tobefiltered: any[] = []
-            for (const { label, value } of selectedValue) {
-                const group = groups.find((group: any) => group.id === value)
-                tobefiltered = [...tobefiltered, ...group.users.map((id: string) => users.find((user) => user.id === id))]
-            }
-
-            console.log(tobefiltered.length)
-
-            setFilteredUsers(tobefiltered)
-        } else {
-            setFilteredUsers(users)
-        }
-    }, [selectedValue])
 
 
     return (
@@ -114,6 +80,7 @@ export default function UserGroupTable() {
                         }}
                         value={selectedValue}
 
+
                     />
 
                     <p>
@@ -125,22 +92,18 @@ export default function UserGroupTable() {
                     className="ml-[50px] flex-[1] max-h-[55px] flex flex-col justify-center text-[#585867] text-[15px]"
 
                 >
-                    <Autocomplete
+
+                    <TextField
+                        value={selectedUser}
+                        onChange={(event) => {
+                            setSelectedUser(event.target.value)
 
 
-                        disablePortal
-                        id="combo-box-demo"
-                        options={[]}
-                        sx={{ padding: 0 }}
-                        // sx={{ width: 300 }}
-                        renderInput={(params) => {
-                            return <TextField
-                                {...params}
-                            // style={{padding:0}}
-                            // className="h-[47px]"
-                            />
+
                         }}
-                    />
+                    >
+
+                    </TextField>
 
                     <p>
                         Nutzer
@@ -152,142 +115,58 @@ export default function UserGroupTable() {
 
             <Divider />
 
-            <TableContainer component={Paper}
-                className="flex-1 overflow-scroll"
+            <TableComponent
+                data={users.map((user: any) => transformUserToData(user))}
+                trigger={triggerChild}
+                setTrigger={setTriggerChild}
+                filterFunction={(data: any[]) => {
+                    let filteredData = []
+                    if (selectedValue.length > 0) {
+                        filteredData = data.filter((row: any) => {
+                            for (const { value } of selectedValue) {
+                                if (row.groupIds.includes(value)) {
+                                    return true
+                                }
+                            }
+                        })
+                    } else {
+                        filteredData = data
+                    }
 
-            >
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow
-                        >
-                            <TableCell
-                                sx={{ padding: "10px", height: 50 }}
+                    if (selectedUser.length > 0) {
+                        filteredData = filteredData.filter((row: any) => {
+                            for (const key in row) {
+                                // check if string
+                                if (typeof row[key] === 'string') {
+                                    if (row[key].toLowerCase().includes(selectedUser.toLowerCase())) {
+                                        return true
+                                    }
+                                }
+                            }
+                        })
+                    }
+                    console.log({ filteredData })
 
-                            >Checkbox</TableCell>
+                    return filteredData
+                }}
+                checkbox={pickedLicenseType !== 'Lerngruppenlizenz'}
+                singleCheckBox={pickedLicenseType === 'Einzellizenz'}
 
-                            <TableCell
-                                sx={{ padding: "10px", height: 50 }}
-
-                            >Vorname</TableCell>
-                            <TableCell align="right"
-                                sx={{ padding: "10px", height: 50 }}
-
-                            >Nachname</TableCell>
-                            <TableCell align="right"
-                                sx={{ padding: "10px", height: 50 }}
-
-                            >Arbeitsgruppe</TableCell>
-                            <TableCell align="right"
-                                sx={{ padding: "10px", height: 50 }}
-
-                            >Klasse</TableCell>
-                            <TableCell align="right"
-                                sx={{ padding: "10px", height: 50 }}
-
-                            >Nutzer-ID</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody
-                        className="max-h-[50px] h-[50px]"
-                    >
-                        {userRows.map((row) => (
-                            <TableRow
-                                key={row.nutzerId}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                className="max-h-[50px]"
-                                style={{ height: '50px', maxHeight: '50px' }}
-                            >
-                                <TableCell component="th" scope="row"
-                                    sx={{ padding: "10px", height: 50 }}
-
-                                >
-                                    <Checkbox
-                                        checked={pickedUserIds.includes(row.nutzerId)}
-                                        onChange={(event) => {
-                                            if (event.target.checked) {
-                                                setPickedUserIds([...pickedUserIds, row.nutzerId])
-                                            } else {
-                                                setPickedUserIds(pickedUserIds.filter((id:string) => id !== row.nutzerId))
-                                            }
-                                        }}
-
-                                    />
-                                </TableCell>
-                                <TableCell align="right"
-                                    sx={{ padding: "10px", height: 50 }}
-
-                                >{row.vorname}</TableCell>
-
-                                <TableCell align="right"
-                                    sx={{ padding: "10px", height: 50 }}
-
-                                >{row.nachname}</TableCell>
-                                <TableCell align="right"
-                                    sx={{ padding: "10px", height: 50 }}
-
-                                >{row.arbeitsgruppe}</TableCell>
-                                <TableCell align="right"
-                                    sx={{ padding: "10px", height: 50 }}
-
-                                >{row.klasse}</TableCell>
-                                <TableCell align="right"
-                                    sx={{ padding: "10px", height: 50 }}
-
-                                >{row.nutzerId}</TableCell>
-                                {/* <TableCell align="right">{row.protein}</TableCell> */}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <div className="pagination flex self-center mt-[30px] mb-[15px]">
-                <div>
-                    <span
-                        className="mr-[10px]"
-                    >
-                        Rows per page:
-                    </span>
-                    <select
-                        onChange={(e) => {
-                            console.log(e.target.value)
-                            setUserRowsPerPage(parseInt(e.target.value))
-                        }}
-
-                    >
-                        <option>5</option>
-                        <option>10</option>
-                        <option>25</option>
-                    </select>
-                </div>
-                <div
-                    className="ml-[20px] mr-[20px]"
-
-                >
-                    {page * userRowsPerPage + 1}- {page * userRowsPerPage + userRowsPerPage} of {filteredUsers.length}
-                </div>
-                <div>
-                    <img
-                        src="/previous.svg"
-                        className="cursor-pointer"
-                        onClick={() => {
-
-                            if (page > 0) setPage(page - 1)
-                        }}
-                    />
-
-                    <img
-                        src="/next.svg"
-                        className="cursor-pointer"
-                        onClick={() => {
-
-                            if (page * userRowsPerPage + userRowsPerPage < filteredUsers.length) setPage(page + 1)
-                        }}
-                    />
-
-
-
-                </div>
-            </div>
+                header={[
+                    { label: 'Vorname', id: 'vorname' },
+                    { label: 'Nachname', id: 'nachname' },
+                    { label: 'Arbeitsgruppe', id: 'arbeitsgruppe' },
+                    { label: 'Klasse', id: 'klasse' },
+                    { label: 'NutzerId', id: 'nutzerId' }
+                ]}
+                onChangeCheckBox={(identifiers: any[]) => {
+                    console.log({ identifiers })
+                }}
+                onChangeFilteredEntries={(entries: any[]) => {
+                    console.log({ entries })
+                    setFilteredEntries(entries)
+                }}
+            />
         </>
     )
 }

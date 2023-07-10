@@ -12,7 +12,9 @@ export interface LicenseAssignmentState {
     setPickedUserIds: (userIds: string[]) => any,
     pickedUserIds: string[],
     setStepper: (step: number) => any,
-    stepper: number
+    stepper: number,
+    pickedLicenseType: string,
+    setPickedLicenseType: (licenseType: string) => any,
 }
 
 export const licenseAssignmentSlice: StateCreator<MergedState,
@@ -50,5 +52,9 @@ export const licenseAssignmentSlice: StateCreator<MergedState,
         setStepper(step: number) {
             set({ stepper: step })
         },
-        stepper: 0
+        stepper: 0,
+        pickedLicenseType: 'Einzellizenz',
+        setPickedLicenseType(licenseType: string) {
+            set({ pickedLicenseType: licenseType })
+        }
     }))
