@@ -1,4 +1,4 @@
-// server.js
+process.env.MARIA_CONFIG = process.env.MARIA_CONFIG!.replace('tcp://', '')
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
 
@@ -17,9 +17,11 @@ import { createClient } from "redis"
 import RedisStore from 'connect-redis'
 
 
+
+
 // use RedisStore for express-session
 
-let url = process.env.REDIS_URL
+let url = process.env.REDIS_URL!.replace('tcp://', '')
 console.log({ url })
 
 

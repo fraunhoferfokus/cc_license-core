@@ -8,6 +8,6 @@ RUN chgrp -R 0 /usr/src/app && \
 
 WORKDIR /usr/src/app
 
-RUN npm ci
+RUN npm i
 
 CMD [ "npm", "start" ]
