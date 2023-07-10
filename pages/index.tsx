@@ -10,6 +10,7 @@ import { useStore } from '../zustand/store'
 import AddLicenseModal from './components/AddLicenseModal'
 import Dashboardview from './components/Dashboardview'
 import LizenzZuweisungV2 from './components/LizenzZuweisungV2'
+import Medien from './components/Medien'
 
 
 export default dynamic(() => Promise.resolve(Home), {
@@ -301,6 +302,11 @@ function Home({ user }: { user: any }) {
               setLicenseModal={setLicenseModal}
               setView={setView}
             />
+          }
+
+          {
+            view === 'media' &&
+            <Medien></Medien>
           }
 
         </div>

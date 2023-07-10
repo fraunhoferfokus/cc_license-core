@@ -7,12 +7,13 @@ export default function AssignmentTableContainer({
     data,
     trigger,
     setTrigger,
-    identifier = 'nutzerId',
+    identifier,
     checkbox,
     header,
     singleCheckBox,
     onChangeCheckBox,
-    onChangeFilteredEntries
+    onChangeFilteredEntries,
+    disableFooter,
 }: any
 
 ) {
@@ -27,14 +28,14 @@ export default function AssignmentTableContainer({
         if (trigger) {
             setTrigger(false)
             const filteredRows = filterFunction(data)
-            console.log({filteredRows})
+            console.log({ filteredRows })
             set_filtered_rows(filteredRows)
         }
     }, [trigger]);
 
 
     useEffect(() => {
-        onChangeFilteredEntries(filtered_rows)
+        if (onChangeFilteredEntries) onChangeFilteredEntries(filtered_rows)
     }, [filtered_rows])
 
 
@@ -52,12 +53,12 @@ export default function AssignmentTableContainer({
 
         },
 
-        [page]
+        [page, filtered_rows]
     )
 
 
     useEffect(() => {
-        onChangeCheckBox(pickedIdentifiers)
+        if (onChangeCheckBox) onChangeCheckBox(pickedIdentifiers)
     }, [pickedIdentifiers])
 
 
@@ -70,7 +71,10 @@ export default function AssignmentTableContainer({
         >
             {checkbox &&
                 <TableCell component="th" scope="row"
-                    sx={{ padding: "10px", height: 50 }}
+                    sx={{ padding: "10px", height: 50,
+                    width: "50px"
+                
+                }}
 
                 >
                     <Checkbox
@@ -89,8 +93,8 @@ export default function AssignmentTableContainer({
             }
 
             {header.map(({ label, id }: any) => (
-                <TableCell align="right"
-                    sx={{ padding: "10px", height: 50 }}
+                <TableCell align="left"
+                    sx={{ padding: "10px"}}
                 >{row[id]}</TableCell>
             ))}
         </TableRow>
@@ -100,7 +104,7 @@ export default function AssignmentTableContainer({
 
     return (
         <>
-            <div className="flex flex-col">
+            <div className="flex flex-col flex-1">
 
                 <TableContainer component={Paper}
                     className="flex-1 overflow-scroll"
@@ -119,7 +123,7 @@ export default function AssignmentTableContainer({
                                     header.map(({ label, value }: any) => {
                                         return (
                                             <TableCell
-                                                sx={{ padding: "10px", height: 50 }}
+                                                sx={{ padding: "10px", height: 50, width: "50px"}}
 
                                             >{label}</TableCell>
                                         )
@@ -135,51 +139,55 @@ export default function AssignmentTableContainer({
                     </Table>
                 </TableContainer>
 
-                <div className="pagination flex self-center mt-[30px] mb-[15px]">
-                    <div>
-                        <span
-                            className="mr-[10px]"
-                        >
-                            Rows per page:
-                        </span>
-                        <select
-                            onChange={(e) => {
-                                console.log(e.target.value)
-                                setEntriesPerPage(parseInt(e.target.value))
-                            }}
+                {!disableFooter &&
+                    <div className="pagination flex self-center mt-[30px] mb-[15px]">
+                        <div>
+                            <span
+                                className="mr-[10px]"
+                            >
+                                Rows per page:
+                            </span>
+                            <select
+                                onChange={(e) => {
+                                    console.log(e.target.value)
+                                    setEntriesPerPage(parseInt(e.target.value))
+                                }}
+
+                            >
+                                <option>5</option>
+                                <option>10</option>
+                                <option>25</option>
+                            </select>
+                        </div>
+                        <div
+                            className="ml-[20px] mr-[20px]"
 
                         >
-                            <option>5</option>
-                            <option>10</option>
-                            <option>25</option>
-                        </select>
+                            {page * entriesPerPage + 1}- {page * entriesPerPage + entriesPerPage} of {filtered_rows.length}
+                        </div>
+                        <div>
+                            <img
+                                src="/previous.svg"
+                                className="cursor-pointer"
+                                onClick={() => {
+
+                                    if (page > 0) setPage(page - 1)
+                                }}
+                            />
+
+                            <img
+                                src="/next.svg"
+                                className="cursor-pointer"
+                                onClick={() => {
+
+                                    if (page * entriesPerPage + entriesPerPage < filtered_rows.length) setPage(page + 1)
+                                }}
+                            />
+                        </div>
                     </div>
-                    <div
-                        className="ml-[20px] mr-[20px]"
 
-                    >
-                        {page * entriesPerPage + 1}- {page * entriesPerPage + entriesPerPage} of {filtered_rows.length}
-                    </div>
-                    <div>
-                        <img
-                            src="/previous.svg"
-                            className="cursor-pointer"
-                            onClick={() => {
 
-                                if (page > 0) setPage(page - 1)
-                            }}
-                        />
-
-                        <img
-                            src="/next.svg"
-                            className="cursor-pointer"
-                            onClick={() => {
-
-                                if (page * entriesPerPage + entriesPerPage < filtered_rows.length) setPage(page + 1)
-                            }}
-                        />
-                    </div>
-                </div>
+                }
 
             </div>
 

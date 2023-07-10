@@ -5,7 +5,7 @@ import { useStore } from "../../../zustand/store";
 import Select from 'react-select'
 import TableComponent from "./TableComponent";
 
-function transformUserToData(user: any) {
+export function transformUserToData(user: any) {
     let [nachname, vorname] = user.email.split(' ')
     return {
         nachname,
@@ -71,6 +71,7 @@ export default function UserGroupTable() {
                         onChange={(value) => {
                             setSelectedValue(value)
                         }}
+                    
 
                         styles={{
                             input: () => ({ height: 50, maxHeight: 50, padding: 0, margin: 0, lineHeight: 50, display: 'flex', alignItems: 'center' }),
@@ -101,6 +102,7 @@ export default function UserGroupTable() {
 
 
                         }}
+                        placeholder="Suche nach Nutzer"
                     >
 
                     </TextField>
@@ -145,13 +147,12 @@ export default function UserGroupTable() {
                             }
                         })
                     }
-                    console.log({ filteredData })
 
                     return filteredData
                 }}
                 checkbox={pickedLicenseType !== 'Lerngruppenlizenz'}
                 singleCheckBox={pickedLicenseType === 'Einzellizenz'}
-
+                identifier={'nutzerId'}
                 header={[
                     { label: 'Vorname', id: 'vorname' },
                     { label: 'Nachname', id: 'nachname' },
@@ -160,10 +161,9 @@ export default function UserGroupTable() {
                     { label: 'NutzerId', id: 'nutzerId' }
                 ]}
                 onChangeCheckBox={(identifiers: any[]) => {
-                    console.log({ identifiers })
+                    setPickedUserIds(identifiers)
                 }}
                 onChangeFilteredEntries={(entries: any[]) => {
-                    console.log({ entries })
                     setFilteredEntries(entries)
                 }}
             />

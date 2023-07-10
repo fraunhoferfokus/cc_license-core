@@ -15,6 +15,8 @@ export interface LicenseAssignmentState {
     stepper: number,
     pickedLicenseType: string,
     setPickedLicenseType: (licenseType: string) => any,
+    pickedMedium: string,
+    setPickedMedium: (medium: string) => any,
 }
 
 export const licenseAssignmentSlice: StateCreator<MergedState,
@@ -56,5 +58,9 @@ export const licenseAssignmentSlice: StateCreator<MergedState,
         pickedLicenseType: 'Einzellizenz',
         setPickedLicenseType(licenseType: string) {
             set({ pickedLicenseType: licenseType })
+        },
+        pickedMedium: '',
+        setPickedMedium(medium: string) {
+            set({ pickedMedium: medium })
         }
     }))

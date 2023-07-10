@@ -1,5 +1,5 @@
 // Hello Fraunhofer
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { Policy } from "license_manager";
 import { ActionObject, Constraint } from "license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2";
 import { useEffect, useRef, useState } from "react";
@@ -8,6 +8,8 @@ import { PolicyWithMetadata } from "../../zustand/licenseDefinitionSlice";
 import { useStore } from '../../zustand/store';
 import FunctionButton from "./Buttons/FunctionButton";
 import AssignmentTableContainer from "./Table/AssignmentTalbeContainer";
+import TableComponent from "./Table/TableComponent";
+import { transformUserToData } from "./Table/UserGroupTable";
 
 
 export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
@@ -27,9 +29,11 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         licenseAssignments,
         pickedLicenseType,
         setPickedLicenseType,
+        createLicenseAssignment
     } = useStore(state => state)
     const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
 
+    const [mediumtrigger, setMediumTrigger] = useState(false)
 
     const [pickedSelect, setPickedSelect] = useState('placeholder')
     const [selectedUsers, setSelectedUsers] = useState<any>(users)
@@ -53,8 +57,8 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
     const autoC = useRef(null);
 
+    let [selectedMedia, setSelectedMedia] = useState<any>([])
 
-    const [page, setPage] = useState('assignment')
     useEffect(() => {
         fetchLicenseDefinitionsV2()
         fetchUsers()
@@ -84,6 +88,79 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
 
     let validStepOne = pickedUserIds.length > 0
+    let validStepTwo = selectedMedia.length > 0
+
+    let firstUser = users.find((user) => user.id === pickedUserIds[0])
+
+    let products: any[] = []
+
+
+    let licenses: any[] = []
+
+    licenseDefinitions?.forEach((grouped_liceses) => {
+        let license = grouped_liceses[0]
+        let product_id = license.target
+        let metadata = license.metadata
+        let max_nutzer = license.action![0].refinement.find((item) => item.uid === 'lizenzanzahl')?.rightOperand
+        let medien_id = metadata.general.identifier
+        let verlag = license.assignee
+        let zugewiesen = licenseAssignments.filter((item) => item.target === product_id).length
+        let verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
+        let medium = license.metadata.general.title.value
+
+        // get the last slash after splitting 
+        let lizenzcode = license.uid.split('/').pop()
+        let lizenztyp = license.action![0].refinement.find((item) => item.uid === 'lizenztyp')?.rightOperand
+
+
+        let aggregate = {
+            medien_id,
+            medium,
+            verlag,
+            max_nutzer,
+            zugewiesen,
+            verfügbar,
+        }
+
+        console.log(license.uid)
+
+        if (!products.find((item) => item.product_id === product_id)) products.push(aggregate)
+        if (!licenses.find((item) => item.medien_id === medien_id)) licenses.push({
+            lizenz_id: license.uid,
+            lizenzcode,
+            medien_id,
+            medium,
+            verlag,
+            lizenztyp,
+            max_nutzer,
+            zugewiesen,
+            verfügbar,
+        })
+    })
+
+
+    let [medium_value, set_medium_value] = useState('')
+
+
+    useEffect(() => {
+        setMediumTrigger(true)
+    }, [medium_value])
+
+
+    let [selectedLicenses, setSelectedLicenses] = useState<any>(null)
+
+    useEffect(() => {
+        if (stepper === 3) {
+            for (let i = 0; i < selectedLicenses.length; i++) {
+                createLicenseAssignment(selectedLicenses[i], selectedUsers[0].id)
+            }
+            setStepper(0)
+            setSelectedLicenses(null)
+            setSelectedUsers([])
+            setPickedLicenseType('Einzel')
+        }
+    }, [stepper])
+
 
 
     return (
@@ -147,9 +224,9 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                     >
                         2. Lerngruppe oder Klasse auswählen
                     </p>
-                    <AssignmentTableContainer 
+                    <AssignmentTableContainer
 
-                    
+
                     />
                 </>
 
@@ -158,36 +235,198 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
 
             {
-                stepper === 1 &&
+                stepper >= 1 &&
                 <>
-                    <div
-                        className=""
-                    >
-                        <p
-                            className="mt-[67px] font-bold text-[#404045] text-[20px]"
+                    <div className="h-full flex flex-col">
+
+                        <div
+                            className="flex flex-wrap content-start justify-start"
                         >
-                            1. Gewählte Lizenz
-                        </p>
+                            <div>
+                                <p
+                                    className="mt-[67px] font-bold text-[#404045] text-[20px]"
+                                >
+                                    1. Gewählte Lizenz
+                                </p>
 
-                        <FunctionButton
-                            infoText={'Selektion einer Klasse, Lerngruppe oder Nutzer'}
-                            buttonTitle={'Einzellizenz'}
-                            iconPath={'/person.svg'}
-                            callback={async () => {
-                                setPickedLicenseType('Einzellizenz')
-                                // setLicenseModal(true)
-                            }}
-                            clicked={pickedLicenseType === 'Einzellizenz'}
-                            color="rgba(237,237,237,1)"
-                            disableInfo={true}
+                                <FunctionButton
+                                    infoText={'Selektion einer Klasse, Lerngruppe oder Nutzer'}
+                                    buttonTitle={'Einzellizenz'}
+                                    iconPath={'/person.svg'}
+                                    callback={async () => {
+                                        setPickedLicenseType('Einzellizenz')
+                                        // setLicenseModal(true)
+                                    }}
+                                    clicked={pickedLicenseType === 'Einzellizenz'}
+                                    color="rgba(237,237,237,1)"
+                                    disableInfo={true}
 
-                        />
+                                />
 
-                        <p
-                            className="mt-[67px] font-bold text-[#404045] text-[20px]"
-                        >
-                            2. Gewählter Nutzer
-                        </p>
+                            </div>
+
+                            <div>
+                                <p
+                                    className="mt-[30px] font-bold text-[#404045] text-[20px]"
+                                >
+                                    2. Gewählter Nutzer
+                                </p>
+                                <TableComponent
+                                    data={users.filter((user) => pickedUserIds.includes(user.id)).map((user) => (transformUserToData(user)))}
+                                    checkbox={false}
+                                    header={[
+                                        { label: 'Vorname', id: 'vorname' },
+                                        { label: 'Nachname', id: 'nachname' },
+                                        { label: 'Arbeitsgruppe', id: 'arbeitsgruppe' },
+                                        { label: 'Klasse', id: 'klasse' },
+                                        { label: 'NutzerId', id: 'nutzerId' }
+                                    ]}
+                                    disableFooter={true}
+
+                                />
+
+                            </div>
+
+
+
+
+
+
+                            {stepper >= 2 &&
+
+                                <div>
+                                    <p
+                                        className="mt-[30px] font-bold text-[#404045] text-[20px]"
+                                    >
+                                        3. Gewähltes Medium
+                                    </p>
+                                    <TableComponent
+                                        data={selectedMedia.length > 0 ? [products.find((product) => product.medien_id === selectedMedia[0])] : []}
+                                        checkbox={false}
+                                        header={[
+                                            { label: 'Medien-ID', id: 'medien_id' },
+                                            { label: 'Medium', id: 'medium' },
+                                            { label: 'Arbeitsgruppe', id: 'verlag' },
+                                            { label: 'Klasse', id: 'max_nutzer' },
+                                            { label: 'Zugewiesen', id: 'zugewiesen' },
+                                            { label: 'Verfügbar', id: 'verfügbar' }
+                                        ]}
+                                        disableFooter={true}
+
+                                    />
+
+                                </div>
+                            }
+
+                        </div>
+
+                        {
+                            stepper === 1 && <div className="w-full flex-1 flex flex-col">
+                                <p
+                                    className="mt-[30px] font-bold text-[#404045] text-[20px] "
+                                >
+                                    3. Medium wählen
+                                </p>
+
+                                <TextField
+                                    placeholder="Suche nach Medium"
+                                    className="bg-white max-w-[700px] mb-[30px]"
+                                    value={medium_value}
+                                    onChange={(e) => {
+                                        set_medium_value(e.target.value)
+                                    }}
+                                >
+
+                                </TextField>
+
+                                <div
+                                    className="w-full bg-white flex-1 flex"
+                                >
+                                    <TableComponent
+                                        data={products.length > 0 ? products : []}
+                                        header={[
+                                            { label: 'Medien-ID', id: 'medien_id' },
+                                            { label: 'Medium', id: 'medium' },
+                                            { label: 'Arbeitsgruppe', id: 'verlag' },
+                                            { label: 'Klasse', id: 'max_nutzer' },
+                                            { label: 'Zugewiesen', id: 'zugewiesen' },
+                                            { label: 'Verfügbar', id: 'verfügbar' }
+
+                                        ]}
+                                        onChangeCheckBox={(identifiers: any[]) => {
+                                            setSelectedMedia(identifiers)
+                                        }}
+                                        checkbox={true}
+                                        singleCheckBox={true}
+                                        identifier={'medien_id'}
+                                        filterFunction={(data: any[]) => {
+
+                                            if (medium_value === '') return data
+
+                                            return data.filter((item) => {
+                                                for (let key in item) {
+                                                    // check if item[key] is string
+                                                    if (typeof item[key] === 'string') {
+                                                        if (item[key].toLowerCase().includes(medium_value.toLowerCase())) {
+                                                            return true
+                                                        }
+                                                    }
+                                                }
+
+                                            })
+
+                                        }}
+                                        trigger={mediumtrigger}
+                                        setTrigger={setMediumTrigger}
+                                    />
+                                </div>
+
+
+                            </div>
+                        }
+
+                        {
+                            stepper === 2 && <div className="w-full flex-1 flex flex-col">
+                                <p
+                                    className="mt-[30px] font-bold text-[#404045] text-[20px] "
+                                >
+                                    3. Lizenzen auswählen
+                                </p>
+                                <div
+                                    className="w-full bg-white flex-1 flex"
+                                >
+                                    <TableComponent
+                                        data={licenses.filter((license) => license.medien_id === selectedMedia[0])}
+                                        header={[
+                                            { label: 'Lizenz_id', id: 'lizenz_id' },
+                                            { label: 'Lizenz-Code', id: 'lizenzcode' },
+                                            { label: 'Medien ID', id: 'medien_id' },
+                                            { label: 'Verlag', id: 'verlag' },
+                                            { label: 'Lizenztyp', id: 'lizenztyp' },
+                                            { label: 'Max Nutzer', id: 'lizenzanzahl' },
+                                            { label: 'Zugewiesen', id: 'zugewiesen' },
+                                            { label: 'Verfügbar', id: 'verfügbar' }
+
+                                        ]}
+                                        onChangeCheckBox={(identifiers: any[]) => {
+                                            setSelectedLicenses(identifiers)
+                                            // setSelectedMedia(identifiers)
+                                        }}
+                                        checkbox={true}
+                                        // singleCheckBox={true}
+                                        identifier={'lizenz_id'}
+                                    />
+                                </div>
+
+
+                            </div>
+                        }
+
+
+
+
+
+
                     </div>
 
 
@@ -219,10 +458,20 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
                 <Button
                     variant="contained"
-                    disabled={!validStepOne}
-                    onClick={() => setStepper(stepper + 1)}
+                    disabled={
+                        (stepper === 0 && !validStepOne)
+                        ||
+                        (stepper === 1 && !validStepTwo)
+
+
+                    }
+                    onClick={() => {
+                        if (stepper < 3) {
+                            setStepper(stepper + 1)
+                        }
+                    }}
                 >
-                    Weiter
+                    {stepper === 2 ? 'Zuweisen' : 'Weiter'}
 
                 </Button>
             </div>
