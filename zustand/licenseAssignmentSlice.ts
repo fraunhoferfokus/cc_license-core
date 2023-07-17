@@ -29,7 +29,10 @@ export const licenseAssignmentSlice: StateCreator<MergedState,
                 targetID
             },
             ).then(async () => {
+                get().setToastProps('Lizenz wurde zugewiesen', 'success')
                 get().fetchLicenseAssignments()
+            }).catch((err) =>{
+                get().setToastProps('Lizenz konnte nicht zugewiesen werden', 'error')
             })
         },
 

@@ -1,8 +1,7 @@
-import { Autocomplete, Checkbox, Divider, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
-import { TableData } from "./AssignmentTalbeContainer";
+import { TextField } from "@mui/material";
 import { useEffect, useState } from "react";
+import Select from 'react-select';
 import { useStore } from "../../../zustand/store";
-import Select from 'react-select'
 import TableComponent from "./TableComponent";
 
 export function transformUserToData(user: any) {
@@ -18,7 +17,15 @@ export function transformUserToData(user: any) {
 }
 
 
-export default function UserGroupTable() {
+export default function UserGroupTable({
+    onChangedUsers,
+    onChangedGroups
+}:
+    {
+        onChangedUsers?: (users: any[]) => void,
+        onChangedGroups?: (groups: any[]) => void
+    }
+) {
 
     const [triggerChild, setTriggerChild] = useState(false)
 
@@ -30,7 +37,9 @@ export default function UserGroupTable() {
         fetchUsersAndGroups: fetchUsers,
         groups,
         pickedUserIds,
-        setPickedUserIds
+        setPickedUserIds,
+        fetchLicenseDefinitionsV2,
+        fetchLicenseAssignments,
     } = useStore(state => state)
 
     let [groupOptions, setGroupOptions] = useState<any[]>(groups.map((group: any) => ({ value: group.id, label: group.displayName })))
@@ -49,128 +58,146 @@ export default function UserGroupTable() {
     )
 
 
+    useEffect(() => {
+        fetchLicenseDefinitionsV2()
+        fetchUsers()
+        fetchLicenseAssignments()
+    }, [])
+
+    useEffect(() => {
+        if(onChangedUsers) {
+            onChangedUsers(pickedUserIds)
+        }
+    }, 
+        [pickedUserIds]
+    
+    )
 
     return (
         <>
-            <div
-                className="flex items-center "
-            >
+            <div className="bg-white pl-[16px] pt-[16px] pr-[16px] flex-1 overflow-scroll flex flex-col w-full">
 
                 <div
-                    className="flex-[3] flex flex-col justify-center text-[#585867] text-[15px]"
+                    className="flex items-center "
                 >
 
-                    <Select
-                        isMulti
-                        name="colors"
-                        options={groupOptions}
-                        className="basic-multi-select"
-                        classNamePrefix="select"
-                        placeholder=""
-                        inputValue={""}
-                        onChange={(value) => {
-                            setSelectedValue(value)
-                        }}
-
-
-                        styles={{
-                            input: (styles) => ({
-                                ...styles, height: 50, maxHeight: 50, padding: 0, margin: 0, lineHeight: 50,
-                                zIndex: 50, display: 'flex', alignItems: 'center'
-                            }),
-                            // placeholder: (styles) => ({ ...styles, justifyItems: 'center', display: 'flex' }),
-                            container: (styles) => ({ ...styles, padding: 0, margin: 0, zIndex: 100 }),
-                            // option: (styles) => ({ ...styles, padding: 0, margin: 0, lineHeight: 50, zIndex:100 }),
-                            // control: () => ({height:50 })
-                        }}
-                        value={selectedValue}
-
-
-                    />
-
-                    <p>
-                        Gruppe, Klasse oder Kurse auswählen
-                    </p>
-
-                </div>
-                <div
-                    className="ml-[50px] flex-[1] max-h-[55px] flex flex-col justify-center text-[#585867] text-[15px]"
-
-                >
-
-                    <TextField
-                        value={selectedUser}
-                        onChange={(event) => {
-                            setSelectedUser(event.target.value)
-
-
-
-                        }}
-                        placeholder="Suche nach Nutzer"
+                    <div
+                        className="flex-[3] flex flex-col justify-center text-[#585867] text-[15px]"
                     >
 
-                    </TextField>
+                        <Select
+                            isMulti
+                            name="colors"
+                            options={groupOptions}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            placeholder=""
+                            inputValue={""}
+                            onChange={(value) => {
+                                setSelectedValue(value)
+                            }}
 
-                    <p>
-                        Nutzer
-                    </p>
+
+                            styles={{
+                                input: (styles) => ({
+                                    ...styles, height: 50, maxHeight: 50, padding: 0, margin: 0, lineHeight: 50,
+                                    zIndex: 50, display: 'flex', alignItems: 'center'
+                                }),
+                                // placeholder: (styles) => ({ ...styles, justifyItems: 'center', display: 'flex' }),
+                                container: (styles) => ({ ...styles, padding: 0, margin: 0, zIndex: 100 }),
+                                // option: (styles) => ({ ...styles, padding: 0, margin: 0, lineHeight: 50, zIndex:100 }),
+                                // control: () => ({height:50 })
+                            }}
+                            value={selectedValue}
+
+
+                        />
+
+                        <p>
+                            Gruppe, Klasse oder Kurse auswählen
+                        </p>
+
+                    </div>
+                    <div
+                        className="ml-[50px] flex-[1] max-h-[55px] flex flex-col justify-center text-[#585867] text-[15px]"
+
+                    >
+
+                        <TextField
+                            value={selectedUser}
+                            onChange={(event) => {
+                                setSelectedUser(event.target.value)
+
+
+
+                            }}
+                            placeholder="Suche nach Nutzer"
+                        >
+
+                        </TextField>
+
+                        <p>
+                            Nutzer
+                        </p>
+
+                    </div>
 
                 </div>
 
-            </div>
+                {/* <Divider /> */}
 
-            {/* <Divider /> */}
-
-            <TableComponent
-                data={users.map((user: any) => transformUserToData(user))}
-                trigger={triggerChild}
-                setTrigger={setTriggerChild}
-                filterFunction={(data: any[]) => {
-                    let filteredData = []
-                    if (selectedValue.length > 0) {
-                        filteredData = data.filter((row: any) => {
-                            for (const { value } of selectedValue) {
-                                if (row.groupIds.includes(value)) {
-                                    return true
-                                }
-                            }
-                        })
-                    } else {
-                        filteredData = data
-                    }
-
-                    if (selectedUser.length > 0) {
-                        filteredData = filteredData.filter((row: any) => {
-                            for (const key in row) {
-                                // check if string
-                                if (typeof row[key] === 'string') {
-                                    if (row[key].toLowerCase().includes(selectedUser.toLowerCase())) {
+                <TableComponent
+                    data={users.map((user: any) => transformUserToData(user))}
+                    trigger={triggerChild}
+                    setTrigger={setTriggerChild}
+                    filterFunction={(data: any[]) => {
+                        let filteredData = []
+                        if (selectedValue.length > 0) {
+                            filteredData = data.filter((row: any) => {
+                                for (const { value } of selectedValue) {
+                                    if (row.groupIds.includes(value)) {
                                         return true
                                     }
                                 }
-                            }
-                        })
-                    }
+                            })
+                        } else {
+                            filteredData = data
+                        }
 
-                    return filteredData
-                }}
-                checkbox={pickedLicenseType !== 'Lerngruppenlizenz'}
-                singleCheckBox={pickedLicenseType === 'Einzellizenz'}
-                identifier={'nutzerId'}
-                header={[
-                    { label: 'Vorname', id: 'vorname' },
-                    { label: 'Nachname', id: 'nachname' },
-                    { label: 'Arbeitsgruppe', id: 'arbeitsgruppe' },
-                    { label: 'Klasse', id: 'klasse' },
-                    { label: 'NutzerId', id: 'nutzerId' }
-                ]}
-                onChangeCheckBox={(identifiers: any[]) => {
-                    setPickedUserIds(identifiers)
-                }}
-                onChangeFilteredEntries={(entries: any[]) => {
-                    setFilteredEntries(entries)
-                }}
-            />
+                        if (selectedUser.length > 0) {
+                            filteredData = filteredData.filter((row: any) => {
+                                for (const key in row) {
+                                    // check if string
+                                    if (typeof row[key] === 'string') {
+                                        if (row[key].toLowerCase().includes(selectedUser.toLowerCase())) {
+                                            return true
+                                        }
+                                    }
+                                }
+                            })
+                        }
+
+                        return filteredData
+                    }}
+                    checkbox={pickedLicenseType !== 'Lerngruppenlizenz'}
+                    singleCheckBox={pickedLicenseType === 'Einzellizenz'}
+                    identifier={'nutzerId'}
+                    header={[
+                        { label: 'Vorname', id: 'vorname' },
+                        { label: 'Nachname', id: 'nachname' },
+                        { label: 'Arbeitsgruppe', id: 'arbeitsgruppe' },
+                        { label: 'Klasse', id: 'klasse' },
+                        { label: 'NutzerId', id: 'nutzerId' }
+                    ]}
+                    onChangeCheckBox={(identifiers: any[]) => {
+                        setPickedUserIds(identifiers)
+                    }}
+                    onChangeFilteredEntries={(entries: any[]) => {
+                        setFilteredEntries(entries)
+                    }}
+                />
+            </div>
+
         </>
     )
 }

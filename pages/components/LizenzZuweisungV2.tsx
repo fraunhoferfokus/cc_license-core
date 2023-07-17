@@ -7,9 +7,8 @@ import { toBILO } from "../../helper/helper";
 import { PolicyWithMetadata } from "../../zustand/licenseDefinitionSlice";
 import { useStore } from '../../zustand/store';
 import FunctionButton from "./Buttons/FunctionButton";
-import AssignmentTableContainer from "./Table/AssignmentTalbeContainer";
 import TableComponent from "./Table/TableComponent";
-import { transformUserToData } from "./Table/UserGroupTable";
+import UserGroupTable, { transformUserToData } from "./Table/UserGroupTable";
 
 
 export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
@@ -38,7 +37,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
     const [mediumtrigger, setMediumTrigger] = useState(false)
 
     const [pickedSelect, setPickedSelect] = useState('placeholder')
-    const [selectedUsers, setSelectedUsers] = useState<any>(users)
+    const [selectedUsersId, setSelectedUsers] = useState<any>(users)
     const [selectedGroups, setSelectedGroups] = useState<any>([])
 
     // let constraints = pickedLicenses ? (pickedLicenses![0]!.action![0].refinement as Constraint[]) : null
@@ -147,6 +146,23 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
     }, [medium_value])
 
 
+    useEffect(() => {
+        if (stepper === 3) {
+
+            for (let i = 0; i < selectedLicenses?.length; i++) {
+                createLicenseAssignment(selectedLicenses[i], selectedUsersId[i].id)
+            }
+            setStepper(0)
+            setSelectedLicenses(null)
+            setSelectedUsers([])
+            setPickedLicenseType('Einzel')
+        }
+    }, [stepper])
+
+
+
+
+
     let [selectedLicenses, setSelectedLicenses] = useState<any>(null)
 
 
@@ -223,9 +239,12 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                         >
                             2. Lerngruppe oder Klasse auswählen
                         </p>
-                        <AssignmentTableContainer
+                        <UserGroupTable
 
-
+                            onChangedUsers={(users) => {
+                                console.log({ users })
+                            }}
+                            onChangedGroups={(groups) => { }}
                         />
                     </div>
                 </>
@@ -284,7 +303,9 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                         { label: 'NutzerId', id: 'nutzerId' }
                                     ]}
                                     disableFooter={true}
-
+                                    onChangeCheckBox={(selected: any) => {
+                                        // setSelectedUsers(selected)
+                                    }}
                                 />
 
                             </div>
@@ -314,6 +335,8 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                             { label: 'Verfügbar', id: 'verfügbar' }
                                         ]}
                                         disableFooter={true}
+                                        entryBackgroundColor={'transparent'}
+                                        headerBackgroundColor={'#DFDFDF'}
 
                                     />
 
@@ -487,17 +510,8 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
                     }
                     onClick={() => {
-                        if (stepper < 3) {
+                        if (stepper < 4) {
                             setStepper(stepper + 1)
-                        } else if (stepper === 2) {
-                            for (let i = 0; i < selectedLicenses.length; i++) {
-                                createLicenseAssignment(selectedLicenses[i], selectedUsers[0].id)
-                            }
-                            setStepper(0)
-                            setSelectedLicenses(null)
-                            setSelectedUsers([])
-                            setPickedLicenseType('Einzel')
-                            setToastProps('Lizenz wurde zugewiesen', 'success')
                         }
                     }}
                 >

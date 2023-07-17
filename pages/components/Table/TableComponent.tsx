@@ -21,6 +21,7 @@ export default function AssignmentTableContainer({
     onChangeClickedRow,
     entryBackgroundColor,
     headerBackgroundColor,
+    highlightOnHover
 }: any
 
 ) {
@@ -84,11 +85,20 @@ export default function AssignmentTableContainer({
             sx={{
                 '&:last-child td, &:last-child th': { border: 0 },
                 backgroundColor: highlightedEntry === row[identifier] && pickedColor ? pickedColor :
-                    entryBackgroundColor ? entryBackgroundColor : "inherit"
+                    entryBackgroundColor ? entryBackgroundColor : "inherit",
+                '&:hover': {
+                    backgroundColor: highlightOnHover ? "#e0e0e0" : "inherit"
+                }
 
             }}
             className="max-h-[50px] cursor-pointer"
-            onClick={() => setHighlightedEntry(row[identifier])}
+            onClick={() => {
+                if (row[identifier] === highlightedEntry) {
+                    setHighlightedEntry(null)
+                } else {
+                    setHighlightedEntry(row[identifier])
+                }
+            }}
 
 
         // style={{ height: '50px', maxHeight: '50px' }}
@@ -158,27 +168,29 @@ export default function AssignmentTableContainer({
 
     return (
         <>
-            <div className="flex flex-col flex-1 overflow-hidden">
+            <div className="flex flex-col flex-1 overflow-hidden bg-transparent">
 
                 <TableContainer component={Paper}
-                    className="flex-1 bg-transparent"
+                    className="flex-1"
+                    sx={{
+                        backgroundColor: 'transparent',
+                    }}
 
                 >
                     <Table sx={{
-                        minWidth: 650,
-
+                        backgroundColor: 'transparent',
 
                     }}
-                        className="bg-transparent"
+
 
                         aria-label="simple table"
                         size="small"
                         stickyHeader={true}
 
                     >
-                        <TableHead>
+                        <TableHead
+                        >
                             <TableRow
-                                className=""
 
                             >
                                 {checkbox && <TableCell
@@ -232,7 +244,6 @@ export default function AssignmentTableContainer({
                             </span>
                             <select
                                 onChange={(e) => {
-                                    console.log(e.target.value)
                                     setEntriesPerPage(parseInt(e.target.value))
                                 }}
 
