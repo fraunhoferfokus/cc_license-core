@@ -29,7 +29,9 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         licenseAssignments,
         pickedLicenseType,
         setPickedLicenseType,
-        createLicenseAssignment
+        createLicenseAssignment,
+        toastProps,
+        setToastProps,
     } = useStore(state => state)
     const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
 
@@ -122,8 +124,6 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
             verfügbar,
         }
 
-        console.log(license.uid)
-
         if (!products.find((item) => item.product_id === product_id)) products.push(aggregate)
         if (!licenses.find((item) => item.medien_id === medien_id)) licenses.push({
             lizenz_id: license.uid,
@@ -149,85 +149,85 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
     let [selectedLicenses, setSelectedLicenses] = useState<any>(null)
 
-    useEffect(() => {
-        if (stepper === 3) {
-            for (let i = 0; i < selectedLicenses.length; i++) {
-                createLicenseAssignment(selectedLicenses[i], selectedUsers[0].id)
-            }
-            setStepper(0)
-            setSelectedLicenses(null)
-            setSelectedUsers([])
-            setPickedLicenseType('Einzel')
-        }
-    }, [stepper])
 
 
 
     return (
 
-        <>
+        <div
+            className="h-full flex flex-col"
+
+        >
             <label
                 className="text-[#404045] font-bold text-[28px]"
-            >Lizenz zuweisen</label>
+            >
+                Lizenz zuweisen
+            </label>
 
 
             {
                 stepper === 0 &&
-                <> <p
-                    className="mt-[67px] font-bold text-[#404045] text-[20px]"
-                >
-                    1. Wähle eine Lizenzart:
-                </p>
+                <>
+                    <div
+                        className="flex flex-col overflow-hidden"
+                    >
 
-                    <div className="Funktionen flex items-center flex-wrap">
+                        <p
+                            className="mt-[67px] font-bold text-[#404045] text-[20px]"
+                        >
+                            1. Wähle eine Lizenzart:
+                        </p>
 
-                        <FunctionButton
-                            infoText={'Selektion einer Klasse, Lerngruppe oder Nutzer'}
-                            buttonTitle={'Einzellizenz'}
-                            iconPath={'/person.svg'}
-                            callback={async () => {
-                                setPickedLicenseType('Einzellizenz')
-                                // setLicenseModal(true)
-                            }}
-                            clicked={pickedLicenseType === 'Einzellizenz'}
-                            color="#FBD19C"
+                        <div className="Funktionen flex items-center flex-wrap">
 
-                        />
+                            <FunctionButton
+                                infoText={'Selektion einer Klasse, Lerngruppe oder Nutzer'}
+                                buttonTitle={'Einzellizenz'}
+                                iconPath={'/person.svg'}
+                                callback={async () => {
+                                    setPickedLicenseType('Einzellizenz')
+                                    // setLicenseModal(true)
+                                }}
+                                clicked={pickedLicenseType === 'Einzellizenz'}
+                                color="#FBD19C"
 
-                        <FunctionButton
-                            infoText={'Selektion einer Klasse, Lerngruppe oder Nutzer'}
-                            buttonTitle={'Volumenlizenz'}
-                            iconPath={'/persons.svg'}
-                            callback={() => {
-                                setPickedLicenseType('Volumenlizenz')
-                                // setView('assignment')
-                            }}
-                            clicked={pickedLicenseType === 'Volumenlizenz'}
-                            color="#F9F3C4"
-                        />
+                            />
 
-                        <FunctionButton
-                            infoText={'Nur selektion einer Klasse oder Lerngruppe mögilch'}
-                            buttonTitle={'Lerngruppenlizenz'}
-                            iconPath={'/map.svg'}
-                            callback={() => {
-                                setPickedLicenseType('Lerngruppenlizenz')
-                                // setView('media')
-                            }}
-                            clicked={pickedLicenseType === 'Lerngruppenlizenz'}
-                            color="#DFC0EB"
+                            <FunctionButton
+                                infoText={'Selektion einer Klasse, Lerngruppe oder Nutzer'}
+                                buttonTitle={'Volumenlizenz'}
+                                iconPath={'/persons.svg'}
+                                callback={() => {
+                                    setPickedLicenseType('Volumenlizenz')
+                                    // setView('assignment')
+                                }}
+                                clicked={pickedLicenseType === 'Volumenlizenz'}
+                                color="#F9F3C4"
+                            />
+
+                            <FunctionButton
+                                infoText={'Nur selektion einer Klasse oder Lerngruppe mögilch'}
+                                buttonTitle={'Lerngruppenlizenz'}
+                                iconPath={'/map.svg'}
+                                callback={() => {
+                                    setPickedLicenseType('Lerngruppenlizenz')
+                                    // setView('media')
+                                }}
+                                clicked={pickedLicenseType === 'Lerngruppenlizenz'}
+                                color="#DFC0EB"
+                            />
+                        </div>
+
+                        <p
+                            className="mt-[40px] font-bold text-[#404045] text-[20px]"
+                        >
+                            2. Lerngruppe oder Klasse auswählen
+                        </p>
+                        <AssignmentTableContainer
+
+
                         />
                     </div>
-
-                    <p
-                        className="mt-[40px] font-bold text-[#404045] text-[20px]"
-                    >
-                        2. Lerngruppe oder Klasse auswählen
-                    </p>
-                    <AssignmentTableContainer
-
-
-                    />
                 </>
 
             }
@@ -274,6 +274,8 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                 <TableComponent
                                     data={users.filter((user) => pickedUserIds.includes(user.id)).map((user) => (transformUserToData(user)))}
                                     checkbox={false}
+                                    headerBackgroundColor={'#DFDFDF'}
+                                    entryBackgroundColor={'transparent'}
                                     header={[
                                         { label: 'Vorname', id: 'vorname' },
                                         { label: 'Nachname', id: 'nachname' },
@@ -348,7 +350,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                             { label: 'Medien-ID', id: 'medien_id' },
                                             { label: 'Medium', id: 'medium' },
                                             { label: 'Arbeitsgruppe', id: 'verlag' },
-                                            { label: 'Klasse', id: 'max_nutzer' },
+                                            { label: 'Max Nutzer', id: 'max_nutzer' },
                                             { label: 'Zugewiesen', id: 'zugewiesen' },
                                             { label: 'Verfügbar', id: 'verfügbar' }
 
@@ -376,6 +378,12 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                             })
 
                                         }}
+
+                                        checkBoxDisabledFunction={(identifier: any) => {
+                                            const product = products.find((product) => product.medien_id === identifier)
+                                            if (product.verfügbar === 0) return true
+                                        }}
+
                                         trigger={mediumtrigger}
                                         setTrigger={setMediumTrigger}
                                     />
@@ -390,7 +398,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                 <p
                                     className="mt-[30px] font-bold text-[#404045] text-[20px] "
                                 >
-                                    3. Lizenzen auswählen
+                                    4. Lizenzen auswählen
                                 </p>
                                 <div
                                     className="w-full bg-white flex-1 flex"
@@ -398,7 +406,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                     <TableComponent
                                         data={licenses.filter((license) => license.medien_id === selectedMedia[0])}
                                         header={[
-                                            { label: 'Lizenz_id', id: 'lizenz_id' },
+                                            { label: 'Lizenz_id', id: 'lizenz_id', disabled: true },
                                             { label: 'Lizenz-Code', id: 'lizenzcode' },
                                             { label: 'Medien ID', id: 'medien_id' },
                                             { label: 'Verlag', id: 'verlag' },
@@ -412,6 +420,19 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                             setSelectedLicenses(identifiers)
                                             // setSelectedMedia(identifiers)
                                         }}
+
+                                        checkBoxDisabledFunction={(identifier: any) => {
+
+                                            const license = licenses.find((license) => license.lizenz_id === identifier)
+                                            if (license.verfügbar === 0) return true
+
+                                        }}
+                                        checkBoxCheckedFunction={(identifier: any) => {
+                                            const license = licenses.find((license) => license.lizenz_id === identifier)
+                                            console.log(license.verfügbar)
+                                            if (license.verfügbar === 0) return true
+                                        }}
+
                                         checkbox={true}
                                         // singleCheckBox={true}
                                         identifier={'lizenz_id'}
@@ -468,6 +489,15 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                     onClick={() => {
                         if (stepper < 3) {
                             setStepper(stepper + 1)
+                        } else if (stepper === 2) {
+                            for (let i = 0; i < selectedLicenses.length; i++) {
+                                createLicenseAssignment(selectedLicenses[i], selectedUsers[0].id)
+                            }
+                            setStepper(0)
+                            setSelectedLicenses(null)
+                            setSelectedUsers([])
+                            setPickedLicenseType('Einzel')
+                            setToastProps('Lizenz wurde zugewiesen', 'success')
                         }
                     }}
                 >
@@ -475,6 +505,6 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
                 </Button>
             </div>
-        </>
+        </div>
     )
 }

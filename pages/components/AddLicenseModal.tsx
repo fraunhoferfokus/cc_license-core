@@ -191,8 +191,6 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                     product_ids.push({ id: product_id })
                                                 }
 
-
-
                                                 if (data.length > 0) {
                                                     const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById`,
                                                         product_ids
@@ -213,9 +211,6 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                 fetchLicenseDefinitionsV2()
                                             })
                                             .catch((e) => {
-                                                console.log('JOJOJOJO')
-                                                console.log(e)
-
                                                 setElement((el) => ({ ...el, isValidDownloadID: false }))
                                             })
 

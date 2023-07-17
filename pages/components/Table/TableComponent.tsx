@@ -1,4 +1,5 @@
 import { Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { max } from "moment"
 import { useEffect, useState } from "react"
 
 
@@ -14,6 +15,12 @@ export default function AssignmentTableContainer({
     onChangeCheckBox,
     onChangeFilteredEntries,
     disableFooter,
+    checkBoxCheckedFunction,
+    checkBoxDisabledFunction,
+    pickedColor,
+    onChangeClickedRow,
+    entryBackgroundColor,
+    headerBackgroundColor,
 }: any
 
 ) {
@@ -21,6 +28,10 @@ export default function AssignmentTableContainer({
     const [filtered_rows, set_filtered_rows] = useState<any[]>(data)
     const [paginated_rows, set_paginated_rows] = useState<any[]>(data)
     const [pickedIdentifiers, setPickedIdentifiers] = useState<any[]>([])
+
+    const [highlightedEntry, setHighlightedEntry] = useState<any>(null)
+
+
     let [page, setPage] = useState(0)
     let [entriesPerPage, setEntriesPerPage] = useState(5)
 
@@ -38,6 +49,9 @@ export default function AssignmentTableContainer({
         if (onChangeFilteredEntries) onChangeFilteredEntries(filtered_rows)
     }, [filtered_rows])
 
+    useEffect(() => {
+        if (onChangeClickedRow) onChangeClickedRow(highlightedEntry)
+    }, [highlightedEntry])
 
 
     useEffect(() => {
@@ -64,22 +78,43 @@ export default function AssignmentTableContainer({
 
     const tableRows = paginated_rows.map((row) => (
         <TableRow
+
+
             key={row[identifier]}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            className="max-h-[50px]"
-            style={{ height: '50px', maxHeight: '50px' }}
+            sx={{
+                '&:last-child td, &:last-child th': { border: 0 },
+                backgroundColor: highlightedEntry === row[identifier] && pickedColor ? pickedColor :
+                    entryBackgroundColor ? entryBackgroundColor : "inherit"
+
+            }}
+            className="max-h-[50px] cursor-pointer"
+            onClick={() => setHighlightedEntry(row[identifier])}
+
+
+        // style={{ height: '50px', maxHeight: '50px' }}
         >
             {checkbox &&
-                <TableCell component="th" scope="row"
-                    sx={{ padding: "10px", height: 50,
-                    width: "50px"
-                
-                }}
+                <TableCell
+                    sx={{
+                        padding: '5px',
+                        height: 50,
+                        width: "50px",
+                        maxHeight: 50,
+                    }}
 
                 >
                     <Checkbox
-                        checked={pickedIdentifiers.includes(row[identifier])}
-                        disabled={singleCheckBox && pickedIdentifiers.length > 0 && !pickedIdentifiers.includes(row[identifier])}
+                        checked={
+                            pickedIdentifiers.includes(row[identifier])
+                            ||
+                            checkBoxCheckedFunction && checkBoxCheckedFunction(row[identifier])
+                        }
+                        disabled={
+                            singleCheckBox && pickedIdentifiers.length > 0 && !pickedIdentifiers.includes(row[identifier])
+                            ||
+                            checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier])
+
+                        }
                         onChange={(event) => {
                             if (event.target.checked) {
                                 setPickedIdentifiers([...pickedIdentifiers, row[identifier]])
@@ -92,11 +127,30 @@ export default function AssignmentTableContainer({
                 </TableCell>
             }
 
-            {header.map(({ label, id }: any) => (
-                <TableCell align="left"
-                    sx={{ padding: "10px"}}
-                >{row[id]}</TableCell>
-            ))}
+            {header.map(({ label, id }: any) => {
+
+                let header_item = header.find((item: any) => item.id === id)
+                if (header_item?.disabled) return (<></>)
+
+                return (
+                    <TableCell align="left"
+                        className="overflow-hidden"
+                        sx={{
+                            padding: "5px",
+                            maxHeight: 50,
+                            height: 40,
+                            // backgroundColor: entryBackgroundColor ? entryBackgroundColor : "inherit",
+                            backgroundColor: 'none'
+                            // textWrap: 'nowrap',
+                        }}
+                    >
+                        {row[id]}
+
+                    </TableCell>
+                )
+
+
+            })}
         </TableRow>
     ))
 
@@ -104,26 +158,55 @@ export default function AssignmentTableContainer({
 
     return (
         <>
-            <div className="flex flex-col flex-1">
+            <div className="flex flex-col flex-1 overflow-hidden">
 
                 <TableContainer component={Paper}
-                    className="flex-1 overflow-scroll"
+                    className="flex-1 bg-transparent"
 
                 >
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <Table sx={{
+                        minWidth: 650,
+
+
+                    }}
+                        className="bg-transparent"
+
+                        aria-label="simple table"
+                        size="small"
+                        stickyHeader={true}
+
+                    >
                         <TableHead>
                             <TableRow
+                                className=""
+
                             >
                                 {checkbox && <TableCell
-                                    sx={{ padding: "10px", height: 50 }}
-
+                                    align="left"
+                                    sx={{
+                                        height: 40,
+                                        padding: '10px',
+                                        fontWeight: 600,
+                                        marginRight: 16,
+                                        backgroundColor: headerBackgroundColor ? headerBackgroundColor : "white",
+                                        // boxSizing: 'content-box',
+                                    }}
                                 >Checkbox</TableCell>}
 
                                 {
-                                    header.map(({ label, value }: any) => {
+                                    header.map(({ label, id }: any) => {
+                                        let header_item = header.find((item: any) => item.id === id)
+                                        if (header_item?.disabled) return (<></>)
+
                                         return (
                                             <TableCell
-                                                sx={{ padding: "10px", height: 50, width: "50px"}}
+                                                align="left"
+                                                sx={{
+                                                    padding: '5px',
+                                                    fontWeight: 600,
+                                                    height: 52,
+                                                    backgroundColor: headerBackgroundColor ? headerBackgroundColor : "white",
+                                                }}
 
                                             >{label}</TableCell>
                                         )
@@ -132,7 +215,7 @@ export default function AssignmentTableContainer({
                             </TableRow>
                         </TableHead>
                         <TableBody
-                            className="max-h-[50px] h-[50px]"
+                            className="bg-transparent"
                         >
                             {tableRows}
                         </TableBody>
@@ -140,7 +223,7 @@ export default function AssignmentTableContainer({
                 </TableContainer>
 
                 {!disableFooter &&
-                    <div className="pagination flex self-center mt-[30px] mb-[15px]">
+                    <div className="pagination flex self-center mt-[10px] mb-[15px]">
                         <div>
                             <span
                                 className="mr-[10px]"

@@ -49,7 +49,7 @@ export default function AssignmentTableContainer() {
     return (
 
         <>
-            <div className="bg-white pl-[16px] pt-[46px] pr-[16px] flex-1 overflow-scroll flex flex-col w-full">
+            <div className="bg-white pl-[16px] pt-[16px] pr-[16px] flex-1 overflow-scroll flex flex-col w-full">
                 <UserGroupTable />
             </div>
 

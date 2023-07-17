@@ -64,19 +64,23 @@ export default function UserGroupTable() {
                         isMulti
                         name="colors"
                         options={groupOptions}
-                        className="basic-multi-select "
+                        className="basic-multi-select"
                         classNamePrefix="select"
                         placeholder=""
                         inputValue={""}
                         onChange={(value) => {
                             setSelectedValue(value)
                         }}
-                    
+
 
                         styles={{
-                            input: () => ({ height: 50, maxHeight: 50, padding: 0, margin: 0, lineHeight: 50, display: 'flex', alignItems: 'center' }),
-                            placeholder: () => ({ justifyItems: 'center', display: 'flex' }),
-                            // container: () => ({ padding:0, margin:0}),
+                            input: (styles) => ({
+                                ...styles, height: 50, maxHeight: 50, padding: 0, margin: 0, lineHeight: 50,
+                                zIndex: 50, display: 'flex', alignItems: 'center'
+                            }),
+                            // placeholder: (styles) => ({ ...styles, justifyItems: 'center', display: 'flex' }),
+                            container: (styles) => ({ ...styles, padding: 0, margin: 0, zIndex: 100 }),
+                            // option: (styles) => ({ ...styles, padding: 0, margin: 0, lineHeight: 50, zIndex:100 }),
                             // control: () => ({height:50 })
                         }}
                         value={selectedValue}
@@ -115,7 +119,7 @@ export default function UserGroupTable() {
 
             </div>
 
-            <Divider />
+            {/* <Divider /> */}
 
             <TableComponent
                 data={users.map((user: any) => transformUserToData(user))}

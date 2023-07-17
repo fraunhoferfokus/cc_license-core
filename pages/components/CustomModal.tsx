@@ -8,7 +8,7 @@ export default function CustomModal({ open, setOpen, children }: any) {
     const ref = useRef(null)
 
     return (
-        <div className="absolute w-full h-full bg-black top-0 left-0 bg-opacity-50 z-10"
+        <div className="absolute w-full h-full bg-black top-0 left-0 bg-opacity-50 z-[100]"
             style={{ display: open ? 'block' : 'none' }}
             
            

@@ -1,7 +1,6 @@
-process.env.MARIA_CONFIG = process.env.MARIA_CONFIG!.replace('tcp://', '')
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
-
+process.env.MARIA_CONFIG = process.env.MARIA_CONFIG!.replace('tcp://', '')
 import axios from 'axios'
 import express from 'express'
 import session from 'express-session'

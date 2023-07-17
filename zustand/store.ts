@@ -5,11 +5,11 @@ import { ActionObject, ActionVerb } from 'license_manager/dist/models/LicenseDef
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import { LicenseDefinitionState, licenseDefinitionSlice } from './licenseDefinitionSlice'
-import { LicenseAssignmentState, licenseAssignmentSlice} from './licenseAssignmentSlice'
+import { LicenseAssignmentState, licenseAssignmentSlice } from './licenseAssignmentSlice'
 
 export interface GeneralState {
     fetchLicenseDefinitionsV2: () => any,
-    
+
     users: any[],
     groups: any[],
     fetchUsersAndGroups: () => any,
@@ -34,6 +34,8 @@ export interface GeneralState {
     fetchNotifications: () => any,
     notifications: any[],
     config: any,
+    toastProps: { message: string, severity: 'success' | 'error' | 'warning' | 'info', duration: number },
+    setToastProps: (message: string, severity?: 'success' | 'error' | 'warning' | 'info', duration?: number) => any,
 
 }
 
@@ -45,7 +47,17 @@ export const useStore = create<MergedState>()(
             ...licenseDefinitionSlice(set, get, props),
             ...licenseAssignmentSlice(set, get, props),
             config: null,
-         
+            toastProps: { message: '', severity: 'success', duration: 3000},
+            setToastProps: (message: string, severity = 'success', duration=3000) => {
+                set({
+                    toastProps: {
+                        ...get().toastProps,
+                        message,
+                        severity,
+                        duration
+                    }
+                })
+            },
             users: [],
             groups: [],
             fetchUsersAndGroups: async () => {
@@ -54,7 +66,7 @@ export const useStore = create<MergedState>()(
                 const resp2 = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`, { withCredentials: true })
                 set({ groups: resp2.data, users: resp.data })
             },
-        
+
             notification: {
                 product_id: null,
                 license_type: null,

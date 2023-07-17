@@ -11,6 +11,7 @@ import AddLicenseModal from './components/AddLicenseModal'
 import Dashboardview from './components/Dashboardview'
 import LizenzZuweisungV2 from './components/LizenzZuweisungV2'
 import Medien from './components/Medien'
+import { ToastMessage } from './components/toastMessage'
 
 
 export default dynamic(() => Promise.resolve(Home), {
@@ -29,7 +30,8 @@ function Home({ user }: { user: any }) {
     setNotification,
     notification,
     fetchLicenseDefinitionsV2,
-
+    toastProps,
+    setToastProps,
     licenseAssignments
   } = useStore(state => state)
   const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
@@ -89,8 +91,11 @@ function Home({ user }: { user: any }) {
   }, [bilo])
 
   return (
+
     <>
-      <div className="flex h-full">
+
+
+      <div className="flex h-full w-full">
         <div className="flex max-w-[280px] h-full">
           <div className='mt-[20px] flex-1 flex flex-col w-[280px]'>
             {/* border bottom with E0E0EB 1px*/}
@@ -149,7 +154,10 @@ function Home({ user }: { user: any }) {
                 </label>
                 <div
                   className='mt-[20px] flex items-center'
-                  onClick={() => setLicenseModal(true)}
+                  onClick={() => {
+                    setLicenseModal(true)
+                    // setToastProps('Lizenz importiert', 'success', 10000)
+                  }}
 
                 >
 
@@ -165,6 +173,7 @@ function Home({ user }: { user: any }) {
                   </div>
                   <label
                     className='ml-[7px] font-bold text-[15px] text-[#585867] cursor-pointer'
+                  // onClick={() => setLicenseModal(true)}
                   >
                     LIZENZ IMPORTIEREN
                   </label>
@@ -287,7 +296,8 @@ function Home({ user }: { user: any }) {
 
           </div>
         </div>
-        <div className="flex-grow bg-[#F0F0F9] pl-[26px] pt-[50px] h-full flex flex-col pr-[26px] pb-[26px]">
+        <div className="flex-grow bg-[#F0F0F9] pl-[26px] pt-[50px] h-full flex flex-col pr-[26px] pb-[26px] relative">
+          <ToastMessage />
 
           {
             view === 'dashboard' &&
