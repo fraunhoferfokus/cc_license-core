@@ -4,10 +4,18 @@ import { ReactNode, useEffect, useState } from 'react';
 import TableComponent from './Table/TableComponent';
 import Select from 'react-select';
 import { transformUserToData } from './Table/UserGroupTable';
+import { useParams } from "react-router-dom";
 
-export default function Medien() {
 
-    let [selectedLicenseId, setSelectedLicenseId] = useState<any>(null)
+export default function Medien({ setLicenseModal }: {
+    setLicenseModal: any,
+}) {
+
+    // let [selectedLicenseId, setSelectedLicenseId] = useState<any>(null)
+
+
+    const { id } = useParams<any>();
+
 
     const {
         licenseDefinitions,
@@ -17,7 +25,11 @@ export default function Medien() {
         fetchUsersAndGroups,
         fetchLicenseDefinitionsV2,
         deleteLicenseAssignment,
-        setToastProps
+        setToastProps,
+        selectedLicenseId,
+        setSelectedLicenseId,
+        selectedMedia,
+        setSelectedMedia,
     } = useStore(state => state)
     let products: any[] = []
     let licenses: any[] = []
@@ -65,7 +77,7 @@ export default function Medien() {
 
     })
 
-    let [selectedMedia, setSelectedMedia] = useState<any>('')
+    // let [selectedMedia, setSelectedMedia] = useState<any>('')
     let [medium_value, set_medium_value] = useState('')
     const [mediumtrigger, setMediumTrigger] = useState(false)
     const [mediumtrigger2, setMediumTrigger2] = useState(false)
@@ -116,6 +128,10 @@ export default function Medien() {
                         >
                             <Button
                                 variant="contained"
+                                onClick={() => {
+                                    setLicenseModal(true)
+
+                                }}
                             >
                                 Lizenz importieren
 
@@ -176,6 +192,7 @@ export default function Medien() {
 
                                 highlightOnHover={true}
                                 onChangeClickedRow={(identifier: string) => {
+                                    console.log({ identifier })
                                     if (identifier) setSelectedMedia(identifier)
 
                                 }}
@@ -324,10 +341,10 @@ export default function Medien() {
                                         trigger={mediumtrigger2}
                                         setTrigger={setMediumTrigger2}
                                         filterFunction={(entries: any) => {
-                                            if(licenseTypes.length === 0) return entries
+                                            if (licenseTypes.length === 0) return entries
                                             let filtered = []
                                             for (const entry of entries) {
-                                                if (licenseTypes.map((item)=> item.value).includes(entry.lizenztyp)) {
+                                                if (licenseTypes.map((item) => item.value).includes(entry.lizenztyp)) {
                                                     filtered.push(entry)
                                                 }
                                             }

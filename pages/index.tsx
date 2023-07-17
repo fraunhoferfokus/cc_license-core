@@ -12,6 +12,7 @@ import Dashboardview from './components/Dashboardview'
 import LizenzZuweisungV2 from './components/LizenzZuweisungV2'
 import Medien from './components/Medien'
 import { ToastMessage } from './components/toastMessage'
+import Licenses from './components/LizenzÜbersicht'
 
 
 export default dynamic(() => Promise.resolve(Home), {
@@ -316,7 +317,16 @@ function Home({ user }: { user: any }) {
 
           {
             view === 'media' &&
-            <Medien></Medien>
+            <Medien
+              setLicenseModal={setLicenseModal}
+            ></Medien>
+          }
+
+          {
+            view === 'licenses' && <Licenses
+              setView={setView}
+            
+            ></Licenses>
           }
 
         </div>

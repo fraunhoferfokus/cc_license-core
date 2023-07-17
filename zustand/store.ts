@@ -36,7 +36,10 @@ export interface GeneralState {
     config: any,
     toastProps: { message: string, severity: 'success' | 'error' | 'warning' | 'info', duration: number },
     setToastProps: (message: string, severity?: 'success' | 'error' | 'warning' | 'info', duration?: number) => any,
-
+    selectedLicenseId: string | null,
+    setSelectedLicenseId: (id: string | null) => any,
+    selectedMedia:any,
+    setSelectedMedia: (media: any) => any,
 }
 
 export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignmentState
@@ -44,6 +47,14 @@ export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignm
 export const useStore = create<MergedState>()(
     persist(
         (set, get, props) => ({
+            selectedLicenseId: null,
+            setSelectedLicenseId: (id: string | null) => {
+                set({ selectedLicenseId: id })
+            },
+            selectedMedia: '',
+            setSelectedMedia: (media: any) => {
+                set({ selectedMedia: media })
+            },
             ...licenseDefinitionSlice(set, get, props),
             ...licenseAssignmentSlice(set, get, props),
             config: null,

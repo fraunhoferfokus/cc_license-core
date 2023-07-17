@@ -58,7 +58,7 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                     buttonTitle={'Lizenz Übersicht'}
                     iconPath={'/lizenzübersichticon.svg'}
                     callback={() => {
-                        setView('license')
+                        setView('licenses')
                     }}
                     color="#FFEED7"
                 />
