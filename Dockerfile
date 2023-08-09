@@ -8,9 +8,12 @@ RUN chgrp -R 0 /usr/src/app && \
 
 WORKDIR /usr/src/app
 
+# Ensure npm uses /.npm as cache
+RUN npm config set cache /.npm --global
+
 RUN npm i
 
-# Adjust permissions again, especially for the npm cache directory
+# Adjust permissions for npm cache directory
 RUN chgrp -R 0 /.npm && \
     chmod -R g=u /.npm
 
