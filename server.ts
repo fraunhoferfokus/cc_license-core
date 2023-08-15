@@ -31,13 +31,13 @@ let redisClient = createClient(
 )
 
 
-redisClient.connect().then(()=>{
+redisClient.connect().then(() => {
     console.log('redis connected')
 })
 
-.catch((err) => {
-    console.log(err)
-})
+    .catch((err) => {
+        console.log(err)
+    })
 
 // @ts-ignore
 let redisStore = new RedisStore({
@@ -143,10 +143,9 @@ app.prepare().then(() => {
             })
             const access_token = resp.data.access_token
             req.session.access_token = access_token
-            console.log('access_token', req.session.access_token)
-
-
             req.session.refresh_token = resp.data.refresh_token
+            console.log({ access_token })
+
             return res.send()
         } catch (err: any) {
             console.log('no valid user session')

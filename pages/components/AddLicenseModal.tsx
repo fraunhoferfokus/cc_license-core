@@ -25,21 +25,21 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                 <Paper className=" bg-white invisible basis-[40%]">
                 </Paper>
                 <Paper className=" bg-white basis-[60%] h-full flex flex-col">
-                    <div className="flex p-2">
+                    <div className="flex p-2 h-[79px] items-center">
 
-                        <h1 className="text-center flex-1">
-                            Lizenz hinzufügen
-                        </h1>
+                        <label className="text-center flex-1 font-[700]">
+                            Lizenz importieren
+                        </label>
                         <CloseIcon
                             onClick={() => setOpen(false)}
-                            className="cursor-pointer text-[#4671C4] text-[40px] stroke-[#4671C4] stroke-[3px]"
+                            className="cursor-pointer text-[#D9D9D9] text-[40px] stroke-[#D9D9D9] "
                         >
                         </CloseIcon>
                     </div>
 
 
                     <div className="mt-[10px] pl-[10%] pr-[10%] pb-[5%] flex gap-2 flex-col flex-1 min-h-0">
-                        <Select className="text-center"
+                        {/* <Select className="text-center"
                             defaultValue={"1"}
                             onChange={(e) => {
                                 e.target.value === "1" ? setElement((el) => ({ ...el, isDownloadID: true })) : setElement((el) => ({ ...el, isDownloadID: false }))
@@ -49,7 +49,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                         >
                             <MenuItem value="1">Import über DownloadID</MenuItem>
                             <MenuItem value="2" disabled={true}>Import über Datei Upload (ODRL) </MenuItem>
-                        </Select>
+                        </Select> */}
 
                         {
                             !element.isDownloadID ?
@@ -60,7 +60,12 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                     2
                                 </textarea> :
                                 <div className="flex">
-                                    <TextField id="outlined-basic" placeholder="Enter DownloadID ..." variant="outlined"
+                                    <TextField 
+                                    id="filled-start-adornmen" 
+
+                                    label="Abholnummer"
+                                   
+                                    variant="outlined"
                                         className="flex-1"
                                         error={
                                             !element.isValidDownloadID
@@ -79,10 +84,8 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                         }
 
-                        <Paper className="overflow-scroll
+                        <Paper className="
                             flex-1
-                           
-
                         ">
                             <div
                                 className="
@@ -218,7 +221,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                 }}
 
 
-                            >Importieren</Button>
+                            >Lizenz IMPORTIEREN</Button>
                         </div>
 
 

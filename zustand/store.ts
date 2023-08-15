@@ -9,7 +9,8 @@ import { LicenseAssignmentState, licenseAssignmentSlice } from './licenseAssignm
 
 export interface GeneralState {
     fetchLicenseDefinitionsV2: () => any,
-
+    org: any,
+    fetchOrg: () => any,
     users: any[],
     groups: any[],
     fetchUsersAndGroups: () => any,
@@ -47,6 +48,11 @@ export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignm
 export const useStore = create<MergedState>()(
     persist(
         (set, get, props) => ({
+            org: null,
+            fetchOrg: async () => {
+                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/org`, { withCredentials: true })
+                set({ org: resp.data })
+            },
             selectedLicenseId: null,
             setSelectedLicenseId: (id: string | null) => {
                 set({ selectedLicenseId: id })

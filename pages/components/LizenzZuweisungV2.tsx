@@ -164,8 +164,11 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
 
     let [selectedLicenses, setSelectedLicenses] = useState<any>(null)
+    const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
 
-
+    useEffect(() => {
+        fetchOrg()
+    }, [])
 
 
     return (
@@ -174,11 +177,23 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
             className="h-full flex flex-col"
 
         >
-            <label
-                className="text-[#404045] font-bold text-[28px]"
+           <div
+                className="flex justify-between"
             >
-                Lizenz zuweisen
-            </label>
+                <label
+                    className="text-[#404045] font-bold text-[28px]"
+                >Lizenz Zuweisen</label>
+                <div>
+                    <div
+                        className="h-[35px] "
+                    >
+                        {org?.name}
+                    </div>
+                    <div>
+                        Die Schule, für die eine Zuweisung erfolgt
+                    </div>
+                </div>
+            </div>
 
 
             {

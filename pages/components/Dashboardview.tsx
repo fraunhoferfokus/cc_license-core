@@ -1,19 +1,40 @@
 import { Divider, Link, MenuItem, MenuList, Paper } from "@mui/material"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import FunctionButton from "./Buttons/FunctionButton"
-
+import { useStore } from '../../zustand/store'
 
 export default function Dashboardview({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
 
     const [users, setUsers] = useState([])
+    const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
+
+    console.log(org)
+    useEffect(() => {
+        fetchOrg()
+    }, [])
+
 
 
 
     return (
         <>
-            <label
-                className="text-[#404045] font-bold text-[28px]"
-            >Dashboard</label>
+            <div
+                className="flex justify-between"
+            >
+                <label
+                    className="text-[#404045] font-bold text-[28px]"
+                >Dashboard</label>
+                <div>
+                    <div
+                        className="h-[35px] "
+                    >
+                        {org?.name}
+                    </div>
+                    <div>
+                        Die Schule, für die eine Zuweisung erfolgt
+                    </div>
+                </div>
+            </div>
 
             <p
                 className="mt-[67px] font-bold text-[#404045] text-[20px]"
@@ -27,7 +48,7 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                     infoText={'Medienlizenzen in den Lizenzmanager importieren'}
                     buttonTitle={'Lizenzen importieren'}
                     iconPath={'/plusicon.svg'}
-                    callback={async() => {
+                    callback={async () => {
                         setLicenseModal(true)
                     }}
                     color="#F0B3AB"
