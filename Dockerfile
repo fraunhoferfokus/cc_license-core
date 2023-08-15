@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20.5.1-slim
 
 COPY . /usr/src/app
 
@@ -18,3 +18,5 @@ RUN chgrp -R 0 /.npm && \
     chmod -R g=u /.npm
 
 CMD [ "npm", "start" ]
+
+
