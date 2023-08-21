@@ -7,8 +7,6 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
 
     const [users, setUsers] = useState([])
     const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
-
-    console.log(org)
     useEffect(() => {
         fetchOrg()
     }, [])
@@ -23,14 +21,23 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
             >
                 <label
                     className="text-[#404045] font-bold text-[28px]"
-                >Dashboard</label>
+                >
+                    Dashboard
+                </label>
                 <div>
                     <div
-                        className="h-[35px] "
+                        className="h-[35px] bg-[rgba(0,0,0,0.06)] h-[41px] flex items-center 
+                        justify-center text-[16px] mb-[3px]"
                     >
-                        {org?.name}
+                        <label
+
+                        >
+                            {org?.name}
+                        </label>
                     </div>
-                    <div>
+                    <div
+                        className="text-[rgba(0,0,0,0.6)] text-[12px]"
+                    >
                         Die Schule, für die eine Zuweisung erfolgt
                     </div>
                 </div>

@@ -13,6 +13,7 @@ import LizenzZuweisungV2 from './components/LizenzZuweisungV2'
 import Medien from './components/Medien'
 import { ToastMessage } from './components/toastMessage'
 import Licenses from './components/LizenzÜbersicht'
+import LogoutIcon from '@mui/icons-material/Logout';
 
 
 export default dynamic(() => Promise.resolve(Home), {
@@ -33,7 +34,9 @@ function Home({ user }: { user: any }) {
     fetchLicenseDefinitionsV2,
     toastProps,
     setToastProps,
-    licenseAssignments
+    licenseAssignments,
+    fetchMyself,
+    myself
   } = useStore(state => state)
   const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
 
@@ -68,6 +71,7 @@ function Home({ user }: { user: any }) {
     fetchLicenseDefinitionsV2()
     fetchUsers()
     fetchLicenseAssignments()
+    fetchMyself()
 
     const interval = setInterval(() => {
       fetchLicenseAssignments()
@@ -91,6 +95,10 @@ function Home({ user }: { user: any }) {
     if (bilo?.lizenztyp === 'Gruppenlizenz') setPickedSelect('group')
   }, [bilo])
 
+  let me = users.find((user) => {
+    return user.id === myself.preferred_username
+  })
+  
   return (
 
     <>
@@ -278,11 +286,27 @@ function Home({ user }: { user: any }) {
               >
               </img>
               <div className='details ml-[16px]'>
-                <label
-                  className='font-bold text-[15px] text-[#585867]'
+                <div
+                  className='flex p-[5px]'
                 >
-                  Max Muster
-                </label>
+
+                  <label
+                    className='font-bold text-[15px] text-[#585867]'
+                  >
+                    {me?.email}
+                  </label>
+                  <LogoutIcon
+
+                    onClick={() => {
+                      const redirect_logout = `${process.env.NEXT_PUBLIC_AUTH_ENDPOINT?.replace('/auth', '')}/logout?response_type=code&scope=openid&client_id=${process.env.NEXT_PUBLIC_OIDC_CLIENT_ID}`
+
+                      //@ts-ignore
+                      window.location = redirect_logout
+                    }}
+
+                    className='cursor-pointer'
+                  ></LogoutIcon>
+                </div>
                 <br>
                 </br>
                 <label
@@ -325,7 +349,7 @@ function Home({ user }: { user: any }) {
           {
             view === 'licenses' && <Licenses
               setView={setView}
-            
+
             ></Licenses>
           }
 

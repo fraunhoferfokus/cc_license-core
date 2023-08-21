@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { Divider, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import Select from 'react-select';
 import { useStore } from "../../../zustand/store";
@@ -65,17 +65,19 @@ export default function UserGroupTable({
     }, [])
 
     useEffect(() => {
-        if(onChangedUsers) {
+        if (onChangedUsers) {
             onChangedUsers(pickedUserIds)
         }
-    }, 
+    },
         [pickedUserIds]
-    
+
     )
 
     return (
         <>
-            <div className="bg-white pl-[16px] pt-[16px] pr-[16px] flex-1 overflow-scroll flex flex-col w-full">
+            <div className="bg-white 
+            rounded-[10px]
+            pl-[16px] pt-[16px] pr-[16px] flex-1 overflow-hidden flex flex-col w-full h-full">
 
                 <div
                     className="flex items-center "
@@ -117,7 +119,9 @@ export default function UserGroupTable({
                             Gruppe, Klasse oder Kurse auswählen
                         </p>
 
+
                     </div>
+
                     <div
                         className="ml-[50px] flex-[1] max-h-[55px] flex flex-col justify-center text-[#585867] text-[15px]"
 
@@ -143,8 +147,6 @@ export default function UserGroupTable({
                     </div>
 
                 </div>
-
-                {/* <Divider /> */}
 
                 <TableComponent
                     data={users.map((user: any) => transformUserToData(user))}

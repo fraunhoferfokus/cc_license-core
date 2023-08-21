@@ -174,22 +174,31 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
     return (
 
         <div
-            className="h-full flex flex-col"
+            className="h-full flex flex-col flex"
 
         >
-           <div
+            <div
                 className="flex justify-between"
             >
                 <label
                     className="text-[#404045] font-bold text-[28px]"
-                >Lizenz Zuweisen</label>
+                >
+                    Lizenz Zuweisen
+                </label>
                 <div>
                     <div
-                        className="h-[35px] "
+                        className="h-[35px] bg-[rgba(0,0,0,0.06)] h-[41px] flex items-center 
+                        justify-center text-[16px] mb-[3px]"
                     >
-                        {org?.name}
+                        <label
+
+                        >
+                            {org?.name}
+                        </label>
                     </div>
-                    <div>
+                    <div
+                        className="text-[rgba(0,0,0,0.6)] text-[12px]"
+                    >
                         Die Schule, für die eine Zuweisung erfolgt
                     </div>
                 </div>
@@ -200,7 +209,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                 stepper === 0 &&
                 <>
                     <div
-                        className="flex flex-col overflow-hidden"
+                        className="flex flex-col overflow-hidden flex-1"
                     >
 
                         <p

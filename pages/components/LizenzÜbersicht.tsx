@@ -5,7 +5,7 @@ import TableComponent from './Table/TableComponent';
 import Select from 'react-select';
 import { transformUserToData } from './Table/UserGroupTable';
 
-export default function Licenses({setView} : {setView: any}) {
+export default function Licenses({ setView }: { setView: any }) {
     const {
         licenseDefinitions,
         fetchLicenseAssignments,
@@ -68,6 +68,7 @@ export default function Licenses({setView} : {setView: any}) {
     })
 
 
+    const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
 
 
 
@@ -77,10 +78,30 @@ export default function Licenses({setView} : {setView: any}) {
                 className="h-full flex flex-col p-[10px]"
 
             >
-                <div>
-                    <label
-                        className="text-[#404045] font-bold text-[28px] mb-[10px]"
-                    >Lizenz Übersicht</label>
+                <div
+                    className="flex justify-between"
+                >                    <label
+                    className="text-[#404045] font-bold text-[28px]"
+                >
+                        Lizenz Übersicht
+                    </label>
+                    <div>
+                        <div
+                            className="h-[35px] bg-[rgba(0,0,0,0.06)] h-[41px] flex items-center 
+                        justify-center text-[16px] mb-[3px]"
+                        >
+                            <label
+
+                            >
+                                {org?.name}
+                            </label>
+                        </div>
+                        <div
+                            className="text-[rgba(0,0,0,0.6)] text-[12px]"
+                        >
+                            Die Schule, für die eine Zuweisung erfolgt
+                        </div>
+                    </div>
                 </div>
 
                 <div
@@ -94,7 +115,7 @@ export default function Licenses({setView} : {setView: any}) {
                     >
                         <TextField
                             placeholder="Beginn Zeitraum"
-                            className="bg-white max-w-[700px] mt-[37px] w-[300px]"
+                            className="bg-white max-w-[700px]  w-[300px]"
 
                         >
 
@@ -111,7 +132,7 @@ export default function Licenses({setView} : {setView: any}) {
                     >
                         <TextField
                             placeholder="Beginn Zeitraum"
-                            className="bg-white max-w-[700px] mt-[37px] w-[300px]"
+                            className="bg-white max-w-[700px]  w-[300px]"
 
                         >
 
@@ -128,7 +149,7 @@ export default function Licenses({setView} : {setView: any}) {
                         >
                             <TextField
                                 placeholder="Verlag"
-                                className="bg-white max-w-[700px] mt-[37px] w-[300px]"
+                                className="bg-white max-w-[700px]  w-[300px]"
 
                             >
 
@@ -139,7 +160,7 @@ export default function Licenses({setView} : {setView: any}) {
                                 Verlag
                             </div>
                         </div>
-                    
+
 
                         <div
                             className='mr-[10px]'
@@ -147,7 +168,7 @@ export default function Licenses({setView} : {setView: any}) {
                         >
                             <TextField
                                 placeholder="Lizenztyp"
-                                className="bg-white max-w-[700px] mt-[37px] w-[300px]"
+                                className="bg-white max-w-[700px]  w-[300px]"
 
                             >
 
@@ -165,7 +186,7 @@ export default function Licenses({setView} : {setView: any}) {
                         >
                             <TextField
                                 placeholder="Benutzererkennung"
-                                className="bg-white max-w-[700px] mt-[37px] w-[300px]"
+                                className="bg-white max-w-[700px]  w-[300px]"
 
                             >
 
@@ -182,7 +203,7 @@ export default function Licenses({setView} : {setView: any}) {
                         >
                             <TextField
                                 placeholder="Medien ID"
-                                className="bg-white max-w-[700px] mt-[37px] w-[300px]"
+                                className="bg-white max-w-[700px]  w-[300px]"
 
                             >
 
@@ -202,7 +223,7 @@ export default function Licenses({setView} : {setView: any}) {
                         >
                             <TextField
                                 placeholder="Medium"
-                                className="bg-white max-w-[700px] mt-[37px] w-[300px]"
+                                className="bg-white max-w-[700px]  w-[300px]"
 
                             >
 
@@ -215,7 +236,7 @@ export default function Licenses({setView} : {setView: any}) {
                         </div>
 
 
-                       
+
 
                         {/* <div
                         className='mr-[10px]'
@@ -223,7 +244,7 @@ export default function Licenses({setView} : {setView: any}) {
                     >
                         <TextField
                             placeholder="Medium"
-                            className="bg-white max-w-[700px] mt-[37px] w-[300px]"
+                            className="bg-white max-w-[700px]  w-[300px]"
 
                         >
 
@@ -238,7 +259,7 @@ export default function Licenses({setView} : {setView: any}) {
                     </div>
 
                     <div
-                        className='flex-1 flex flex-col bg-white mt-[20px]'
+                        className='flex-1 flex flex-col bg-white mt-[20px] pt-[30px] pl-[30px] pr-[30px] rounded-[10px]'
                     >
 
                         <TableComponent
@@ -253,6 +274,7 @@ export default function Licenses({setView} : {setView: any}) {
                                 { label: 'Zugewiesen', id: 'zugewiesen' },
                                 { label: 'Verfügbar', id: 'verfügbar' }
                             ]}
+                            headerBackgroundColor={'white'}
                             trigger={mediumtrigger2}
                             setTrigger={setMediumTrigger2}
                             filterFunction={(entries: any) => {
@@ -272,8 +294,8 @@ export default function Licenses({setView} : {setView: any}) {
                             pickedColor={'#EEF7FE'}
                             onChangeClickedRow={(identifier: string) => {
                                 let license = licenses.find((item) => item.lizenz_id === identifier)
-                                if (identifier){
-                                    setSelectedMedia(license.medien_id)    
+                                if (identifier) {
+                                    setSelectedMedia(license.medien_id)
                                     setSelectedLicenseId(identifier)
                                     setView('media')
                                     console.log('setting view')

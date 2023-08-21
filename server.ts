@@ -117,6 +117,7 @@ app.prepare().then(() => {
 
     server.get('/api/user-info', AuthHandler.requireSessison, (req, res) => {
         return res.send(req.session.user)
+        
     })
 
     server.get('/api/oidc-auth/:code', async (req, res, next) => {
@@ -144,7 +145,8 @@ app.prepare().then(() => {
             const access_token = resp.data.access_token
             req.session.access_token = access_token
             req.session.refresh_token = resp.data.refresh_token
-            console.log({ access_token })
+
+         
 
             return res.send()
         } catch (err: any) {

@@ -22,9 +22,9 @@ export default function AddLicenseModal({ open, setOpen }: any) {
     return (
         <>
             <CustomModal open={open} setOpen={setOpen}>
-                <Paper className=" bg-white invisible basis-[40%]">
+                <Paper className=" bg-white invisible ">
                 </Paper>
-                <Paper className=" bg-white basis-[60%] h-full flex flex-col">
+                <Paper className=" bg-white h-full flex flex-col min-w-[850px]">
                     <div className="flex p-2 h-[79px] items-center">
 
                         <label className="text-center flex-1 font-[700]">
@@ -32,25 +32,17 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                         </label>
                         <CloseIcon
                             onClick={() => setOpen(false)}
-                            className="cursor-pointer text-[#D9D9D9] text-[40px] stroke-[#D9D9D9] "
+                            className="cursor-pointer text-[#D9D9D9] text-[40px] stroke-[#D9D9D9]"
+                            sx={{
+                                fontSize: 40
+                            }}
+
                         >
                         </CloseIcon>
                     </div>
 
 
                     <div className="mt-[10px] pl-[10%] pr-[10%] pb-[5%] flex gap-2 flex-col flex-1 min-h-0">
-                        {/* <Select className="text-center"
-                            defaultValue={"1"}
-                            onChange={(e) => {
-                                e.target.value === "1" ? setElement((el) => ({ ...el, isDownloadID: true })) : setElement((el) => ({ ...el, isDownloadID: false }))
-
-
-                            }}
-                        >
-                            <MenuItem value="1">Import über DownloadID</MenuItem>
-                            <MenuItem value="2" disabled={true}>Import über Datei Upload (ODRL) </MenuItem>
-                        </Select> */}
-
                         {
                             !element.isDownloadID ?
 
@@ -60,12 +52,12 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                     2
                                 </textarea> :
                                 <div className="flex">
-                                    <TextField 
-                                    id="filled-start-adornmen" 
+                                    <TextField
+                                        id="filled-start-adornmen"
 
-                                    label="Abholnummer"
-                                   
-                                    variant="outlined"
+                                        label="Abholnummer"
+
+                                        variant="outlined"
                                         className="flex-1"
                                         error={
                                             !element.isValidDownloadID
@@ -91,61 +83,120 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                 className="
                                     gap-2
                                     h-full
-                                 grid grid-cols-[repeat(auto-fill,100px)]
-                                grid-rows-[repeat(auto-fill,100px)]"
+                                "
 
                             >
                                 {licenseDefinitions.map((el: any, index) => {
                                     let element = el[0]
                                     let metadata = element.metadata
                                     let image = metadata?.annotation[1]?.description?.value
+                                    let title = metadata?.general?.title?.value
+                                    let data = element?.data
+                                    let product_id = data?.product_id
+                                    let lizenz_geber = data?.lizenzgeber
+                                    let lizenz_typ = data?.lizenztyp
+                                    let description = metadata?.general?.description[0]?.value
+                                   
                                     return (
-
-                                        <Tooltip title={(() => {
-
-                                            return (<>
-                                                {element.status !== 204 &&
-                                                    <h1 className="text-[red]">Already Imported!</h1>
-
-                                                }
-                                                <h1>{metadata?.general?.title?.value}</h1>
-                                                <br></br>
-                                                <h1>{metadata?.general?.description?.value}</h1>
-                                            </>)
-                                        })()
-                                        }>
-
-                                            <Paper
-                                                sx={
-                                                    {
-                                                        backgroundColor: 'white',
-                                                        borderRadius: '10px',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        width: '100px',
-                                                        height: '100px',
-                                                        border: '1px solid #e7ebef',
-                                                        position: 'relative',
-                                                        backgroundImage: `url(${metadata?.annotation[1]?.description.value})`,
-                                                        backgroundRepeat: 'no-repeat',
-                                                        backgroundPosition: 'center center',
-                                                        backgroundSize: 'contain',
-                                                    }
-                                                }
+                                        <>
+                                            <div
+                                                className='h-[341px] flex pt-[20px] pl-[10px] pr-[10px]'
                                             >
-
-                                                {el[0].status !== 204 ?
-                                                    <CloseIcon
-                                                        className="absolute bottom-0 right-0 text-[red] text-3xl  stroke-[red] stroke-[3px]"
+                                                <div
+                                                    className='h-full w-[250px] mr-[25px]'
+                                                >
+                                                    <img
+                                                        className='w-full'
+                                                        src={image}
                                                     >
-                                                    </CloseIcon>
-                                                    :
-                                                    <DoneOutlineIcon
-                                                        className="absolute bottom-0 right-0 text-[green] text-3xl"
-                                                    ></DoneOutlineIcon>
-                                                }
-                                            </Paper>
-                                        </Tooltip>
+                                                    </img>
+                                                </div>
+                                                <div
+                                                    className='p-[25px]'
+                                                >
+                                                    <label
+                                                        className='font-bold text-[24px]'
+                                                    >
+                                                        {title}
+                                                    </label>
+
+                                                    <div
+                                                        className='text-[20px] text-[#585867]'
+                                                    >
+                                                        <div 
+                                                            className='mt-[10px]'
+                                                        
+                                                        >
+                                                            {description}
+                                                        </div>
+
+
+                                                        <div
+                                                            className='mt-[15px]'
+                                                        >
+                                                            Produkt-ID: {product_id}
+                                                        </div>
+                                                        <div>
+                                                            Lizenzgeber: {lizenz_geber}
+                                                        </div>
+                                                        <div>
+                                                            Lizenztyp: {lizenz_typ}
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+
+                                            </div>
+
+                                        </>
+
+                                        // <Tooltip title={(() => {
+
+                                        //     return (<>
+                                        //         {element.status !== 204 &&
+                                        //             <h1 className="text-[red]">Already Imported!</h1>
+
+                                        //         }
+                                        //         <h1>{metadata?.general?.title?.value}</h1>
+                                        //         <br></br>
+                                        //         <h1>{metadata?.general?.description?.value}</h1>
+                                        //     </>)
+                                        // })()
+                                        // }>
+
+                                        //     <Paper
+                                        //         sx={
+                                        //             {
+                                        //                 backgroundColor: 'white',
+                                        //                 borderRadius: '10px',
+                                        //                 justifyContent: 'center',
+                                        //                 alignItems: 'center',
+                                        //                 width: '100px',
+                                        //                 height: '100px',
+                                        //                 border: '1px solid #e7ebef',
+                                        //                 position: 'relative',
+                                        //                 backgroundImage: `url(${metadata?.annotation[1]?.description.value})`,
+                                        //                 backgroundRepeat: 'no-repeat',
+                                        //                 backgroundPosition: 'center center',
+                                        //                 backgroundSize: 'contain',
+                                        //             }
+                                        //         }
+                                        //     >
+
+                                        //         {el[0].status !== 204 ?
+                                        //             <CloseIcon
+                                        //                 className="absolute bottom-0 right-0 text-[red] text-3xl  stroke-[red] stroke-[3px]"
+                                        //             >
+                                        //             </CloseIcon>
+                                        //             :
+                                        //             <DoneOutlineIcon
+                                        //                 className="absolute bottom-0 right-0 text-[green] text-3xl"
+                                        //             ></DoneOutlineIcon>
+                                        //         }
+                                        //     </Paper>
+                                        // </Tooltip>
 
                                     )
                                 })}

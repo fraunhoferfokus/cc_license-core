@@ -11,6 +11,8 @@ export default function Medien({ setLicenseModal }: {
     setLicenseModal: any,
 }) {
 
+    const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
+
     // let [selectedLicenseId, setSelectedLicenseId] = useState<any>(null)
 
 
@@ -100,7 +102,6 @@ export default function Medien({ setLicenseModal }: {
 
 
 
-
     let userLicenseAssignments = licenseAssignments.filter((assignment) => assignment.inheritFrom === selectedLicense?.lizenz_id)
     let filteredUsers = users.filter((user) => userLicenseAssignments.find((assignment) => assignment.assignee === user.id))
 
@@ -118,57 +119,32 @@ export default function Medien({ setLicenseModal }: {
             {
                 selectedMedia === '' &&
                 <>
-                    <div>
+                    <div
+                        className="flex justify-between"
+                    >
                         <label
                             className="text-[#404045] font-bold text-[28px]"
-                        >Medien</label>
-                        <div
-
-                            className='mt-[60px] flex justify-between items-center'
                         >
-                            <Button
-                                variant="contained"
-                                onClick={() => {
-                                    setLicenseModal(true)
-
-                                }}
-                            >
-                                Lizenz importieren
-
-                            </Button>
-
+                            Medien
+                        </label>
+                        <div>
                             <div
-                                className='bg-white w-[50%]'
+                                className="h-[35px] bg-[rgba(0,0,0,0.06)] h-[41px] flex items-center 
+                        justify-center text-[16px] mb-[3px]"
                             >
-                                {/* <Autocomplete
-                            disablePortal
-                            id="combo-box-demo"
-                            options={products.map((option) => option.medium)}
-                            sx={{ width: 300 }}
-                            renderInput={(params) => <TextField {...params} label="" placeholder='Suche nach Medien...' />}
-                        />                    */}
+                                <label
 
-                                <TextField
-                                    placeholder='Suche nach Medien'
-                                    variant='outlined'
-                                    fullWidth
-                                    value={medium_value}
-                                    onChange={(e) => {
-                                        set_medium_value(e.target.value)
-                                        setMediumTrigger(!mediumtrigger)
-                                    }}
-                                />
+                                >
+                                    {org?.name}
+                                </label>
                             </div>
-
-
-
-
-
-
-
-                        </div >
+                            <div
+                                className="text-[rgba(0,0,0,0.6)] text-[12px]"
+                            >
+                                Die Schule, für die eine Zuweisung erfolgt
+                            </div>
+                        </div>
                     </div>
-
                     <div
                         className='h-full flex flex-col mt-[18px]'
                     >
@@ -189,7 +165,7 @@ export default function Medien({ setLicenseModal }: {
                                     { label: 'Verfügbar', id: 'verfügbar' }
 
                                 ]}
-
+                                headerBackgroundColor={'white'}
                                 highlightOnHover={true}
                                 onChangeClickedRow={(identifier: string) => {
                                     console.log({ identifier })

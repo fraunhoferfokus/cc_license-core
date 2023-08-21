@@ -41,6 +41,8 @@ export interface GeneralState {
     setSelectedLicenseId: (id: string | null) => any,
     selectedMedia:any,
     setSelectedMedia: (media: any) => any,
+    myself: any,
+    fetchMyself: () => any,
 }
 
 export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignmentState
@@ -48,6 +50,13 @@ export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignm
 export const useStore = create<MergedState>()(
     persist(
         (set, get, props) => ({
+            myself: null,
+            fetchMyself: async () =>{
+                const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/user-info`, { withCredentials: true })
+                set({
+                    myself: resp.data
+                })
+            },
             org: null,
             fetchOrg: async () => {
                 const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/org`, { withCredentials: true })

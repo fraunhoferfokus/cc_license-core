@@ -67,9 +67,9 @@ export default function AssignmentTableContainer({
             set_paginated_rows(filtered_rows.slice(page * entriesPerPage, page * entriesPerPage + entriesPerPage))
 
         },
-
         [page, filtered_rows]
     )
+
 
 
     useEffect(() => {
@@ -107,13 +107,14 @@ export default function AssignmentTableContainer({
                 <TableCell
                     sx={{
                         padding: '5px',
-                        height: 50,
-                        width: "50px",
-                        maxHeight: 50,
+                        height: 40,
+                        width: "40px",
+                        maxHeight: 40,
                     }}
 
                 >
                     <Checkbox
+                        className="p-[0px] h-[15px] w-[15px]"
                         checked={
                             pickedIdentifiers.includes(row[identifier])
                             ||
@@ -147,7 +148,7 @@ export default function AssignmentTableContainer({
                         className="overflow-hidden"
                         sx={{
                             padding: "5px",
-                            maxHeight: 50,
+                            maxHeight: 40,
                             height: 40,
                             // backgroundColor: entryBackgroundColor ? entryBackgroundColor : "inherit",
                             backgroundColor: 'none'
@@ -155,6 +156,7 @@ export default function AssignmentTableContainer({
                         }}
                     >
                         {row[id]}
+
 
                     </TableCell>
                 )
@@ -165,10 +167,10 @@ export default function AssignmentTableContainer({
     ))
 
 
-
     return (
         <>
-            <div className="flex flex-col flex-1 overflow-hidden bg-transparent">
+            <div className="flex flex-col flex-1 overflow-hidden bg-transparent             
+            ">
 
                 <TableContainer component={Paper}
                     className="flex-1"
@@ -197,10 +199,9 @@ export default function AssignmentTableContainer({
                                     align="left"
                                     sx={{
                                         height: 40,
-                                        padding: '10px',
                                         fontWeight: 600,
                                         marginRight: 16,
-                                        backgroundColor: headerBackgroundColor ? headerBackgroundColor : "white",
+                                        backgroundColor: headerBackgroundColor ? headerBackgroundColor : "#EEF7FE",
                                         // boxSizing: 'content-box',
                                     }}
                                 >Checkbox</TableCell>}
@@ -210,17 +211,40 @@ export default function AssignmentTableContainer({
                                         let header_item = header.find((item: any) => item.id === id)
                                         if (header_item?.disabled) return (<></>)
 
+
+
                                         return (
                                             <TableCell
                                                 align="left"
                                                 sx={{
                                                     padding: '5px',
                                                     fontWeight: 600,
-                                                    height: 52,
-                                                    backgroundColor: headerBackgroundColor ? headerBackgroundColor : "white",
+                                                    height: 40,
+                                                    backgroundColor: headerBackgroundColor ? headerBackgroundColor : "#EEF7FE",
                                                 }}
 
-                                            >{label}</TableCell>
+                                            >
+                                                <label>
+                                                    {label}
+                                                </label>
+                                                <img
+                                                    className="ml-[5px] cursor-pointer"
+                                                    src="/sort.svg"
+                                                    onClick={() => {
+                                                        // sort filterd rows
+                                                        let attribute = id
+                                                        const sorted_rows = filtered_rows.sort((a, b) => {
+                                                            return a[id].localeCompare(b[id])
+                                                        })
+
+                                                        set_filtered_rows(
+                                                            [...sorted_rows]
+                                                        )
+
+                                                    }}
+                                                >
+                                                </img>
+                                            </TableCell>
                                         )
                                     })
                                 }
@@ -235,10 +259,14 @@ export default function AssignmentTableContainer({
                 </TableContainer>
 
                 {!disableFooter &&
-                    <div className="pagination flex self-center mt-[10px] mb-[15px]">
-                        <div>
+                    <div className="pagination flex self-center mt-[10px] mb-[15px]
+                    text-[12px] text-[rgba(0,0,0,0.6)] justify-center items-center
+                    ">
+                        <div
+                            className=""
+                        >
                             <span
-                                className="mr-[10px]"
+                                className="mr-[10px] "
                             >
                                 Rows per page:
                             </span>
@@ -254,7 +282,7 @@ export default function AssignmentTableContainer({
                             </select>
                         </div>
                         <div
-                            className="ml-[20px] mr-[20px]"
+                            className="ml-[20px] mr-[20px] font-bold"
 
                         >
                             {page * entriesPerPage + 1}- {page * entriesPerPage + entriesPerPage} of {filtered_rows.length}
@@ -262,7 +290,7 @@ export default function AssignmentTableContainer({
                         <div>
                             <img
                                 src="/previous.svg"
-                                className="cursor-pointer"
+                                className="cursor-pointer mr-[20px]"
                                 onClick={() => {
 
                                     if (page > 0) setPage(page - 1)
