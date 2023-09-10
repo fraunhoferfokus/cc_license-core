@@ -262,14 +262,14 @@ function Home({ user }: { user: any }) {
                 <div
                   className='ml-[25px] text-xs text-[#585867] mt-[10px]'
                 >
-                  <a href='#'>
+                  <a href='/imprint'>
 
                     Impressum
                   </a>
                   &nbsp;
                   |
                   &nbsp;
-                  <a href='#'>
+                  <a href='/dataprotection'>
                     Datenschutz
 
                   </a>
