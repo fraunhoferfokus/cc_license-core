@@ -70,7 +70,7 @@ export default function Imprint() {
 
                 <p><strong>Responsible editor:</strong><br /><a href="mailto:webmaster@fokus.fraunhofer.de">webmaster</a></p>
 
-                <p><em>Please note: If you have general questions concerning the institute please refer to persons mentioned under  “Contact".</em></p>
+                
 
                 <p><b>Executive Board</b></p>
 
