@@ -67,6 +67,7 @@ declare module 'express-session' {
         access_token: string,
         refresh_token: string,
         user?: {
+            id: string,
             sub: string,
             name: string,
             preferred_username: string,

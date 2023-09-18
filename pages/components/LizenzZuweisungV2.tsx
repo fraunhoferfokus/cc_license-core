@@ -37,7 +37,13 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
     const [mediumtrigger, setMediumTrigger] = useState(false)
 
     const [pickedSelect, setPickedSelect] = useState('placeholder')
+
+
     const [selectedUsersId, setSelectedUsers] = useState<any>(users)
+
+    console.log({users})
+    console.log({selectedUsersId})
+
     const [selectedGroups, setSelectedGroups] = useState<any>([])
 
     // let constraints = pickedLicenses ? (pickedLicenses![0]!.action![0].refinement as Constraint[]) : null
@@ -159,6 +165,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         }
     }, [stepper])
 
+    
 
 
 

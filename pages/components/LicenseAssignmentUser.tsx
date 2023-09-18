@@ -46,8 +46,8 @@ export default function LicenseAssignmentUser({
 
                 const isActivated =
                     userHasThisParticularLicense &&
-                    userHasThisParticularLicense.action![0].refinement.find((item) => 
-                    item.uid === 'aktivierungsstatus' && item.rightOperand === 'true')
+                    userHasThisParticularLicense.action![0].refinement.find((item) =>
+                        item.uid === 'aktivierungsstatus' && item.rightOperand === 'true')
 
                 return (<Paper className="flex"
                     key={user.id}

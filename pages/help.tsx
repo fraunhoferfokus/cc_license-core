@@ -108,7 +108,6 @@ export default function Help() {
                 <Accordion
                     id='import'
                     expanded={selected === 'import'}
-                    onClick={() => selected !== 'import' ? setSelected('import') : setSelected('')}
                     style={{
                         display: 'Lizenzen importieren'.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none'
                     }}
@@ -116,6 +115,8 @@ export default function Help() {
                     <AccordionSummary
                         expandIcon={<Expand />}
                         aria-controls="panel1a-content"
+                        onClick={() => setSelectedSection('import', 500, 100)}
+
                         id="panel1a-header"
                     >
                         <Typography
@@ -148,11 +149,11 @@ export default function Help() {
                                 2)
                             </strong>
                             &nbsp;
-                            Nach dem Klicken des Buttons öffnet sich ein Overlay, in dem man in ein Eingabefeld eine Abholnummer eingeben kann, um ein Lizenzpaket abzurufen, das mehrere Lizenzen beinhaltet. Für den Rahmen der 
+                            Nach dem Klicken des Buttons öffnet sich ein Overlay, in dem man in ein Eingabefeld eine Abholnummer eingeben kann, um ein Lizenzpaket abzurufen, das mehrere Lizenzen beinhaltet. Für den Rahmen der
                             Erprobung wird das folgende Lizenzpaket zur Verfügung gestellt:
                             &nbsp;
                             <strong>
-                                WES-5gg-20i-jZF
+                                WES-5gg-2Oi-jZF
                             </strong>
                             <br />
 
@@ -215,7 +216,6 @@ export default function Help() {
                 <Accordion
                     id='assignment'
                     expanded={selected === 'assignment'}
-                    onClick={() => selected !== 'assignment' ? setSelected('assignment') : setSelected('')}
                     style={{
                         display: 'Lizenz zuweisen'.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none'
                     }}
@@ -223,6 +223,7 @@ export default function Help() {
                     <AccordionSummary
                         expandIcon={<Expand />}
                         aria-controls="panel2a-content"
+                        onClick={() => setSelectedSection('assignment', 500, 100)}
                         id="panel2a-header"
                     >
                         <Typography
@@ -268,19 +269,24 @@ export default function Help() {
                                 Einzellizenz:
                             </strong>
                             &nbsp;
-                            Hierbei wird eine Lizenz an einen oder mehrere Nutzer zugewiesen.
+                            Hierbei werden eine oder mehrere Einzellizenzen an einen oder mehrere Nutzer zugewiesen.
                             <br />
                             &ensp;
                             <strong>
                                 Volumenlizenz:
                             </strong>
                             &nbsp;
-                            Ähnlich wie bei der Einzellizenz wird hier eine Lizenz an einen oder mehrere Nutzer zugewiesen. Der Unterschied besteht darin, dass technisch die zugewiesen Lizenzen den gleichen Lizenzschlüssel aufweisen.
+                            Ähnlich wie bei der Einzellizenz werden hier eine oder mehrere Volumenlizenzen an einen oder mehrere Nutzer zugewiesen. Der Unterschied besteht darin, dass technisch die zugewiesen Lizenzen den gleichen Lizenzschlüssel aufweisen.
                             <br />
 
-
-
-
+                            &ensp;
+                            <strong>
+                                Gruppenlizenz:
+                            </strong>
+                            &nbsp;
+                            Hierbei werden eine oder mehrere Gruppenlizenzen an eine Gruppe oder mehrere Gruppen zugewiesen.
+                            <br />
+                            In der Erprobung werden lediglich Einzellizenzen verwendet, weshalb Einzellizenz standardmäßig ausgewählt ist.
 
                             <img
                                 src="/assignment_view.png"
@@ -289,39 +295,59 @@ export default function Help() {
                             />
                             <br />
 
+                            <strong>
+                                3) Filter-, Bätter- und Sortierfunktionalität
+                            </strong>
+                            <br></br>
+                            &nbsp;
+                            In der Lizenzzuweisungsansicht ist es möglich die Schüler einer Organisation nach Namen oder der Gruppenzughörigkeit zu filtern. Die Filterfunktionalität ist in den zwei Textfeldern dargestellt. Es kann über die Pfeiltasten am unteren Rand der Tabelle geblättert werden und die Anzahl der Dokumente beschränkt werden, die in der Tabellenansicht pro Seite angezeigt werden sollen. Die Sortierfunktionalität ist über die Pfeiltasten in der Tabellenüberschrift dargestellt. Diese Funktionalitäten werden in den folgenden Bild dargestellt.
+                            <br />
+                            <img
+                                src="/assignment_filter.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
+
+
+                            <strong>
+                                4)
+                            </strong>
+                            &nbsp;
+                            Im nächsten Schritt kann man über die Checkboxen in der Tabelle einen oder mehrere Nutzer auswählen, für die man eine Lizenzzuweisung vornehmen möchte. Der Button unten rechts sollte nun blaulich sein, um darzustellen, dass man kann den nächsten Schritt durchführen kann. Dieser muss geklickt werden:
+                            <br />
+                            <img
+                                src="/assignment_pick_user.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
+
+                            <strong>
+                                5)
+                            </strong>
+                            &nbsp;
+                            Im letzen Schritt wird angezeigt für welche(n) Nutzer und Medium die Zuweisung erfolgt und es kann eine Zuweisung vorgenommen werden:
+                            <br />
+                            <img
+                                src="/assignment_pick_assign.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
                         </Typography>
                     </AccordionDetails>
                 </Accordion>
 
-                <Accordion
-                    id='licenses'
-                    expanded={selected === 'licenses'}
-                    onClick={() => setSelectedSection('licenses', 1000, 100)}
-                    style={{
-                        display: 'Anzeige von Lizenzen'.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none'
-                    }}
-                >
-                    <AccordionSummary
-                        expandIcon={<Expand />}
-                        aria-controls="panel2a-content"
-                        id="panel2a-header"
-                    >
-                        <Typography
-                            className='text-blue-500'
-                        >Anzeige von Lizenzen</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Typography>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                            malesuada lacus ex, sit amet blandit leo lobortis eget.
-                        </Typography>
-                    </AccordionDetails>
-                </Accordion>
 
                 <Accordion
                     id='media'
                     expanded={selected === 'media'}
-                    onClick={() => setSelectedSection('media')}
                     style={{
                         display: 'Anzeige von Lizenzen'.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none'
                     }}
@@ -329,6 +355,7 @@ export default function Help() {
                     <AccordionSummary
                         expandIcon={<Expand />}
                         aria-controls="panel2a-content"
+                        onClick={() => setSelectedSection('media')}
                         id="panel2a-header"
                     >
                         <Typography
@@ -337,8 +364,143 @@ export default function Help() {
                     </AccordionSummary>
                     <AccordionDetails>
                         <Typography>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                            malesuada lacus ex, sit amet blandit leo lobortis eget.
+
+                            <strong>
+                                1)
+                            </strong>
+                            &nbsp;
+                            Im ersten Schritt muss entweder über die Dashboardansicht auf das Icon "Medien" geklickt werden oder in der Seitennavigation auf den Reiter "Medien" geklickt werden, wie im folgenden Bild dargestellt:
+                            <br />
+                            <img
+                                src="/media_view.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
+
+                            <strong>
+                                2)
+                            </strong>
+                            &nbsp;
+                            Anschließend gelangt man zu einer Tabellenansicht, wo man auf den entsprechenden Eintrag klicken kann:
+                            <br />
+                            <img
+                                src="/media.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
+
+                            <strong>
+                                3)
+                            </strong>
+                            &nbsp;
+                            Das Klicken führt dann zu einer Ansicht wo das Medium mit den entsprechenden Metadaten angezeigt wird. Die zugehörige Lizenz kann anschließend ausgewählt werden:
+                            <br />
+                            <img
+                                src="/media_book.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
+                            <strong>
+                                4)
+                            </strong>
+                            &nbsp;
+                            Nach der Auswahl der entsprechenden Lizenz wird angezeigt welche Nutzer diese Lizenz zugewiesen sind. Diese Lizenzen kann auch wieder entzogen werden, wie im folgenden Beispiel dargestellt:
+                            <br />
+                            <img
+                                src="/media_book_last.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+                        </Typography>
+                    </AccordionDetails>
+                </Accordion>
+                <Accordion
+                    id='licenses'
+                    expanded={selected === 'licenses'}
+                    style={{
+                        display: 'Anzeige von Lizenzen'.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none'
+                    }}
+                >
+                    <AccordionSummary
+                        expandIcon={<Expand />}
+                        aria-controls="panel2a-content"
+                        onClick={() => setSelectedSection('licenses', 1000, 100)}
+                        id="panel2a-header"
+                    >
+                        <Typography
+                            className='text-blue-500'
+                        >Anzeige von Lizenzen</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Typography>
+                            <strong>
+                                1)
+                            </strong>
+                            &nbsp;
+                            Im ersten Schritt muss entweder über die Dashboardansicht auf das Icon "Lizenz Übersicht" geklickt werden oder in der Seitennavigation auf den Reiter "Lizenz Übersicht" geklickt werden, wie im folgenden Bild dargestellt:
+                            <br />
+                            <img
+                                src="/licenses_view.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
+
+                            <strong>
+                                2)
+                            </strong>
+                            &nbsp;
+                            Anschließend gelangt man zu einer Tabellenansicht, wo man eine entsprechende Lizenz auswählen kann. Man ist in der Lage durch die Textfelder die entsprechende Lizenz zu filter oder durch die Pfeiltasten am unteren Rand der Tabelle zu blättern. Die Sortierfunktionalität ist über die Pfeiltasten in der Tabellenüberschrift dargestellt. Diese Funktionalitäten werden in den folgenden Bild dargestellt:
+                            <br />
+                            <img
+                                src="/licenses_first.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
+                            <strong>
+                                3)
+                            </strong>
+                            &nbsp;
+                            Das Klicken führt dann zu einer Ansicht wo das Medium mit den entsprechenden Metadaten angezeigt wird. Die zugehörige Lizenz kann anschließend ausgewählt werden:
+                            <br />
+                            <img
+                                src="/media_book.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
+                            <strong>
+                                4)
+                            </strong>
+                            &nbsp;
+                            Nach der Auswahl der entsprechenden Lizenz wird angezeigt welche Nutzer diese Lizenz zugewiesen sind. Diese Lizenzen kann auch wieder entzogen werden, wie im folgenden Beispiel dargestellt:
+                            <br />
+                            <img
+                                src="/media_book_last.png"
+                                alt="Lizenzen importieren"
+                                className="w-[100%]"
+                            />
+                            <br />
+                            <br />
+
                         </Typography>
                     </AccordionDetails>
                 </Accordion>

@@ -208,7 +208,7 @@ class LicenseAssignmentController {
             const requestingUser = req.session.user
             console.log({ requestingUser })
             const [sanisUserPromise, licenseAssignments] = await Promise.all([(
-                axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${requestingUser?.preferred_username}`, {
+                axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${requestingUser?.id}`, {
                     headers: {
                         Authorization: `Bearer ${req.session.access_token}`
                     }
