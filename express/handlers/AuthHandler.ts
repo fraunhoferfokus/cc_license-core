@@ -8,10 +8,9 @@ export class AuthHandler {
     static requireSessison: Handler = async (req, res, next) => {
         const access_token = req.headers.authorization?.split(' ')[1]
         if (access_token) req.session.access_token = access_token
-
         if (req.session.access_token) {
             try {
-                const resp = await axios.get(`${process.env.OIDC_USERINFO_ENDPOINT}`, {
+                const resp = await axios.get(`${process.env.OIDC_SANIS_USERINFO_ENDPOINT}`, {
                     headers: {
                         Authorization: `Bearer ${req.session.access_token}`
                     }
@@ -42,9 +41,7 @@ export class AuthHandler {
                         req.session.access_token = new_access_token
                         return next()
                     } catch (err: any) {
-
                         console.log(err)
-
                         return next(err)
                     }
                 }

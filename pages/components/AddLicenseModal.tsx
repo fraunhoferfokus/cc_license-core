@@ -78,11 +78,13 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                         <Paper className="
                             flex-1
+                            overflow-scroll
                         ">
                             <div
                                 className="
                                     gap-2
                                     h-full
+
                                 "
 
                             >
@@ -152,51 +154,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                                         </>
 
-                                        // <Tooltip title={(() => {
-
-                                        //     return (<>
-                                        //         {element.status !== 204 &&
-                                        //             <h1 className="text-[red]">Already Imported!</h1>
-
-                                        //         }
-                                        //         <h1>{metadata?.general?.title?.value}</h1>
-                                        //         <br></br>
-                                        //         <h1>{metadata?.general?.description?.value}</h1>
-                                        //     </>)
-                                        // })()
-                                        // }>
-
-                                        //     <Paper
-                                        //         sx={
-                                        //             {
-                                        //                 backgroundColor: 'white',
-                                        //                 borderRadius: '10px',
-                                        //                 justifyContent: 'center',
-                                        //                 alignItems: 'center',
-                                        //                 width: '100px',
-                                        //                 height: '100px',
-                                        //                 border: '1px solid #e7ebef',
-                                        //                 position: 'relative',
-                                        //                 backgroundImage: `url(${metadata?.annotation[1]?.description.value})`,
-                                        //                 backgroundRepeat: 'no-repeat',
-                                        //                 backgroundPosition: 'center center',
-                                        //                 backgroundSize: 'contain',
-                                        //             }
-                                        //         }
-                                        //     >
-
-                                        //         {el[0].status !== 204 ?
-                                        //             <CloseIcon
-                                        //                 className="absolute bottom-0 right-0 text-[red] text-3xl  stroke-[red] stroke-[3px]"
-                                        //             >
-                                        //             </CloseIcon>
-                                        //             :
-                                        //             <DoneOutlineIcon
-                                        //                 className="absolute bottom-0 right-0 text-[green] text-3xl"
-                                        //             ></DoneOutlineIcon>
-                                        //         }
-                                        //     </Paper>
-                                        // </Tooltip>
+            
 
                                     )
                                 })}

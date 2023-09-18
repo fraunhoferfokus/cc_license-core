@@ -117,7 +117,7 @@ app.prepare().then(() => {
 
     server.get('/api/user-info', AuthHandler.requireSessison, (req, res) => {
         return res.send(req.session.user)
-        
+
     })
 
     server.get('/api/oidc-auth/:code', async (req, res, next) => {
@@ -129,7 +129,7 @@ app.prepare().then(() => {
 
 
         try {
-            const resp = await axios(url, {
+            const oidcB_response = await axios(url, {
                 method: 'POST',
                 data: {
                     grant_type: 'authorization_code',
@@ -142,12 +142,27 @@ app.prepare().then(() => {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
-            const access_token = resp.data.access_token
-            req.session.access_token = access_token
-            req.session.refresh_token = resp.data.refresh_token
+            const keycloak_access_token = oidcB_response.data.access_token
+            const idp_resposne = await axios.get(`${process.env.OIDC_EXCHANGE_TOKEN_ENDPOINT}`, {
+                headers: {
+                    'Authorization': `Bearer ${keycloak_access_token}`
+                }
+            });
+            const data = idp_resposne.data
 
-         
+            console.log(keycloak_access_token)
 
+            // berarer auth
+            const user_with_context_resp = await axios.get(`${process.env.OIDC_SANIS_USERINFO_ENDPOINT}`, {
+                headers: {
+                    Authorization: `Bearer ${data.access_token}`
+                }
+            })
+            req.session.user = user_with_context_resp.data
+            req.session.access_token = keycloak_access_token
+            req.session.refresh_token = oidcB_response.data.refresh_token
+
+            console.log('user session created')
             return res.send()
         } catch (err: any) {
             console.log('no valid user session')

@@ -1,3 +1,4 @@
+import LogoutIcon from '@mui/icons-material/Logout'
 import { Policy } from 'license_manager'
 import { ActionObject, Constraint } from 'license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2'
 import { RequestContext } from 'next/dist/server/base-server'
@@ -10,10 +11,9 @@ import { useStore } from '../zustand/store'
 import AddLicenseModal from './components/AddLicenseModal'
 import Dashboardview from './components/Dashboardview'
 import LizenzZuweisungV2 from './components/LizenzZuweisungV2'
+import Licenses from './components/LizenzÜbersicht'
 import Medien from './components/Medien'
 import { ToastMessage } from './components/toastMessage'
-import Licenses from './components/LizenzÜbersicht'
-import LogoutIcon from '@mui/icons-material/Logout';
 
 
 export default dynamic(() => Promise.resolve(Home), {
@@ -24,23 +24,21 @@ export default dynamic(() => Promise.resolve(Home), {
 function Home({ user }: { user: any }) {
   const [open, setLicenseModal] = useState(false);
   const {
-    licenseDefinitions,
     fetchLicenseAssignments,
     users,
     fetchUsersAndGroups: fetchUsers,
-    groups,
-    setNotification,
-    notification,
     fetchLicenseDefinitionsV2,
-    toastProps,
-    setToastProps,
     licenseAssignments,
     fetchMyself,
-    myself
+    myself,
+    fetchOrg,
+    org
   } = useStore(state => state)
   const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
 
-
+  console.log({
+    myself
+  })
   const [view, setView] = useState('dashboard')
 
   const [pickedSelect, setPickedSelect] = useState('placeholder')
@@ -72,6 +70,7 @@ function Home({ user }: { user: any }) {
     fetchUsers()
     fetchLicenseAssignments()
     fetchMyself()
+    fetchOrg()
 
     const interval = setInterval(() => {
       fetchLicenseAssignments()
@@ -96,9 +95,9 @@ function Home({ user }: { user: any }) {
   }, [bilo])
 
   let me = users.find((user) => {
-    return user.id === myself.preferred_username
+    return user.id === myself.pid
   })
-  
+
   return (
 
     <>
@@ -110,14 +109,7 @@ function Home({ user }: { user: any }) {
             {/* border bottom with E0E0EB 1px*/}
             <div className='uppertPart flex-1'>
 
-              <div className='flex-1 h-[90px] w-full border-0 border-b border-solid border-[#E0E0EB] pl-[50px]'>
-                <div className='h-[72px] w-[72px] bg-[#F0F0F9] rounded-[50%] flex justify-center items-center text-center '>
-                  Logo & Name
-                </div>
 
-
-
-              </div>
               <div className='organization flex justify-center mt-[40px] flex-col items-center'>
                 <div>
                   <img
@@ -129,7 +121,7 @@ function Home({ user }: { user: any }) {
 
                 </div>
                 <label className='mt-[3px] font-bold text-xs'>
-                  Organization
+                  {org?.name}
                 </label>
               </div>
 
@@ -298,7 +290,7 @@ function Home({ user }: { user: any }) {
                   <LogoutIcon
 
                     onClick={() => {
-                      const redirect_logout = `${process.env.NEXT_PUBLIC_AUTH_ENDPOINT?.replace('/auth', '')}/logout?response_type=code&scope=openid&client_id=${process.env.NEXT_PUBLIC_OIDC_CLIENT_ID}`
+                      const redirect_logout = `${process.env.NEXT_PUBLIC_AUTH_ENDPOINT?.replace('/auth', '')}/logout?response_type=code&scope=openid&client_id=${process.env.NEXT_PUBLIC_OIDC_CLIENT_ID}&post_logout_redirect_uri=${process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI}`
 
                       //@ts-ignore
                       window.location = redirect_logout
