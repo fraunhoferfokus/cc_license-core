@@ -11,7 +11,6 @@ export default function Medien({ setLicenseModal }: {
     setLicenseModal: any,
 }) {
 
-    const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
 
     // let [selectedLicenseId, setSelectedLicenseId] = useState<any>(null)
 
@@ -32,7 +31,10 @@ export default function Medien({ setLicenseModal }: {
         setSelectedLicenseId,
         selectedMedia,
         setSelectedMedia,
+        myself
     } = useStore(state => state)
+    let org = myself?.personenkontexte[0]?.organisation
+
     let products: any[] = []
     let licenses: any[] = []
 

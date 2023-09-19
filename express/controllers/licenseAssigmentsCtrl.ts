@@ -204,11 +204,9 @@ class LicenseAssignmentController {
     getLicenseAssingmentForUser: express.Handler = async (req, res, next) => {
         try {
             const schema = req.query.schema
-
             const requestingUser = req.session.user
-            console.log({ requestingUser })
             const [sanisUserPromise, licenseAssignments] = await Promise.all([(
-                axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${requestingUser?.id}`, {
+                axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${requestingUser?.pid}`, {
                     headers: {
                         Authorization: `Bearer ${req.session.access_token}`
                     }
@@ -222,15 +220,9 @@ class LicenseAssignmentController {
 
             if (schema === 'urn:bilo:assignment') {
                 const { orgs, groups, email } = user
-
-                console.log({
-                    groups
-                })
-
                 const [first_name, last_name] = email.split(' ')
                 let context: { [key: string]: any } = {}
-
-
+                
                 for (const group of groups) {
                     const org = orgs.find((org:any) => org.id === group.orgid)
                     let groupLicenses = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === group.id)
@@ -315,7 +307,7 @@ class LicenseAssignmentController {
     createLicenseAssignment: express.Handler = async (req, res, next) => {
         try {
             // const authorization = req.headers.authorization
-
+       
             const config = {
                 headers: {
                     authorization: `Bearer ${req.session.access_token}`
@@ -362,8 +354,16 @@ class LicenseAssignmentController {
             switch (licenseType) {
                 case 'Einzellizenz':
                 case 'Volumenlizenz':
+                    console.log('here we are')
                     const found = licenseAssignments.find((assignment) => assignment.inheritFrom === licenseDefinitionID)
+
+                    console.log(process.env.GATEWAY_URL)
+
                     const user = (await axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${targetID}`, config)).data
+                    console.log({ user })
+
+
+
                     if (found) return res.status(400).json({ message: 'Single-License already assigned' })
                     if (role && !user.gruppen.find((gruppe: any) => gruppe.rolle === role)) {
                         return res.status(400).json({ message: 'User has no role to use this license' })

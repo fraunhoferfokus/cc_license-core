@@ -5,12 +5,8 @@ import { useStore } from '../../zustand/store'
 
 export default function Dashboardview({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
 
-    const [users, setUsers] = useState([])
-    const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
-    useEffect(() => {
-        fetchOrg()
-    }, [])
-
+    const [myself] = useStore(state => [state.myself])
+    const org = myself?.personenkontexte[0]?.organisation
 
 
 
@@ -32,7 +28,9 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                         <label
 
                         >
-                            {org?.name}
+                            {
+                                org?.name
+                            }
                         </label>
                     </div>
                     <div

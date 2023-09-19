@@ -10,13 +10,14 @@ export default function SignIn() {
 
     useEffect(() => {
         if (code) {
-            axios.get(`/api/oidc-auth/${code}`, {
-                withCredentials: true
-            }).then((resp) => {
-                router.push("/")
-            }).catch((err) => {
-                router.push("/signIn")
-            })
+            window.location.href = `${process.env.NEXT_PUBLIC_SELF_URL}/oidc-auth/${code}`
+            // axios.get(`/api/oidc-auth/${code}`, {
+            //     withCredentials: true
+            // }).then((resp) => {
+            //     router.push("/")
+            // }).catch((err) => {
+            //     router.push("/signIn")
+            // })
         }
 
     }, [code])

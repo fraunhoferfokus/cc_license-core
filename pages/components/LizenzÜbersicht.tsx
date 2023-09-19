@@ -8,16 +8,12 @@ import { transformUserToData } from './Table/UserGroupTable';
 export default function Licenses({ setView }: { setView: any }) {
     const {
         licenseDefinitions,
-        fetchLicenseAssignments,
         licenseAssignments,
-        users,
-        fetchUsersAndGroups,
-        fetchLicenseDefinitionsV2,
-        deleteLicenseAssignment,
-        setToastProps,
         setSelectedLicenseId,
         setSelectedMedia,
+        myself
     } = useStore(state => state)
+    let org = myself?.personenkontexte[0].organisation
     let products: any[] = []
     let licenses: any[] = []
     const [mediumtrigger2, setMediumTrigger2] = useState(false)
@@ -66,12 +62,7 @@ export default function Licenses({ setView }: { setView: any }) {
         })
 
     })
-
-
-    const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
-
-
-
+    
     return (
         <>
             <div

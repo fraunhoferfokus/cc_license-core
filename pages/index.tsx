@@ -1,8 +1,10 @@
 import LogoutIcon from '@mui/icons-material/Logout'
+import axios from 'axios'
 import { Policy } from 'license_manager'
 import { ActionObject, Constraint } from 'license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2'
 import { RequestContext } from 'next/dist/server/base-server'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { requireSession } from '../auth-mw/auth'
 import { toBILO } from '../helper/helper'
@@ -28,58 +30,33 @@ function Home({ user }: { user: any }) {
     users,
     fetchUsersAndGroups: fetchUsers,
     fetchLicenseDefinitionsV2,
-    licenseAssignments,
     fetchMyself,
     myself,
-    fetchOrg,
-    org
   } = useStore(state => state)
   const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
-
-  console.log({
-    myself
-  })
   const [view, setView] = useState('dashboard')
-
+  const router = useRouter()
   const [pickedSelect, setPickedSelect] = useState('placeholder')
-  const [selectedUsers, setSelectedUsers] = useState<any>(users)
-  const [selectedGroups, setSelectedGroups] = useState<any>([])
-
   // let constraints = pickedLicenses ? (pickedLicenses![0]!.action![0].refinement as Constraint[]) : null
 
   let pickedLicense: (Policy & { metadata: any }) | null = pickedLicenses ? pickedLicenses[0] as any : null
   let bilo = toBILO(pickedLicense!)
-  const currentlyAssignedAmount =
-    bilo?.lizenztyp === 'Einzellizenz' ?
-      licenseAssignments?.filter((item) => item.inheritFrom! === pickedLicense?._id).length
-      :
-      bilo?.lizenztyp === 'Gruppenlizenz' ? licenseAssignments?.filter((item) =>
-        item.inheritFrom! === pickedLicense?._id
-        &&
-        ((item.action![0] as ActionObject).refinement as Constraint[]).find((item) => item.rightOperand === 'group')
-      ).length :
-
-        pickedLicenses?.filter((license: Policy) => licenseAssignments.find((assignment) => assignment.inheritFrom === license.uid)).length
-
   const autoC = useRef(null);
 
 
-  const [page, setPage] = useState('assignment')
+
+
   useEffect(() => {
     fetchLicenseDefinitionsV2()
     fetchUsers()
     fetchLicenseAssignments()
     fetchMyself()
-    fetchOrg()
-
     const interval = setInterval(() => {
       fetchLicenseAssignments()
     }, 1000 * 5)
-
     return () => {
       clearInterval(interval)
     }
-
   }, [])
 
   useEffect(() => {
@@ -95,14 +72,14 @@ function Home({ user }: { user: any }) {
   }, [bilo])
 
   let me = users.find((user) => {
-    return user.id === myself.pid
+    return user.id === myself?.pid
   })
 
+  const org = myself?.personenkontexte[0]?.organisation
+
+
   return (
-
     <>
-
-
       <div className="flex h-full w-full">
         <div className="flex max-w-[280px] h-full">
           <div className='mt-[20px] flex-1 flex flex-col w-[280px]'>
@@ -288,14 +265,9 @@ function Home({ user }: { user: any }) {
                     {me?.email}
                   </label>
                   <LogoutIcon
-
-                    onClick={() => {
-                      const redirect_logout = `${process.env.NEXT_PUBLIC_AUTH_ENDPOINT?.replace('/auth', '')}/logout?response_type=code&scope=openid&client_id=${process.env.NEXT_PUBLIC_OIDC_CLIENT_ID}&post_logout_redirect_uri=${process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI}`
-
-                      //@ts-ignore
-                      window.location = redirect_logout
+                    onClick={async() => {
+                      window.location.href = `${process.env.NEXT_PUBLIC_SELF_URL}/logout`
                     }}
-
                     className='cursor-pointer'
                   ></LogoutIcon>
                 </div>
@@ -304,7 +276,7 @@ function Home({ user }: { user: any }) {
                 <label
                   className='text-[12px] text-[#585867] text-opacity-[0.6]'
                 >
-                  Administrator
+                  {me?.role}
                 </label>
               </div>
 

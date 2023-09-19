@@ -6,11 +6,10 @@ import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import { LicenseDefinitionState, licenseDefinitionSlice } from './licenseDefinitionSlice'
 import { LicenseAssignmentState, licenseAssignmentSlice } from './licenseAssignmentSlice'
+import { SANIS_USER } from '../server'
 
 export interface GeneralState {
     fetchLicenseDefinitionsV2: () => any,
-    org: any,
-    fetchOrg: () => any,
     users: any[],
     groups: any[],
     fetchUsersAndGroups: () => any,
@@ -41,7 +40,7 @@ export interface GeneralState {
     setSelectedLicenseId: (id: string | null) => any,
     selectedMedia:any,
     setSelectedMedia: (media: any) => any,
-    myself: any,
+    myself: SANIS_USER | null,
     fetchMyself: () => any,
 }
 
@@ -57,11 +56,7 @@ export const useStore = create<MergedState>()(
                     myself: resp.data
                 })
             },
-            org: null,
-            fetchOrg: async () => {
-                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/org`, { withCredentials: true })
-                set({ org: resp.data })
-            },
+            
             selectedLicenseId: null,
             setSelectedLicenseId: (id: string | null) => {
                 set({ selectedLicenseId: id })
@@ -120,8 +115,6 @@ export const useStore = create<MergedState>()(
                 set({ notifications: data })
             },
             notifications: []
-
-
         }),
         {
             name: 'license-storage',

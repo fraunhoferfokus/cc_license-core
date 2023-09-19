@@ -12,15 +12,11 @@ import UserGroupTable, { transformUserToData } from "./Table/UserGroupTable";
 
 
 export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
-
     const {
         licenseDefinitions,
         fetchLicenseAssignments,
         users,
         fetchUsersAndGroups: fetchUsers,
-        groups,
-        setNotification,
-        notification,
         fetchLicenseDefinitionsV2,
         pickedUserIds,
         stepper,
@@ -29,23 +25,13 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         pickedLicenseType,
         setPickedLicenseType,
         createLicenseAssignment,
-        toastProps,
-        setToastProps,
+        myself
     } = useStore(state => state)
     const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
-
     const [mediumtrigger, setMediumTrigger] = useState(false)
-
     const [pickedSelect, setPickedSelect] = useState('placeholder')
-
-
     const [selectedUsersId, setSelectedUsers] = useState<any>(users)
-
-    console.log({users})
-    console.log({selectedUsersId})
-
     const [selectedGroups, setSelectedGroups] = useState<any>([])
-
     // let constraints = pickedLicenses ? (pickedLicenses![0]!.action![0].refinement as Constraint[]) : null
 
     let pickedLicense: (Policy & { metadata: any }) | null = pickedLicenses ? pickedLicenses[0] as any : null
@@ -165,18 +151,14 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         }
     }, [stepper])
 
-    
+
 
 
 
 
     let [selectedLicenses, setSelectedLicenses] = useState<any>(null)
-    const [org, fetchOrg] = useStore(state => [state.org, state.fetchOrg])
 
-    useEffect(() => {
-        fetchOrg()
-    }, [])
-
+    let org = myself?.personenkontexte[0]?.organisation
 
     return (
 
