@@ -21,7 +21,8 @@ export default function AssignmentTableContainer({
     onChangeClickedRow,
     entryBackgroundColor,
     headerBackgroundColor,
-    highlightOnHover
+    highlightOnHover,
+    triggerSetBoxFunction
 }: any
 
 ) {
@@ -40,10 +41,15 @@ export default function AssignmentTableContainer({
         if (trigger) {
             setTrigger(false)
             const filteredRows = filterFunction(data)
-            console.log({ filteredRows })
             set_filtered_rows(filteredRows)
+            if (triggerSetBoxFunction) {
+                const selectedUserIds = triggerSetBoxFunction(pickedIdentifiers, setPickedIdentifiers)
+                setPickedIdentifiers(selectedUserIds)
+            }
         }
     }, [trigger]);
+
+
 
 
     useEffect(() => {
@@ -116,14 +122,14 @@ export default function AssignmentTableContainer({
                     <Checkbox
                         className="p-[0px] h-[15px] w-[15px]"
                         checked={
-                            pickedIdentifiers.includes(row[identifier])
-                            ||
-                            checkBoxCheckedFunction && checkBoxCheckedFunction(row[identifier])
+                            pickedIdentifiers.includes(row[identifier]) ? true : false
+                                ||
+                                (checkBoxCheckedFunction && checkBoxCheckedFunction(row[identifier])) ? true : false
                         }
                         disabled={
-                            singleCheckBox && pickedIdentifiers.length > 0 && !pickedIdentifiers.includes(row[identifier])
-                            ||
-                            checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier])
+                            singleCheckBox && pickedIdentifiers.length > 0 && !pickedIdentifiers.includes(row[identifier]) ? true : false
+                                ||
+                                checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier]) ? true : false
 
                         }
                         onChange={(event) => {

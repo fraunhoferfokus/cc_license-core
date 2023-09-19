@@ -39,7 +39,7 @@ export default function SignIn() {
                 className="mb-[20px]"
             >
                 <a
-                    href="/dataprotection"
+                    href={process.env.NEXT_PUBLIC_DATENSCHUTZ_URL}
                     className="text-[#2d7592] text-underline"
                 >
                     Datenschutz
@@ -48,7 +48,7 @@ export default function SignIn() {
                 |
                 &nbsp;
                 <a
-                    href="/imprint"
+                    href={process.env.NEXT_PUBLIC_IMPRESSUM_URL}
                     className="text-[#2d7592] text-underline"
                 >
                     Impressum

@@ -231,18 +231,16 @@ function Home({ user }: { user: any }) {
                 <div
                   className='ml-[25px] text-xs text-[#585867] mt-[10px]'
                 >
-                  <a href='/imprint'>
+                  <a href={process.env.NEXT_PUBLIC_IMPRESSUM_URL}>
 
                     Impressum
                   </a>
                   &nbsp;
                   |
                   &nbsp;
-                  <a href='/dataprotection'>
+                  <a href={process.env.NEXT_PUBLIC_DATENSCHUTZ_URL}>
                     Datenschutz
-
                   </a>
-
                 </div>
 
               </div>

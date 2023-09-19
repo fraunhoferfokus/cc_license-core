@@ -254,10 +254,10 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                         </p>
                         <UserGroupTable
 
-                            onChangedUsers={(users) => {
-                                console.log({ users })
-                            }}
-                            onChangedGroups={(groups) => { }}
+                            // onChangedUsers={(users) => {
+                            //     console.log({ users })
+                            // }}
+                            // onChangedGroups={(groups) => { }}
                         />
                     </div>
                 </>
@@ -301,7 +301,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                 <p
                                     className="mt-[30px] font-bold text-[#404045] text-[20px]"
                                 >
-                                    2. Gewählter Nutzer
+                                    2. Gewählte Nutzer
                                 </p>
                                 <TableComponent
                                     data={users.filter((user) => pickedUserIds.includes(user.id)).map((user) => (transformUserToData(user)))}
@@ -450,25 +450,21 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                             { label: 'Max Nutzer', id: 'lizenzanzahl' },
                                             { label: 'Zugewiesen', id: 'zugewiesen' },
                                             { label: 'Verfügbar', id: 'verfügbar' }
-
                                         ]}
                                         onChangeCheckBox={(identifiers: any[]) => {
                                             setSelectedLicenses(identifiers)
-                                            // setSelectedMedia(identifiers)
                                         }}
-
                                         checkBoxDisabledFunction={(identifier: any) => {
-
-                                            const license = licenses.find((license) => license.lizenz_id === identifier)
-                                            if (license.verfügbar === 0) return true
+                                            return true;
+                                            // const license = licenses.find((license) => license.lizenz_id === identifier)
+                                            // if (license.verfügbar === 0) return true
 
                                         }}
                                         checkBoxCheckedFunction={(identifier: any) => {
-                                            const license = licenses.find((license) => license.lizenz_id === identifier)
-                                            console.log(license.verfügbar)
-                                            if (license.verfügbar === 0) return true
+                                            return true;
+                                            // const license = licenses.find((license) => license.lizenz_id === identifier)
+                                            // if (license.verfügbar === 0) return true
                                         }}
-
                                         checkbox={true}
                                         // singleCheckBox={true}
                                         identifier={'lizenz_id'}

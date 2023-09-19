@@ -46,7 +46,7 @@ export default function UserGroupTable({
 
     let [filteredEntries, setFilteredEntries] = useState<any[]>([])
 
-    let [selectedValue, setSelectedValue] = useState<any>([])
+    let [selectedGroupsSelect, setSelectedGroupsSelect] = useState<any>([])
 
     let [selectedUser, setSelectedUser] = useState<any>([])
 
@@ -54,7 +54,7 @@ export default function UserGroupTable({
     useEffect(() => {
         setTriggerChild(true)
     },
-        [selectedValue, selectedUser]
+        [selectedGroupsSelect, selectedUser]
     )
 
 
@@ -64,14 +64,13 @@ export default function UserGroupTable({
         fetchLicenseAssignments()
     }, [])
 
-    useEffect(() => {
-        if (onChangedUsers) {
-            onChangedUsers(pickedUserIds)
-        }
-    },
-        [pickedUserIds]
-
-    )
+    // useEffect(() => {
+    //     if (onChangedUsers) {
+    //         console.log({ pickedUserIds })
+    //         onChangedUsers(pickedUserIds)
+    //     }
+    // },
+    //     [pickedUserIds])
 
     return (
         <>
@@ -96,7 +95,7 @@ export default function UserGroupTable({
                             placeholder=""
                             inputValue={""}
                             onChange={(value) => {
-                                setSelectedValue(value)
+                                setSelectedGroupsSelect(value)
                             }}
 
 
@@ -105,14 +104,9 @@ export default function UserGroupTable({
                                     ...styles, height: 50, maxHeight: 50, padding: 0, margin: 0, lineHeight: 50,
                                     zIndex: 50, display: 'flex', alignItems: 'center'
                                 }),
-                                // placeholder: (styles) => ({ ...styles, justifyItems: 'center', display: 'flex' }),
                                 container: (styles) => ({ ...styles, padding: 0, margin: 0, zIndex: 100 }),
-                                // option: (styles) => ({ ...styles, padding: 0, margin: 0, lineHeight: 50, zIndex:100 }),
-                                // control: () => ({height:50 })
                             }}
-                            value={selectedValue}
-
-
+                            value={selectedGroupsSelect}
                         />
 
                         <p>
@@ -131,9 +125,6 @@ export default function UserGroupTable({
                             value={selectedUser}
                             onChange={(event) => {
                                 setSelectedUser(event.target.value)
-
-
-
                             }}
                             placeholder="Suche nach Nutzer"
                         >
@@ -152,11 +143,17 @@ export default function UserGroupTable({
                     data={users.map((user: any) => transformUserToData(user))}
                     trigger={triggerChild}
                     setTrigger={setTriggerChild}
+                    triggerSetBoxFunction={(pickedIdentifiers: any, setPickedIdentifiers: any) => {
+                        let selectedUserIds = groups.filter((group) => {
+                            return selectedGroupsSelect.map((selected: any) => selected.value).includes(group.id)
+                        })?.map((group) => group.users).flat()
+                        return selectedUserIds
+                    }}
                     filterFunction={(data: any[]) => {
                         let filteredData = []
-                        if (selectedValue.length > 0) {
+                        if (selectedGroupsSelect.length > 0) {
                             filteredData = data.filter((row: any) => {
-                                for (const { value } of selectedValue) {
+                                for (const { value } of selectedGroupsSelect) {
                                     if (row.groupIds.includes(value)) {
                                         return true
                                     }
@@ -182,7 +179,7 @@ export default function UserGroupTable({
                         return filteredData
                     }}
                     checkbox={pickedLicenseType !== 'Lerngruppenlizenz'}
-                    singleCheckBox={pickedLicenseType === 'Einzellizenz'}
+                    // singleCheckBox={pickedLicenseType === 'Einzellizenz'}
                     identifier={'nutzerId'}
                     header={[
                         { label: 'Vorname', id: 'vorname' },
