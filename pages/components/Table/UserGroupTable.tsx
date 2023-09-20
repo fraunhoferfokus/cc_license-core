@@ -64,13 +64,13 @@ export default function UserGroupTable({
         fetchLicenseAssignments()
     }, [])
 
-    // useEffect(() => {
-    //     if (onChangedUsers) {
-    //         console.log({ pickedUserIds })
-    //         onChangedUsers(pickedUserIds)
-    //     }
-    // },
-    //     [pickedUserIds])
+    useEffect(() => {
+        if (onChangedUsers) {
+            console.log({ pickedUserIds })
+            onChangedUsers(pickedUserIds)
+        }
+    },
+        [pickedUserIds])
 
     return (
         <>

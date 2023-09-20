@@ -57,6 +57,7 @@ export default function Medien({ setLicenseModal }: {
 
 
         let aggregate = {
+            product_id,
             medien_id,
             medium,
             verlag,
@@ -67,7 +68,8 @@ export default function Medien({ setLicenseModal }: {
         }
 
         if (!products.find((item) => item.product_id === product_id)) products.push(aggregate)
-        if (!licenses.find((item) => item.medien_id === medien_id)) licenses.push({
+
+        licenses.push({
             lizenz_id: license.uid,
             lizenzcode,
             medien_id,
@@ -85,6 +87,7 @@ export default function Medien({ setLicenseModal }: {
     let [medium_value, set_medium_value] = useState('')
     const [mediumtrigger, setMediumTrigger] = useState(false)
     const [mediumtrigger2, setMediumTrigger2] = useState(false)
+    const [mediumtrigger3, setMediumTrigger3] = useState(false)
 
 
     let product = products.find((item) => item.medien_id === selectedMedia)
@@ -104,15 +107,22 @@ export default function Medien({ setLicenseModal }: {
 
 
 
+
     let userLicenseAssignments = licenseAssignments.filter((assignment) => assignment.inheritFrom === selectedLicense?.lizenz_id)
-    let filteredUsers = users.filter((user) => userLicenseAssignments.find((assignment) => assignment.assignee === user.id))
+
 
 
     const [selectedUserIds, setSelectedUsers] = useState<any[]>([])
+    let targetedUser = licenseAssignments.filter((assignment) => assignment.inheritFrom === selectedLicense?.lizenz_id).map((assignment) => assignment.assignee)[0]
 
     useEffect(() => {
         if (licenseTypes.length > 0) setMediumTrigger2(!mediumtrigger2)
     }, [licenseTypes])
+
+
+    useEffect(() => {
+        setMediumTrigger3(!mediumtrigger3)
+    }, [targetedUser])
 
 
 
@@ -354,9 +364,7 @@ export default function Medien({ setLicenseModal }: {
                                         </h4>
                                         <TableComponent
                                             data={
-
-                                                filteredUsers.map((user) => transformUserToData(user))
-
+                                                targetedUser ? [transformUserToData(users.find((user) => user.id === targetedUser))] : []
                                             }
                                             header={[
                                                 { label: 'Vorname', id: 'vorname' },
@@ -371,6 +379,11 @@ export default function Medien({ setLicenseModal }: {
                                                 setSelectedUsers(selected)
                                             }}
                                             checkbox={true}
+                                            setTrigger={setMediumTrigger3}
+                                            trigger={mediumtrigger3}
+                                            filterFunction={(data: any[]) => {
+                                                return data
+                                            }}
                                         />
                                         <div className='flex justify-end'>
 

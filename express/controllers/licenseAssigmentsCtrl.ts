@@ -307,10 +307,12 @@ class LicenseAssignmentController {
     createLicenseAssignment: express.Handler = async (req, res, next) => {
         try {
             // const authorization = req.headers.authorization
-       
+            const sessionCookie = req.headers.cookie;
+
             const config = {
                 headers: {
-                    authorization: `Bearer ${req.session.access_token}`
+                    'Cookie': sessionCookie
+                    // authorization: `Bearer ${req.session.access_token}`
                 }
             }
 
@@ -420,7 +422,7 @@ class LicenseAssignmentController {
 
             return res.status(204).send()
         } catch (err: any) {
-            console.log(err)
+            console.log(err.response.data)
             return res.status(err?.response?.statusCode || 500).json(err)
         }
     }

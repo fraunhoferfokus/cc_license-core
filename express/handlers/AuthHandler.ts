@@ -11,8 +11,7 @@ export class AuthHandler {
         
         if (req.session.access_token) {
             try {
-                console.log(req.session.access_token)
-                const keycloack_access_token = req.session.access_token
+                 const keycloack_access_token = req.session.access_token
                 const keycloak_sanis_exchange_resp = await axios.get(`${process.env.OIDC_EXCHANGE_TOKEN_ENDPOINT}`, {
                     headers: {
                         Authorization: `Bearer ${keycloack_access_token}`

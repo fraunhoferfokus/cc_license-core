@@ -30,7 +30,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
     const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
     const [mediumtrigger, setMediumTrigger] = useState(false)
     const [pickedSelect, setPickedSelect] = useState('placeholder')
-    const [selectedUsersId, setSelectedUsers] = useState<any>(users)
+    const [selectedUsersId, setSelectedUsers] = useState<any>([])
     const [selectedGroups, setSelectedGroups] = useState<any>([])
     // let constraints = pickedLicenses ? (pickedLicenses![0]!.action![0].refinement as Constraint[]) : null
 
@@ -50,7 +50,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
     const autoC = useRef(null);
 
-    let [selectedMedia, setSelectedMedia] = useState<any>([])
+    let [selectedMedia, setSelectedMedia] = useState<any>(null)
 
     useEffect(() => {
         fetchLicenseDefinitionsV2()
@@ -81,9 +81,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
 
     let validStepOne = pickedUserIds.length > 0
-    let validStepTwo = selectedMedia.length > 0
-
-    let firstUser = users.find((user) => user.id === pickedUserIds[0])
+    let validStepTwo = selectedMedia ? true : false
 
     let products: any[] = []
 
@@ -113,10 +111,12 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
             max_nutzer,
             zugewiesen,
             verfügbar,
+            product_id
         }
 
+
         if (!products.find((item) => item.product_id === product_id)) products.push(aggregate)
-        if (!licenses.find((item) => item.medien_id === medien_id)) licenses.push({
+        licenses.push({
             lizenz_id: license.uid,
             lizenzcode,
             medien_id,
@@ -128,8 +128,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
             verfügbar,
         })
     })
-
-
+    let [selectedLicenses, setSelectedLicenses] = useState<any>([])
     let [medium_value, set_medium_value] = useState('')
 
 
@@ -139,24 +138,32 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
 
     useEffect(() => {
-        if (stepper === 3) {
 
+        if (stepper === 2) {
+            const sliced_licenses = licenses.filter((license) => license.medien_id === selectedMedia && !licenseAssignments.find((assignment) => assignment.inheritFrom === license.lizenz_id)).slice(0, selectedUsersId.length)
+            setSelectedLicenses(sliced_licenses)
+        }
+
+        if (stepper === 3) {
             for (let i = 0; i < selectedLicenses?.length; i++) {
-                createLicenseAssignment(selectedLicenses[i], selectedUsersId[i].id)
+                createLicenseAssignment(selectedLicenses[i].lizenz_id, selectedUsersId[i])
             }
             setStepper(0)
-            setSelectedLicenses(null)
             setSelectedUsers([])
             setPickedLicenseType('Einzel')
+            setSelectedLicenses([])
         }
     }, [stepper])
 
+    useEffect(() => {
+        console.log(selectedUsersId)
+    }, [selectedUsersId])
+
+    useEffect(() => console.log(selectedLicenses), [selectedLicenses])
 
 
 
 
-
-    let [selectedLicenses, setSelectedLicenses] = useState<any>(null)
 
     let org = myself?.personenkontexte[0]?.organisation
 
@@ -253,11 +260,10 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                             2. Lerngruppe oder Klasse auswählen
                         </p>
                         <UserGroupTable
-
-                            // onChangedUsers={(users) => {
-                            //     console.log({ users })
-                            // }}
-                            // onChangedGroups={(groups) => { }}
+                            onChangedUsers={(selectedUserIds) => {
+                                setSelectedUsers(selectedUserIds)
+                            }}
+                            onChangedGroups={(groups) => { }}
                         />
                     </div>
                 </>
@@ -337,7 +343,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                         3. Gewähltes Medium
                                     </p>
                                     <TableComponent
-                                        data={selectedMedia.length > 0 ? [products.find((product) => product.medien_id === selectedMedia[0])] : []}
+                                        data={selectedMedia ? [products.find((product) => product.medien_id === selectedMedia)] : []}
                                         checkbox={false}
                                         header={[
                                             { label: 'Medien-ID', id: 'medien_id' },
@@ -392,7 +398,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
                                         ]}
                                         onChangeCheckBox={(identifiers: any[]) => {
-                                            setSelectedMedia(identifiers)
+                                            setSelectedMedia(identifiers[0])
                                         }}
                                         checkbox={true}
                                         singleCheckBox={true}
@@ -417,9 +423,11 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
                                         checkBoxDisabledFunction={(identifier: any) => {
                                             const product = products.find((product) => product.medien_id === identifier)
-                                            if (product.verfügbar === 0) return true
+                                            if (product.verfügbar < selectedUsersId.length) return true
                                         }}
-
+                                        checkBoxDisabledMessage={
+                                            "Die Anzahl der verfügbaren Lizenzen ist geringer als die Anzahl der ausgewählten Nutzer."
+                                        }
                                         trigger={mediumtrigger}
                                         setTrigger={setMediumTrigger}
                                     />
@@ -440,7 +448,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                     className="w-full bg-white flex-1 flex"
                                 >
                                     <TableComponent
-                                        data={licenses.filter((license) => license.medien_id === selectedMedia[0])}
+                                        data={licenses.filter((license) => license.medien_id === selectedMedia && !licenseAssignments.find((assignment) => assignment.inheritFrom === license.lizenz_id)).slice(0, selectedUsersId.length)}
                                         header={[
                                             { label: 'Lizenz_id', id: 'lizenz_id', disabled: true },
                                             { label: 'Lizenz-Code', id: 'lizenzcode' },
@@ -452,7 +460,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                             { label: 'Verfügbar', id: 'verfügbar' }
                                         ]}
                                         onChangeCheckBox={(identifiers: any[]) => {
-                                            setSelectedLicenses(identifiers)
+                                            // setSelectedLicenses(identifiers)
                                         }}
                                         checkBoxDisabledFunction={(identifier: any) => {
                                             return true;

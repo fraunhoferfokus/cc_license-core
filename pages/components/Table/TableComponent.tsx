@@ -1,6 +1,9 @@
-import { Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import { max } from "moment"
-import { useEffect, useState } from "react"
+import GppMaybeIcon from '@mui/icons-material/GppMaybe';
+import { Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import Tooltip from '@mui/material/Tooltip';
+import { useEffect, useState } from "react";
+
+
 
 
 export default function AssignmentTableContainer({
@@ -22,11 +25,11 @@ export default function AssignmentTableContainer({
     entryBackgroundColor,
     headerBackgroundColor,
     highlightOnHover,
-    triggerSetBoxFunction
+    triggerSetBoxFunction,
+    checkBoxDisabledMessage,
 }: any
 
 ) {
-
     const [filtered_rows, set_filtered_rows] = useState<any[]>(data)
     const [paginated_rows, set_paginated_rows] = useState<any[]>(data)
     const [pickedIdentifiers, setPickedIdentifiers] = useState<any[]>([])
@@ -116,11 +119,13 @@ export default function AssignmentTableContainer({
                         height: 40,
                         width: "40px",
                         maxHeight: 40,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                     }}
-
                 >
                     <Checkbox
-                        className="p-[0px] h-[15px] w-[15px]"
+                        className="p-[0px] h-[15px] w-[15px] ml-[10px]"
                         checked={
                             pickedIdentifiers.includes(row[identifier]) ? true : false
                                 ||
@@ -139,8 +144,17 @@ export default function AssignmentTableContainer({
                                 setPickedIdentifiers(pickedIdentifiers.filter((id: string) => id !== row[identifier]))
                             }
                         }}
-
                     />
+                    {
+                        checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier]) && checkBoxDisabledMessage ?
+                            <Tooltip title={checkBoxDisabledMessage} placement="top">
+                                <GppMaybeIcon
+                                    color='warning'
+                                ></GppMaybeIcon>
+                            </Tooltip> : <></>
+
+                    }
+
                 </TableCell>
             }
 
