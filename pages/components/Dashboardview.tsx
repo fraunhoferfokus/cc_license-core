@@ -2,9 +2,10 @@ import { Divider, Link, MenuItem, MenuList, Paper } from "@mui/material"
 import { useEffect, useState } from "react"
 import FunctionButton from "./Buttons/FunctionButton"
 import { useStore } from '../../zustand/store'
+import { useRouter } from "next/router"
 
 export default function Dashboardview({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
-
+    const router = useRouter()
     const [myself] = useStore(state => [state.myself])
     const org = myself?.personenkontexte[0]?.organisation
 
@@ -138,11 +139,16 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                 <div className="flex flex-col justify-center items-center mr-[50px] ">
                     <div
                         className="w-[70px] h-[70px] bg-[#48AAF0] bg-opacity-[40%] rounded-[10px] flex justify-center items-center cursor-pointer"
+                        onClick={() => {
+                            console.log('see help')
+                            router.push('/help')
+                        }}
                     >
                         <img
                             src="/questionicon.svg"
                             height={50}
                             width={50}
+
                         >
                         </img>
                     </div>

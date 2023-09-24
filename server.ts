@@ -47,9 +47,9 @@ const port = parseInt(process.env.PORT || '4001')
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
-const client_secret = process.env.OIDC_CLIENT_SECRET!
-const client_id = process.env.OIDC_CLIENT_ID!
-const token_endpoint = process.env.OIDC_TOKEN_ENDPOINT!
+const client_secret = process.env.KEYCLOAK_CLIENT_SECRET!
+const client_id = process.env.KEYCLOAK_CLIENT_ID!
+const token_endpoint = process.env.KEYCLOAK_TOKEN_ENDPOINT!
 const deployURL = process.env.DEPLOY_URL!
 
 export interface SANIS_USER {
@@ -127,21 +127,21 @@ app.prepare().then(() => {
                     client_id,
                     client_secret,
                     code,
-                    redirect_uri: `${process.env.OIDC_REDIRECT_URI}`
+                    redirect_uri: `${process.env.REDIRECT_URI}`
                 },
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
             const keycloak_access_token = keycloak_response.data.access_token
-            const keycloak_exchange_sanis_response = await axios.get(`${process.env.OIDC_EXCHANGE_TOKEN_ENDPOINT}`, {
+            const keycloak_exchange_sanis_response = await axios.get(`${process.env.KEYCLOAK_EXCHANGE_TOKEN_ENDPOINT}`, {
                 headers: {
                     'Authorization': `Bearer ${keycloak_access_token}`
                 }
             });
             const data = keycloak_exchange_sanis_response.data
             // berarer auth
-            const user_with_context_resp = await axios.get(`${process.env.OIDC_SANIS_USERINFO_ENDPOINT}`, {
+            const user_with_context_resp = await axios.get(`${process.env.SANIS_USERINFO_ENDPOINT}`, {
                 headers: {
                     Authorization: `Bearer ${data.access_token}`
                 }
@@ -155,7 +155,7 @@ app.prepare().then(() => {
             if (rolle !== 'Leit') {
                 const id_token_hint = id_token
                 const post_logout_redirect_uri = `${self_url}/forbidden`
-                const logout_url = `${process.env.OIDC_LOGOUT_URL}?response_type=code&scope=openid&client_id=${process.env.OIDC_CLIENT_ID}&id_token_hint=${id_token_hint}&post_logout_redirect_uri=${post_logout_redirect_uri}`
+                const logout_url = `${process.env.KEYCLOAK_LOGOUT_URL}?response_type=code&scope=openid&client_id=${process.env.KEYCLOAK_CLIENT_ID}&id_token_hint=${id_token_hint}&post_logout_redirect_uri=${post_logout_redirect_uri}`
                 return res.redirect(logout_url)
             } else {
                 req.session.user = user_with_context_resp.data
@@ -168,8 +168,11 @@ app.prepare().then(() => {
                 // const keycloak_response = sanis_resp
                 req.session.id_token = keycloak_response.data.id_token
             }
+            console.log({self_url})
             return res.redirect(`${self_url}`)
         } catch (err: any) {
+            console.log(err)
+            console.log(err.response.data)
             console.log('no valid user session')
             return res.status(err.response.statusCode || 500).send(err.response.data)
         }
@@ -182,8 +185,8 @@ app.prepare().then(() => {
     server.get('/api/logout', AuthHandler.requireSessison, async (req, res) => {
         try {
             const id_token_hint = req.session.id_token
-            const post_logout_redirect_uri = process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI
-            const url = `${process.env.OIDC_LOGOUT_URL}?response_type=code&scope=openid&client_id=${process.env.OIDC_CLIENT_ID}&id_token_hint=${id_token_hint}&post_logout_redirect_uri=${post_logout_redirect_uri}`
+            const post_logout_redirect_uri = process.env.NEXT_PUBLIC_REDIRECT_URI
+            const url = `${process.env.KEYCLOAK_LOGOUT_URL}?response_type=code&scope=openid&client_id=${process.env.KEYCLOAK_CLIENT_ID}&id_token_hint=${id_token_hint}&post_logout_redirect_uri=${post_logout_redirect_uri}`
             req.session.destroy((err) => {
                 if (err) return next(err)
 

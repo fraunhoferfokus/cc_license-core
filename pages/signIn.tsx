@@ -22,7 +22,7 @@ export default function SignIn() {
 
     }, [code])
 
-    const auth_url = `${process.env.NEXT_PUBLIC_AUTH_ENDPOINT}?response_type=code&scope=openid&client_id=${process.env.NEXT_PUBLIC_OIDC_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI}`;
+    const auth_url = `${process.env.NEXT_PUBLIC_KEYCLOAK_AUTH_ENDPOINT}?response_type=code&scope=openid&client_id=${process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}`;
 
     return <>
         <div className="bg-[#e7ebef] flex items-center justify-center h-[100%] flex-col">
