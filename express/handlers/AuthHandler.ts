@@ -16,8 +16,10 @@ export class AuthHandler {
 
     static requireSessison: Handler = async (req, res, next) => {
         const access_token = req.headers.authorization?.split(' ')[1]
+
+
         if (access_token) req.session.access_token = access_token
-        
+
         if (req.session.access_token) {
             try {
                 const keycloack_access_token = req.session.access_token
@@ -27,13 +29,13 @@ export class AuthHandler {
                     }
                 })
                 const sanis_access_token = sanis_response.data.access_token
-    
+                const sanis_refresh_token = sanis_response.data.refresh_token
                 const sanis_user_resp = await axios.get(`${SANIS_USERINFO_ENDPOINT}`, {
                     headers: {
                         Authorization: `Bearer ${sanis_access_token}`
                     }
                 })
-    
+                req.session.sanis_refresh_token = sanis_refresh_token
                 req.session.user = sanis_user_resp.data
                 return next()
             } catch (err: any) {
@@ -55,7 +57,7 @@ export class AuthHandler {
                                 }
                             }
                         )
-    
+
                         const sanis_access_token = sanis_resp.data.access_token
                         const sanis_user_resp = await axios.get(`${SANIS_USERINFO_ENDPOINT}`, {
                             headers: {
@@ -69,7 +71,7 @@ export class AuthHandler {
                         return next(err)
                     }
                 }
-    
+
                 return next(err)
             }
         }

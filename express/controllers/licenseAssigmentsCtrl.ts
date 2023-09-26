@@ -1,4 +1,4 @@
-import { unstable_useId } from "@mui/material";
+import { keyframes, unstable_useId } from "@mui/material";
 import axios from "axios";
 import express from "express";
 import { LicenseDefinitionModel, Policy } from "license_manager";
@@ -205,6 +205,11 @@ class LicenseAssignmentController {
         try {
             const schema = req.query.schema
             const requestingUser = req.session.user
+
+            console.log({
+                requestingUser
+            })
+
             const [sanisUserPromise, licenseAssignments] = await Promise.all([(
                 axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${requestingUser?.pid}`, {
                     headers: {
@@ -218,17 +223,22 @@ class LicenseAssignmentController {
             const userID = user.id
             let userLicenseAssignments = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === userID)
 
+
+
             if (schema === 'urn:bilo:assignment') {
                 const { orgs, groups, email } = user
                 const [first_name, last_name] = email.split(' ')
                 let context: { [key: string]: any } = {}
-                
+
+
                 for (const group of groups) {
-                    const org = orgs.find((org:any) => org.id === group.orgid)
+
+                    const org_map = orgs.find((org:any) => Object.keys(org).some((key) => key === group.orgid))
+                    const org = org_map[group.orgid]
+
                     let groupLicenses = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === group.id)
                     .map((assignment) =>( assignment.inheritFrom as string)?.split('/').pop())
 
-                    console.log({org})
                     if (context[group.orgid] === undefined) {
                         context[group.orgid] = {
                             school_name:org.school_name,
