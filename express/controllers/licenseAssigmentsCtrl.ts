@@ -207,6 +207,7 @@ class LicenseAssignmentController {
             const requestingUser = req.session.user
 
             console.log({
+                access_token: req.session.access_token,
                 requestingUser
             })
 
@@ -233,22 +234,32 @@ class LicenseAssignmentController {
 
                 for (const group of groups) {
 
-                    const org_map = orgs.find((org:any) => Object.keys(org).some((key) => key === group.orgid))
+                    const org_map = orgs.find((org: any) => Object.keys(org).some((key) => key === group.orgid))
                     const org = org_map[group.orgid]
 
                     let groupLicenses = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === group.id)
-                    .map((assignment) =>( assignment.inheritFrom as string)?.split('/').pop())
+                        .map((assignment) => (assignment.inheritFrom as string)?.split('/').pop())
 
                     if (context[group.orgid] === undefined) {
                         context[group.orgid] = {
-                            school_name:org.school_name,
+                            school_name: org.school_name,
                             classes: [],
                             workgroups: [],
-                            roles: org.roles,
+                            roles: org.roles?.map((role: string) => {
+                                let map: { [key: string]: any } = {
+                                    "Leit": "staff",
+                                    "Lehr": "teacher",
+                                    "Lern": "student"
+                                }
+                                let val = map[role]
+                                if (!val) return 'student'
+                                return val
+                            }),
+
                             licenses: []
                         }
-                    }else{
-                        if(group.type ==='Klasse') {
+                    } else {
+                        if (group.type === 'Klasse') {
                             context[group.orgid]['classes'].push({
                                 name: group.name,
                                 id: group.id,
@@ -288,8 +299,7 @@ class LicenseAssignmentController {
 
             return res.json(userLicenseAssignments)
         } catch (err: any) {
-            console.log(err)
-            return res.status(err?.response?.statusCode || 500).json(err)
+            return res.status(err?.response?.statusCode || 500).json(err?.response?.data)
         }
 
     }

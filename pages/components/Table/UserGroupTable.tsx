@@ -5,14 +5,19 @@ import { useStore } from "../../../zustand/store";
 import TableComponent from "./TableComponent";
 
 export function transformUserToData(user: any) {
-    let [nachname, vorname] = user.email.split(' ')
-    return {
-        nachname,
-        vorname,
-        klasse: user.groups.filter((group: any) => group.type === 'Klasse').map((group: any) => group.displayName).join(', '),
-        arbeitsgruppe: user.groups.filter((group: any) => group.type !== 'Klasse').map((group: any) => group.displayName).join(', '),
-        nutzerId: user.id,
-        groupIds: user.groups.map((group: any) => group.id)
+    console.log({ user })
+    if (user) {
+        let [nachname, vorname] = user?.email.split(' ')
+        return {
+            nachname,
+            vorname,
+            klasse: user.groups.filter((group: any) => group.type === 'Klasse').map((group: any) => group.displayName).join(', '),
+            arbeitsgruppe: user.groups.filter((group: any) => group.type !== 'Klasse').map((group: any) => group.displayName).join(', '),
+            nutzerId: user.id,
+            groupIds: user.groups.map((group: any) => group.id),
+            role: user.role
+        }
+
     }
 }
 
@@ -186,7 +191,8 @@ export default function UserGroupTable({
                         { label: 'Nachname', id: 'nachname' },
                         { label: 'Arbeitsgruppe', id: 'arbeitsgruppe' },
                         { label: 'Klasse', id: 'klasse' },
-                        { label: 'NutzerId', id: 'nutzerId' }
+                        { label: 'NutzerId', id: 'nutzerId' },
+                        { label: 'Rolle', id: 'role'}
                     ]}
                     onChangeCheckBox={(identifiers: any[]) => {
                         setPickedUserIds(identifiers)

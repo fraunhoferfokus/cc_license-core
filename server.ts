@@ -178,6 +178,12 @@ app.prepare().then(() => {
         }
     })
 
+    server.get('/api/access_token', (req,res,next) => {
+        return res.json({
+            access_token: req.session.access_token
+        })
+    })
+    
     // server.get('/access_token', AuthHandler.requireSessison, (req, res) => {
     //     return res.send(req.session.access_token)
     // })

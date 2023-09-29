@@ -82,7 +82,7 @@ export default function Help() {
                 <Autocomplete
                     disablePortal
                     id="combo-box-demo"
-                    options={['Lizenz zuweisen', 'Lizenzen importieren', 'Anzeige von Lizenzen', 'Anzeige von Medien'].filter((item) =>
+                    options={['Lizenz zuweisen', 'Lizenzen importieren', 'Anzeige von Medien','Anzeige von Lizenzen', ].filter((item) =>
                         item.toLowerCase().includes(filter.toLowerCase())
                     )}
                     renderInput={(params) => <TextField {...params} label="Filter"

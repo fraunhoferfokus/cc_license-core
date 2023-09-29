@@ -14,7 +14,6 @@ export default function Medien({ setLicenseModal }: {
 
     // let [selectedLicenseId, setSelectedLicenseId] = useState<any>(null)
 
-
     const { id } = useParams<any>();
 
 
@@ -35,8 +34,11 @@ export default function Medien({ setLicenseModal }: {
     } = useStore(state => state)
     let org = myself?.personenkontexte[0]?.organisation
 
+
+
     let products: any[] = []
     let licenses: any[] = []
+
 
     licenseDefinitions?.forEach((grouped_liceses) => {
         let license = grouped_liceses[0]
@@ -83,6 +85,9 @@ export default function Medien({ setLicenseModal }: {
 
     })
 
+    console.log(licenses.filter((license) => license.medien_id ==='urn:bilo:medium:COR-220053802'))
+
+
     // let [selectedMedia, setSelectedMedia] = useState<any>('')
     let [medium_value, set_medium_value] = useState('')
     const [mediumtrigger, setMediumTrigger] = useState(false)
@@ -113,7 +118,7 @@ export default function Medien({ setLicenseModal }: {
 
 
     const [selectedUserIds, setSelectedUsers] = useState<any[]>([])
-    let targetedUser = licenseAssignments.filter((assignment) => assignment.inheritFrom === selectedLicense?.lizenz_id).map((assignment) => assignment.assignee)[0]
+    let targetedUserId = licenseAssignments.filter((assignment) => assignment.inheritFrom === selectedLicense?.lizenz_id).map((assignment) => assignment.assignee)[0]
 
     useEffect(() => {
         if (licenseTypes.length > 0) setMediumTrigger2(!mediumtrigger2)
@@ -122,7 +127,12 @@ export default function Medien({ setLicenseModal }: {
 
     useEffect(() => {
         setMediumTrigger3(!mediumtrigger3)
-    }, [targetedUser])
+    }, [targetedUserId])
+
+
+    let user = users.find((user) => {
+        return user.id === targetedUserId
+    })
 
 
 
@@ -340,7 +350,7 @@ export default function Medien({ setLicenseModal }: {
                                         }}
 
 
-                                        disableFooter={true}
+                                        // disableFooter={true}
                                         highlightOnHover={true}
                                         pickedColor={'#EEF7FE'}
                                         onChangeClickedRow={(identifier: string) => {
@@ -364,7 +374,7 @@ export default function Medien({ setLicenseModal }: {
                                         </h4>
                                         <TableComponent
                                             data={
-                                                targetedUser ? [transformUserToData(users.find((user) => user.id === targetedUser))] : []
+                                                user ? [transformUserToData(user)] : []
                                             }
                                             header={[
                                                 { label: 'Vorname', id: 'vorname' },
