@@ -21,7 +21,11 @@ export const licenseDefinitionSlice: StateCreator<
     = ((set, get) =>
     ({
         fetchLicenseDefinitionsV2: async () => {
-            const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseDefinitions`)
+            const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseDefinitions`,
+                {
+                    withCredentials: true,
+                }
+            )
             let data: Policy[] = resp.data
 
             const groupMapper = new Map<string, Policy[]>()

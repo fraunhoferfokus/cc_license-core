@@ -171,7 +171,12 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                                     // import via downloadID
                                     if (element.isDownloadID) {
-                                        axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseInformations/import2/${element.downloadID}`)
+                                        axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseInformations/import2/${element.downloadID}`,
+                                            {  
+                                                withCredentials: true,
+                                            }
+                                        
+                                        )
                                             .then(async (resp) => {
                                                 setElement((el) => ({ ...el, isValidDownloadID: true }))
 

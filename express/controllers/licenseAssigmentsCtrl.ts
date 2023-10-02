@@ -307,7 +307,12 @@ class LicenseAssignmentController {
 
     getLicenseAssignments: express.Handler = async (req, res, next) => {
         try {
-            let licenseAssignments = await LicenseAssignmentDAO.findAll()
+            const orgId = req.session.user?.personenkontexte[0].organisation.id
+            let licenseAssignments = (await LicenseAssignmentDAO.findAll()).filter((policy) => {
+                const action = policy.action![0] as ActionObject
+                const refinement = action.refinement.find((refinement) => { return refinement.uid === 'organisation' })
+                return refinement?.rightOperand === orgId
+            })
             return res.json(licenseAssignments)
         } catch (err: any) {
             return res.status(err?.response?.statusCode || 500).json(err)
@@ -328,7 +333,7 @@ class LicenseAssignmentController {
         try {
             // const authorization = req.headers.authorization
             const sessionCookie = req.headers.cookie;
-
+            const orgId = req.session.user?.personenkontexte[0].organisation.id
             const config = {
                 headers: {
                     'Cookie': sessionCookie
@@ -337,7 +342,7 @@ class LicenseAssignmentController {
             }
 
             const { licenseDefinitionID, targetID } = req.body
-            const licenseDefinition: Policy = (await axios.get(`${licenseDefinitionID}`)).data
+            const licenseDefinition: Policy = (await axios.get(`${licenseDefinitionID}`, config)).data
             const licenseAssignments = await LicenseAssignmentDAO.findAll()
             const constraints = (licenseDefinition.action![0] as ActionObject).refinement as Constraint[]
             const licenseType = constraints.find((constraint) => constraint.uid === 'lizenztyp')!.rightOperand
@@ -365,6 +370,12 @@ class LicenseAssignmentController {
                             rightOperand: "false",
                             operator: "eq",
                             leftOperand: "event"
+                        },
+                        {
+                            uid: "organisation",
+                            leftOperand: "system",
+                            operator: "eq",
+                            rightOperand: orgId!,
                         }
                     ]
                 }],
@@ -442,6 +453,7 @@ class LicenseAssignmentController {
 
             return res.status(204).send()
         } catch (err: any) {
+            console.log('err')
             console.log(err.response.data)
             return res.status(err?.response?.statusCode || 500).json(err)
         }
@@ -449,10 +461,18 @@ class LicenseAssignmentController {
 
     deleteLicenseAssignment: express.Handler = async (req, res, next) => {
         try {
-            console.log(req.params.id)
+            const sessionCookie = req.headers.cookie;
+            const orgId = req.session.user?.personenkontexte[0].organisation.id
+            const config = {
+                headers: {
+                    'Cookie': sessionCookie
+                    // authorization: `Bearer ${req.session.access_token}`
+                }
+            }
+
             const licenseAssignments = await LicenseAssignmentDAO.findAll()
             const licenseAssignment = await LicenseAssignmentDAO.findById(req.params.id)
-            const licenseDefinition: Policy = (await axios.get(`${licenseAssignment.inheritFrom}`)).data
+            const licenseDefinition: Policy = (await axios.get(`${licenseAssignment.inheritFrom}`, config)).data
             // const permissions = licenseDefinition.permissions!
 
             let definitionConstraints = (licenseDefinition.action![0] as ActionObject).refinement as Constraint[]

@@ -5,7 +5,6 @@ import { useStore } from "../../../zustand/store";
 import TableComponent from "./TableComponent";
 
 export function transformUserToData(user: any) {
-    console.log({ user })
     if (user) {
         let [nachname, vorname] = user?.email.split(' ')
         return {
