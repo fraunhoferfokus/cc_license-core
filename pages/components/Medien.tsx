@@ -48,12 +48,23 @@ export default function Medien({ setLicenseModal }: {
         let medien_id = metadata.general.identifier
         let verlag = license.assignee
         let zugewiesen = licenseAssignments.filter((item) => item.target === product_id).length
-        let verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
         let medium = license.metadata.general.title.value
 
         // get the last slash after splitting 
         let lizenzcode = license.uid.split('/').pop()
         let lizenztyp = license.action![0].refinement.find((item) => item.uid === 'lizenztyp')?.rightOperand
+
+
+        let verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
+        // let verfügbar
+
+        // if (lizenztyp === 'Einzellizenz') {
+        //     console.log({ zugewiesen })
+        //     verfügbar = zugewiesen ? 0 : 1
+        // } else {
+        //     verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
+        // }
+
 
         let cover = license.metadata.annotation[0].description.value
 
@@ -84,8 +95,6 @@ export default function Medien({ setLicenseModal }: {
         })
 
     })
-
-    console.log(licenses.filter((license) => license.medien_id ==='urn:bilo:medium:COR-220053802'))
 
 
     // let [selectedMedia, setSelectedMedia] = useState<any>('')
@@ -325,7 +334,23 @@ export default function Medien({ setLicenseModal }: {
                                         Alle Lizenzen für: {product?.medium.split(' ').slice(1).join(' ')}
                                     </h4>
                                     <TableComponent
-                                        data={licenses.filter((license) => license.medien_id === selectedMedia)}
+                                        data={licenses.filter((license) => license.medien_id === selectedMedia).map((attributes) => {
+                                            let { verfügbar, lizenztyp, product_id, lizenz_id } = attributes
+                                            let zugewiesen = licenseAssignments.filter((item) => item.inheritFrom === lizenz_id).length
+
+                                            if (lizenztyp === 'Einzellizenz') {
+                                                verfügbar = zugewiesen ? 0 : 1
+                                            } else {
+                                                verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
+                                            }
+
+                                            return {
+                                                ...attributes,
+                                                zugewiesen: zugewiesen ? 1 : 0,
+                                                verfügbar
+                                            }
+
+                                        })}
                                         header={[
                                             { label: 'Lizenz_id', id: 'lizenz_id', disabled: true },
                                             { label: 'Lizenz-Code', id: 'lizenzcode' },

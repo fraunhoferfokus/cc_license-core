@@ -238,7 +238,12 @@ class LicenseAssignmentController {
                     const org = org_map[group.orgid]
 
                     let groupLicenses = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === group.id)
-                        .map((assignment) => (assignment.inheritFrom as string)?.split('/').pop())
+                        .map((assignment) => {
+                            const action = assignment.action![0] as ActionObject
+                            const refinement = action.refinement;
+                            const code = refinement?.find((refinement) => { return refinement.uid === 'lizenzcode' })?.rightOperand;
+                            return code;
+                        })
 
                     if (context[group.orgid] === undefined) {
                         context[group.orgid] = {
@@ -280,7 +285,12 @@ class LicenseAssignmentController {
 
                 // })
 
-                let licenses = userLicenseAssignments.map((assignment) => (assignment.inheritFrom as string).split('/').pop())
+                let licenses = userLicenseAssignments.map((assignment) => {
+                    const action = assignment.action![0] as ActionObject
+                    const refinement = action.refinement;
+                    const code = refinement?.find((refinement) => { return refinement.uid === 'lizenzcode' })?.rightOperand;
+                    return code;
+                })
 
 
                 return res.json({
@@ -343,6 +353,7 @@ class LicenseAssignmentController {
 
             const { licenseDefinitionID, targetID } = req.body
             const licenseDefinition: Policy = (await axios.get(`${licenseDefinitionID}`, config)).data
+            const lizenzcode = licenseDefinition.action![0].refinement.find((refinement) => refinement.uid === 'lizenzcode')?.rightOperand
             const licenseAssignments = await LicenseAssignmentDAO.findAll()
             const constraints = (licenseDefinition.action![0] as ActionObject).refinement as Constraint[]
             const licenseType = constraints.find((constraint) => constraint.uid === 'lizenztyp')!.rightOperand
@@ -376,6 +387,12 @@ class LicenseAssignmentController {
                             leftOperand: "system",
                             operator: "eq",
                             rightOperand: orgId!,
+                        },
+                        {
+                            uid: "lizenzcode",
+                            leftOperand: "system",
+                            operator: "eq",
+                            rightOperand: lizenzcode!,
                         }
                     ]
                 }],
