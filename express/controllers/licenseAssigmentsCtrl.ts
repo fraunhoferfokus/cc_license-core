@@ -237,6 +237,9 @@ class LicenseAssignmentController {
                     const org_map = orgs.find((org: any) => Object.keys(org).some((key) => key === group.orgid))
                     const org = org_map[group.orgid]
 
+
+                    org.roles = Array.from(new Set(org.roles))
+
                     let groupLicenses = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === group.id)
                         .map((assignment) => {
                             const action = assignment.action![0] as ActionObject

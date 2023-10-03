@@ -18,6 +18,32 @@ export default function Licenses({ setView }: { setView: any }) {
     let licenses: any[] = []
     const [mediumtrigger2, setMediumTrigger2] = useState(false)
 
+
+    let [filterMap, setFilterMap] = useState<{
+        lizenztyp: {
+            label: string,
+            value: string
+        },
+        verlag: string,
+        medien_id: string,
+        medium: string
+    }>({
+        lizenztyp: { label: 'Einzellizenz', value: 'Einzellizenz' },
+        verlag: '',
+        medien_id: '',
+        medium: ''
+
+    })
+
+
+
+    useEffect(() => {
+        setMediumTrigger2(!mediumtrigger2)
+
+    }, [filterMap])
+
+
+
     // let [selectedMedia, setSelectedMedia] = useState<any>('')
 
     licenseDefinitions?.forEach((grouped_liceses) => {
@@ -62,7 +88,7 @@ export default function Licenses({ setView }: { setView: any }) {
         })
 
     })
-    
+
     return (
         <>
             <div
@@ -141,7 +167,12 @@ export default function Licenses({ setView }: { setView: any }) {
                             <TextField
                                 placeholder="Verlag"
                                 className="bg-white max-w-[700px]  w-[300px]"
-
+                                onChange={(e) => {
+                                    setFilterMap({
+                                        ...filterMap,
+                                        verlag: e.target.value
+                                    })
+                                }}
                             >
 
                             </TextField>
@@ -153,40 +184,30 @@ export default function Licenses({ setView }: { setView: any }) {
                         </div>
 
 
-                        <div
-                            className='mr-[10px]'
+                        <Select
+                            className='h-[41px] max-w-[700px]  w-[300px]'
+                            options={
+                                [
+                                    { label: 'Einzellizenz', value: 'Einzellizenz' },
+                                    { label: 'Volumenlizenz', value: 'Volumenlizenz' },
+                                    { label: 'Gruppenlizenz', value: 'Gruppenlizenz' }
+                                ]
+                            }
+                            onChange={(value) => {
+                                setFilterMap({
+                                    ...filterMap,
+                                    lizenztyp: value as any
+                                })
+                            }}
+                            value={filterMap.lizenztyp}
+                            // isMulti={true}
+                            placeholder='Lizenztyp'
+                            styles={{
+                                container: (provided) => ({ ...provided, width: 300, height: 55 }),
+                                control: (provided) => ({ ...provided, height: 55, minHeight: 55 }),
 
-                        >
-                            <TextField
-                                placeholder="Lizenztyp"
-                                className="bg-white max-w-[700px]  w-[300px]"
-
-                            >
-
-                            </TextField>
-                            <div
-                                className='mt-[5px] pl-[5px]'
-                            >
-                                Lizenztyp
-                            </div>
-                        </div>
-
-                        <div
-                            className='mr-[10px]'
-
-                        >
-                            <TextField
-                                placeholder="Benutzererkennung"
-                                className="bg-white max-w-[700px]  w-[300px]"
-
-                            >
-
-                            </TextField>
-                            <div
-                                className='mt-[5px] pl-[5px]'
-                            >
-                                Benutzererkennung                        </div>
-                        </div>
+                            }}
+                        />
 
                         <div
                             className='mr-[10px]'
@@ -195,7 +216,12 @@ export default function Licenses({ setView }: { setView: any }) {
                             <TextField
                                 placeholder="Medien ID"
                                 className="bg-white max-w-[700px]  w-[300px]"
-
+                                onChange={(e) => {
+                                    setFilterMap({
+                                        ...filterMap,
+                                        medien_id: e.target.value
+                                    })
+                                }}
                             >
 
                             </TextField>
@@ -215,7 +241,12 @@ export default function Licenses({ setView }: { setView: any }) {
                             <TextField
                                 placeholder="Medium"
                                 className="bg-white max-w-[700px]  w-[300px]"
-
+                                onChange={(e) => {
+                                    setFilterMap({
+                                        ...filterMap,
+                                        medium: e.target.value
+                                    })
+                                }}
                             >
 
                             </TextField>
@@ -262,22 +293,42 @@ export default function Licenses({ setView }: { setView: any }) {
                                 { label: 'Verlag', id: 'verlag' },
                                 { label: 'Lizenztyp', id: 'lizenztyp' },
                                 { label: 'Max Nutzer', id: 'lizenzanzahl' },
+                                { label: 'Medium', id: 'medium' },
                                 { label: 'Zugewiesen', id: 'zugewiesen' },
-                                { label: 'Verfügbar', id: 'verfügbar' }
+
+                                { label: 'Verfügbar', id: 'verfügbar' },
+
                             ]}
                             headerBackgroundColor={'white'}
                             trigger={mediumtrigger2}
                             setTrigger={setMediumTrigger2}
                             filterFunction={(entries: any) => {
+
+                                if (filterMap.lizenztyp.value) {
+                                    entries = entries.filter((item:any) => {
+                                        return item.lizenztyp.toLowerCase().indexOf(filterMap.lizenztyp.value.toLowerCase()) > -1
+                                    })
+                                }
+
+                                if (filterMap.verlag) {
+                                    entries = entries.filter((item:any) => {
+                                        return item.verlag.toLowerCase().indexOf(filterMap.verlag.toLowerCase()) > -1
+                                    })
+                                }
+
+                                if (filterMap.medien_id) {
+                                    entries = entries.filter((item:any) => {
+                                        return item.medien_id.toLowerCase().indexOf(filterMap.medien_id.toLowerCase()) > -1
+                                    })
+                                }
+
+                                if (filterMap.medium) {
+                                    entries = entries.filter((item:any) => {
+                                        return item.medium.toLowerCase().indexOf(filterMap.medium.toLowerCase()) > -1
+                                    })
+                                }
+                                
                                 return entries
-                                // if (licenseTypes.length === 0) return entries
-                                // let filtered = []
-                                // for (const entry of entries) {
-                                //     if (licenseTypes.map((item) => item.value).includes(entry.lizenztyp)) {
-                                //         filtered.push(entry)
-                                //     }
-                                // }
-                                // return filtered
                             }}
 
 

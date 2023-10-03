@@ -52,6 +52,7 @@ function Home({ user }: { user: any }) {
     fetchLicenseAssignments()
     fetchMyself()
     const interval = setInterval(() => {
+      console.log('fetching license assignments')
       fetchLicenseAssignments()
     }, 1000 * 5)
     return () => {

@@ -152,23 +152,24 @@ app.prepare().then(() => {
             const id_token = keycloak_response.data.id_token
             const self_url = process.env.NEXT_PUBLIC_SELF_URL?.replace('/api', '')
 
-            if (rolle !== 'Leit') {
-                const id_token_hint = id_token
-                const post_logout_redirect_uri = `${self_url}/forbidden`
-                const logout_url = `${process.env.KEYCLOAK_LOGOUT_URL}?response_type=code&scope=openid&client_id=${process.env.KEYCLOAK_CLIENT_ID}&id_token_hint=${id_token_hint}&post_logout_redirect_uri=${post_logout_redirect_uri}`
-                return res.redirect(logout_url)
-            } else {
-                req.session.user = user_with_context_resp.data
-                req.session.access_token = keycloak_access_token
-                // req.session.refresh_token = keycloak_response.data.refresh_token
-                req.session.sanis_refresh_token = data.refresh_token
+            // if (rolle !== 'Leit') {
+            //     const id_token_hint = id_token
+            //     const post_logout_redirect_uri = `${self_url}/forbidden`
+            //     const logout_url = `${process.env.KEYCLOAK_LOGOUT_URL}?response_type=code&scope=openid&client_id=${process.env.KEYCLOAK_CLIENT_ID}&id_token_hint=${id_token_hint}&post_logout_redirect_uri=${post_logout_redirect_uri}`
+            //     return res.redirect(logout_url)
+            // }
 
-                console.log({ sanis: req.session.sanis_refresh_token })
+            req.session.user = user_with_context_resp.data
+            req.session.access_token = keycloak_access_token
+            // req.session.refresh_token = keycloak_response.data.refresh_token
+            req.session.sanis_refresh_token = data.refresh_token
 
-                // const keycloak_response = sanis_resp
-                req.session.id_token = keycloak_response.data.id_token
-            }
-            console.log({self_url})
+            console.log({ sanis: req.session.sanis_refresh_token })
+
+            // const keycloak_response = sanis_resp
+            req.session.id_token = keycloak_response.data.id_token
+
+            // console.log({userAbortedAccesTOken: })
             return res.redirect(`${self_url}`)
         } catch (err: any) {
             console.log(err)
@@ -178,12 +179,12 @@ app.prepare().then(() => {
         }
     })
 
-    server.get('/api/access_token', (req,res,next) => {
+    server.get('/api/access_token', (req, res, next) => {
         return res.json({
             access_token: req.session.access_token
         })
     })
-    
+
     // server.get('/access_token', AuthHandler.requireSessison, (req, res) => {
     //     return res.send(req.session.access_token)
     // })

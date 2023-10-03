@@ -18,6 +18,8 @@ export default function SignIn() {
             // }).catch((err) => {
             //     router.push("/signIn")
             // })
+        } else {
+            window.location.href = `${process.env.NEXT_PUBLIC_KEYCLOAK_AUTH_ENDPOINT}?response_type=code&scope=openid&client_id=${process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}`
         }
 
     }, [code])
@@ -29,11 +31,11 @@ export default function SignIn() {
             <div
                 className="flex-1 flex justify-centers items-center"
             >
-            <Button variant="contained" href={auth_url}
-                
+                {/* <Button variant="contained" href={auth_url}
 
-                >Sign In with {process.env.BROKER_NAME || 'moin.schule'}</Button>
-                
+
+                >Sign In with {process.env.BROKER_NAME || 'moin.schule'}</Button> */}
+
             </div>
             <div
                 className="mb-[20px]"

@@ -23,11 +23,13 @@ export function transformUserToData(user: any) {
 
 export default function UserGroupTable({
     onChangedUsers,
-    onChangedGroups
+    onChangedGroups,
+    users
 }:
     {
         onChangedUsers?: (users: any[]) => void,
-        onChangedGroups?: (groups: any[]) => void
+        onChangedGroups?: (groups: any[]) => void,
+        users: any[]
     }
 ) {
 
@@ -35,7 +37,6 @@ export default function UserGroupTable({
 
 
     const {
-        users,
         pickedLicenseType,
         setPickedLicenseType,
         fetchUsersAndGroups: fetchUsers,
@@ -93,7 +94,7 @@ export default function UserGroupTable({
                         <Select
                             isMulti
                             name="colors"
-                            options={groupOptions}
+                            options={users.length > 0 ? groupOptions : []}
                             className="basic-multi-select"
                             classNamePrefix="select"
                             placeholder=""

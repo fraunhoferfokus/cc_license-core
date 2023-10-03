@@ -44,7 +44,7 @@ export default function Medien({ setLicenseModal }: {
         let license = grouped_liceses[0]
         let product_id = license.target
         let metadata = license.metadata
-        let max_nutzer = license.action![0].refinement.find((item) => item.uid === 'lizenzanzahl')?.rightOperand
+            let max_nutzer = license.action![0].refinement.find((item) => item.uid === 'lizenzanzahl')?.rightOperand
         let medien_id = metadata.general.identifier
         let verlag = license.assignee
         let zugewiesen = licenseAssignments.filter((item) => item.target === product_id).length

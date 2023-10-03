@@ -44,10 +44,12 @@ export const licenseAssignmentSlice: StateCreator<MergedState,
             })
         },
         fetchLicenseAssignments: async () => {
-            const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`)
-            set({ licenseAssignments: resp.data })
-
-
+            try{
+                const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`)
+                set({ licenseAssignments: resp.data })
+            }catch(err) {
+                window.location.href = `${process.env.NEXT_PUBLIC_REDIRECT_URI}`
+            }
         },
         licenseAssignments: [],
         setPickedUserIds(userIds: string[]) {

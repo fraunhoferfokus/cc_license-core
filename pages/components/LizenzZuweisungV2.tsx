@@ -57,13 +57,16 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         fetchUsers()
         fetchLicenseAssignments()
 
-        const interval = setInterval(() => {
-            fetchLicenseAssignments()
-        }, 1000 * 5)
+    
+        // const interval = setInterval(() => {
+        //     console.log('fetching license assignments2')
 
-        return () => {
-            clearInterval(interval)
-        }
+        //     fetchLicenseAssignments()
+        // }, 1000 * 5)
+
+        // return () => {
+        //     clearInterval(interval)
+        // }
 
     }, [])
 
@@ -259,12 +262,29 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                         >
                             2. Lerngruppe oder Klasse auswählen
                         </p>
-                        <UserGroupTable
+                        {
+                            
+                            pickedLicenseType === 'Einzellizenz' &&
+
+                            <UserGroupTable
                             onChangedUsers={(selectedUserIds) => {
                                 setSelectedUsers(selectedUserIds)
                             }}
+                            users={users}
                             onChangedGroups={(groups) => { }}
-                        />
+                        />}
+
+                        {
+                            (pickedLicenseType === 'Volumenlizenz' || pickedLicenseType === 'Lerngruppenlizenz' )&&
+                             <UserGroupTable
+                             onChangedUsers={(selectedUserIds) => {
+                                 setSelectedUsers(selectedUserIds)
+                             }}
+                             users={[]}
+                             onChangedGroups={(groups) => { }}
+                         />
+                        }
+                     
                     </div>
                 </>
 
