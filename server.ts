@@ -152,12 +152,12 @@ app.prepare().then(() => {
             const id_token = keycloak_response.data.id_token
             const self_url = process.env.NEXT_PUBLIC_SELF_URL?.replace('/api', '')
 
-            // if (rolle !== 'Leit') {
-            //     const id_token_hint = id_token
-            //     const post_logout_redirect_uri = `${self_url}/forbidden`
-            //     const logout_url = `${process.env.KEYCLOAK_LOGOUT_URL}?response_type=code&scope=openid&client_id=${process.env.KEYCLOAK_CLIENT_ID}&id_token_hint=${id_token_hint}&post_logout_redirect_uri=${post_logout_redirect_uri}`
-            //     return res.redirect(logout_url)
-            // }
+            if (rolle !== 'Leit') {
+                const id_token_hint = id_token
+                const post_logout_redirect_uri = `${self_url}/forbidden`
+                const logout_url = `${process.env.KEYCLOAK_LOGOUT_URL}?response_type=code&scope=openid&client_id=${process.env.KEYCLOAK_CLIENT_ID}&id_token_hint=${id_token_hint}&post_logout_redirect_uri=${post_logout_redirect_uri}`
+                return res.redirect(logout_url)
+            }
 
             req.session.user = user_with_context_resp.data
             req.session.access_token = keycloak_access_token
