@@ -1,6 +1,6 @@
 import { Autocomplete, AutocompleteRenderInputParams, Button, TextField } from '@mui/material';
 import { useStore } from '../../zustand/store';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, use, useEffect, useState } from 'react';
 import TableComponent from './Table/TableComponent';
 import Select from 'react-select';
 import { transformUserToData } from './Table/UserGroupTable';
@@ -44,7 +44,7 @@ export default function Medien({ setLicenseModal }: {
         let license = grouped_liceses[0]
         let product_id = license.target
         let metadata = license.metadata
-            let max_nutzer = license.action![0].refinement.find((item) => item.uid === 'lizenzanzahl')?.rightOperand
+        let max_nutzer = license.action![0].refinement.find((item) => item.uid === 'lizenzanzahl')?.rightOperand
         let medien_id = metadata.general.identifier
         let verlag = license.assignee
         let zugewiesen = licenseAssignments.filter((item) => item.target === product_id).length
@@ -137,6 +137,12 @@ export default function Medien({ setLicenseModal }: {
     useEffect(() => {
         setMediumTrigger3(!mediumtrigger3)
     }, [targetedUserId])
+
+    useEffect(() => {
+        if (products.length > 0) {
+            setMediumTrigger(!mediumtrigger)
+        }
+    }, [products])
 
 
     let user = users.find((user) => {

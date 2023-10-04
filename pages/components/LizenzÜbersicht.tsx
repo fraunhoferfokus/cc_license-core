@@ -37,10 +37,7 @@ export default function Licenses({ setView }: { setView: any }) {
 
 
 
-    useEffect(() => {
-        setMediumTrigger2(!mediumtrigger2)
 
-    }, [filterMap])
 
 
 
@@ -88,6 +85,19 @@ export default function Licenses({ setView }: { setView: any }) {
         })
 
     })
+
+
+    useEffect(() => {
+        setMediumTrigger2(!mediumtrigger2)
+
+    }, [filterMap])
+
+
+    useEffect(() => {
+        if (products.length > 0) {
+            setMediumTrigger2(!mediumtrigger2)
+        }
+    }, [products])
 
     return (
         <>
