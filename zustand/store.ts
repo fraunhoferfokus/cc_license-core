@@ -38,10 +38,14 @@ export interface GeneralState {
     setToastProps: (message: string, severity?: 'success' | 'error' | 'warning' | 'info', duration?: number) => any,
     selectedLicenseId: string | null,
     setSelectedLicenseId: (id: string | null) => any,
-    selectedMedia:any,
+    selectedMedia: any,
     setSelectedMedia: (media: any) => any,
     myself: SANIS_USER | null,
     fetchMyself: () => any,
+    modalProps: {
+        open: boolean
+    },
+    setModalProps: (props: any) => void
 }
 
 export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignmentState
@@ -49,14 +53,20 @@ export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignm
 export const useStore = create<MergedState>()(
     persist(
         (set, get, props) => ({
+            modalProps: {
+                open: false
+            },
+            setModalProps: (props: any) => {
+                set({ modalProps: props })
+            },
             myself: null,
-            fetchMyself: async () =>{
+            fetchMyself: async () => {
                 const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/user-info`, { withCredentials: true })
                 set({
                     myself: resp.data
                 })
             },
-            
+
             selectedLicenseId: null,
             setSelectedLicenseId: (id: string | null) => {
                 set({ selectedLicenseId: id })
@@ -68,8 +78,8 @@ export const useStore = create<MergedState>()(
             ...licenseDefinitionSlice(set, get, props),
             ...licenseAssignmentSlice(set, get, props),
             config: null,
-            toastProps: { message: '', severity: 'success', duration: 3000},
-            setToastProps: (message: string, severity = 'success', duration=3000) => {
+            toastProps: { message: '', severity: 'success', duration: 3000 },
+            setToastProps: (message: string, severity = 'success', duration = 3000) => {
                 set({
                     toastProps: {
                         ...get().toastProps,

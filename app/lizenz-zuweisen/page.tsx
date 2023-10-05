@@ -1,4 +1,4 @@
-// Hello Fraunhofer
+"use client"
 import { Button, TextField } from "@mui/material";
 import { Policy } from "license_manager";
 import { ActionObject, Constraint } from "license_manager/dist/models/LicenseDefinition/LicenseDefinitionModel.2_2";
@@ -6,9 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { toBILO } from "../../helper/helper";
 import { PolicyWithMetadata } from "../../zustand/licenseDefinitionSlice";
 import { useStore } from '../../zustand/store';
-import FunctionButton from "./Buttons/FunctionButton";
-import TableComponent from "./Table/TableComponent";
-import UserGroupTable, { transformUserToData } from "./Table/UserGroupTable";
+import FunctionButton from "../components/Buttons/FunctionButton";
+import TableComponent from "../components/Table/TableComponent";
+import UserGroupTable, { transformUserToData } from "../components/Table/UserGroupTable";
 
 
 export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
@@ -165,8 +165,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
     useEffect(() => console.log(selectedLicenses), [selectedLicenses])
 
 
-
-
+    let picked_users = users.filter((user) => pickedUserIds.includes(user.id)).map((user) => (transformUserToData(user)))
 
     let org = myself?.personenkontexte[0]?.organisation
 
@@ -330,7 +329,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                                     2. Gewählte Nutzer
                                 </p>
                                 <TableComponent
-                                    data={users.filter((user) => pickedUserIds.includes(user.id)).map((user) => (transformUserToData(user)))}
+                                    data={picked_users}
                                     checkbox={false}
                                     headerBackgroundColor={'#DFDFDF'}
                                     entryBackgroundColor={'transparent'}

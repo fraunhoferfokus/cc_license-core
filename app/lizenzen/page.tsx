@@ -1,11 +1,12 @@
+"use client"
 import { Autocomplete, AutocompleteRenderInputParams, Button, TextField } from '@mui/material';
 import { useStore } from '../../zustand/store';
 import { ReactNode, useEffect, useState } from 'react';
-import TableComponent from './Table/TableComponent';
+import TableComponent from '../components/Table/TableComponent';
 import Select from 'react-select';
-import { transformUserToData } from './Table/UserGroupTable';
+import { transformUserToData } from '../components/Table/UserGroupTable';
 
-export default function Licenses({ setView }: { setView: any }) {
+export default function Licenses() {
     const {
         licenseDefinitions,
         licenseAssignments,
@@ -91,13 +92,6 @@ export default function Licenses({ setView }: { setView: any }) {
         setMediumTrigger2(!mediumtrigger2)
 
     }, [filterMap])
-
-
-    useEffect(() => {
-        if (products.length > 0) {
-            setMediumTrigger2(!mediumtrigger2)
-        }
-    }, [products])
 
     return (
         <>
@@ -349,8 +343,8 @@ export default function Licenses({ setView }: { setView: any }) {
                                 if (identifier) {
                                     setSelectedMedia(license.medien_id)
                                     setSelectedLicenseId(identifier)
-                                    setView('media')
-                                    console.log('setting view')
+                                    // setView('media')
+                                    // console.log('setting view')
                                 }
                                 // setSelectedLicenseId(identifier)
                             }}

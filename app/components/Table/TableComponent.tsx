@@ -30,13 +30,10 @@ export default function AssignmentTableContainer({
 }: any
 
 ) {
-    const [filtered_rows, set_filtered_rows] = useState<any[]>(data)
-    const [paginated_rows, set_paginated_rows] = useState<any[]>(data)
+    const [filtered_rows, set_filtered_rows] = useState<any[]>([])
+    const [paginated_rows, set_paginated_rows] = useState<any[]>([])
     const [pickedIdentifiers, setPickedIdentifiers] = useState<any[]>([])
-
     const [highlightedEntry, setHighlightedEntry] = useState<any>(null)
-
-
     let [page, setPage] = useState(0)
     let [entriesPerPage, setEntriesPerPage] = useState(5)
 
@@ -51,9 +48,6 @@ export default function AssignmentTableContainer({
             }
         }
     }, [trigger]);
-
-
-
 
     useEffect(() => {
         if (onChangeFilteredEntries) onChangeFilteredEntries(filtered_rows)
@@ -70,7 +64,6 @@ export default function AssignmentTableContainer({
         set_paginated_rows(rows)
     }, [entriesPerPage])
 
-
     useEffect(
         () => {
             set_paginated_rows(filtered_rows.slice(page * entriesPerPage, page * entriesPerPage + entriesPerPage))
@@ -79,12 +72,18 @@ export default function AssignmentTableContainer({
         [page, filtered_rows]
     )
 
-
-
     useEffect(() => {
         if (onChangeCheckBox) onChangeCheckBox(pickedIdentifiers)
     }, [pickedIdentifiers])
 
+    useEffect(() => {
+        if (filterFunction) {
+            set_filtered_rows(filterFunction(data))
+        } else {
+            set_filtered_rows(data)
+        }
+        set_paginated_rows(filtered_rows.slice(page * entriesPerPage, page * entriesPerPage + entriesPerPage))
+    }, [data])
 
     const tableRows = paginated_rows.map((row) => (
         <TableRow

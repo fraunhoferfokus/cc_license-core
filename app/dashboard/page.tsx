@@ -1,12 +1,14 @@
+"use client"
 import { Divider, Link, MenuItem, MenuList, Paper } from "@mui/material"
 import { useEffect, useState } from "react"
-import FunctionButton from "./Buttons/FunctionButton"
+
 import { useStore } from '../../zustand/store'
 import { useRouter } from "next/router"
+import FunctionButton from "../components/Buttons/FunctionButton"
 
-export default function Dashboardview({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
-    const router = useRouter()
-    const [myself] = useStore(state => [state.myself])
+export default function Dashboardview() {
+    // const router = useRouter()
+    const [myself, setModalProps] = useStore(state => [state.myself, state.setModalProps])
     const org = myself?.personenkontexte[0]?.organisation
 
 
@@ -55,7 +57,8 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                     buttonTitle={'Lizenzen importieren'}
                     iconPath={'/plusicon.svg'}
                     callback={async () => {
-                        setLicenseModal(true)
+                        setModalProps({ open: true })
+                        // setLicenseModal(true)
                     }}
                     color="#F0B3AB"
                 />
@@ -65,7 +68,7 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                     buttonTitle={'Lizenzen zuweisen'}
                     iconPath={'/usericon.svg'}
                     callback={() => {
-                        setView('assignment')
+                        // setView('assignment')
                     }}
                     color="#EAF3F8"
                 />
@@ -75,7 +78,7 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                     buttonTitle={'Medien'}
                     iconPath={'/medienicon.svg'}
                     callback={() => {
-                        setView('media')
+                        // setView('media')
                     }}
                     color="#B7DEB0"
                 />
@@ -85,7 +88,7 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                     buttonTitle={'Lizenz Übersicht'}
                     iconPath={'/lizenzübersichticon.svg'}
                     callback={() => {
-                        setView('licenses')
+                        // setView('licenses')
                     }}
                     color="#FFEED7"
                 />
@@ -141,7 +144,7 @@ export default function Dashboardview({ setLicenseModal, setView }: { setLicense
                         className="w-[70px] h-[70px] bg-[#48AAF0] bg-opacity-[40%] rounded-[10px] flex justify-center items-center cursor-pointer"
                         onClick={() => {
                             console.log('see help')
-                            router.push('/help')
+                            // router.push('/help')
                         }}
                     >
                         <img

@@ -224,7 +224,21 @@ class LicenseAssignmentController {
             const userID = user.id
             let userLicenseAssignments = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === userID)
 
+            const licenseDefinitions: any[] = []
 
+            const sessionCookie = req.headers.cookie;
+
+            const config = {
+                headers: {
+                    'Cookie': sessionCookie
+                    // authorization: `Bearer ${req.session.access_token}`
+                }
+            }
+            for (const userAssignment of userLicenseAssignments) {
+                licenseDefinitions.push((await axios.get(userAssignment.inheritFrom as string, config)).data)
+            }
+
+            // return res.json(licenseDefinitions)
 
             if (schema === 'urn:bilo:assignment') {
                 const { orgs, groups, email } = user
@@ -242,9 +256,15 @@ class LicenseAssignmentController {
 
                     let groupLicenses = licenseAssignments.filter(licenseAssignment => licenseAssignment.assignee === group.id)
                         .map((assignment) => {
+
+
                             const action = assignment.action![0] as ActionObject
                             const refinement = action.refinement;
-                            const code = refinement?.find((refinement) => { return refinement.uid === 'lizenzcode' })?.rightOperand;
+                            let code = refinement?.find((refinement) => { return refinement.uid === 'lizenzcode' })?.rightOperand;
+                            const parent_license_definition = licenseDefinitions.find((license: Policy) => license._id === assignment.inheritFrom)
+                            const verlag = parent_license_definition.assignee
+                            if (!code?.includes(verlag)) code = `${verlag}-${code}`
+
                             return code;
                         })
 
@@ -291,7 +311,11 @@ class LicenseAssignmentController {
                 let licenses = userLicenseAssignments.map((assignment) => {
                     const action = assignment.action![0] as ActionObject
                     const refinement = action.refinement;
-                    const code = refinement?.find((refinement) => { return refinement.uid === 'lizenzcode' })?.rightOperand;
+                    let code = refinement?.find((refinement) => { return refinement.uid === 'lizenzcode' })?.rightOperand;
+                    const parent_license_definition = licenseDefinitions.find((license: Policy) => license._id === assignment.inheritFrom)
+                    const verlag = parent_license_definition.assignee
+                    if (!code?.includes(verlag)) code = `${verlag}-${code}`
+
                     return code;
                 })
 

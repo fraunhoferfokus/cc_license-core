@@ -31,7 +31,9 @@ export default function UserGroupTable({
         onChangedGroups?: (groups: any[]) => void,
         users: any[]
     }
-) {
+) { 
+
+
 
     const [triggerChild, setTriggerChild] = useState(false)
 
@@ -47,7 +49,7 @@ export default function UserGroupTable({
         fetchLicenseAssignments,
     } = useStore(state => state)
 
-    let [groupOptions, setGroupOptions] = useState<any[]>(groups.map((group: any) => ({ value: group.id, label: group.displayName })))
+    let [groupOptions, setGroupOptions] = useState<any[]>([])
 
     let [filteredEntries, setFilteredEntries] = useState<any[]>([])
 
@@ -76,6 +78,11 @@ export default function UserGroupTable({
         }
     },
         [pickedUserIds])
+
+
+    useEffect(() => {
+        setGroupOptions(groups.map((group: any) => ({ value: group.id, label: group.displayName })))
+    },[groups])
 
     return (
         <>
@@ -195,10 +202,12 @@ export default function UserGroupTable({
                         { label: 'Rolle', id: 'role'}
                     ]}
                     onChangeCheckBox={(identifiers: any[]) => {
+                        console.log('picked user ids', identifiers)
                         setPickedUserIds(identifiers)
                     }}
                     onChangeFilteredEntries={(entries: any[]) => {
-                        setFilteredEntries(entries)
+                        console.log({ entries })
+                        // setFilteredEntries(entries)
                     }}
                 />
             </div>
