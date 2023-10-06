@@ -8,7 +8,7 @@ export default function Page({ params }: { params: { lizenz_id: string } }) {
     let { lizenz_id } = params
     lizenz_id = decodeURIComponent(lizenz_id)
 
-    const { licenseAssignments, deleteLicenseAssignment, setToastProps, selectedLicenseId, setSelectedLicenseId, users, fetchUsersAndGroups, fetchLicenseDefinitionsV2, fetchLicenseAssignments, myself, licenseDefinitions } = useStore(state => state)
+    const { licenseAssignments, deleteLicenseAssignment, setToastProps, setSelectedLicenseId, users, licenseDefinitions } = useStore(state => state)
 
     const [mediumtrigger3, setMediumTrigger3] = useState(false)
     const license = licenseDefinitions?.find((grouped_license) => grouped_license.some((item) => item.uid === lizenz_id))?.find((item) => item.uid === lizenz_id)
@@ -22,6 +22,7 @@ export default function Page({ params }: { params: { lizenz_id: string } }) {
 
     let [selectedUserCheckbox, setSelectedUserCheckbox] = useState<any[]>([])
 
+    // let users = usersIds?.map((userId) => {})
     return (
         <>
             <div
@@ -32,8 +33,8 @@ export default function Page({ params }: { params: { lizenz_id: string } }) {
                 </h4>
                 <TableComponent
                     data={
-                       userIds?.map((userId) => {
-                            return transformUserToData(users?.find((user) => user.uid === userId))
+                        userIds?.map((userId) => {
+                            return transformUserToData(users?.find((user) => user.id === userId))
                         })
                     }
                     header={[
@@ -55,33 +56,30 @@ export default function Page({ params }: { params: { lizenz_id: string } }) {
                         return data
                     }}
                 />
-                <div className='flex justify-end'>
+                {
+                    selectedUserCheckbox.length !== 0 && <div className='flex justify-end mt-[10px]'>
 
-                    <Button variant='contained'
-                        disabled={selectedUserCheckbox.length === 0}
-                        onClick={() => {
-                            const filtered = licenseAssignments.filter((assignment) => {
+                        <Button variant='contained'
 
-                                return selectedUserCheckbox.includes(assignment.assignee) && assignment.inheritFrom === selectedLicenseId
+                            onClick={() => {
+                                const filtered = licenseAssignments.filter((assignment) => {
+                                    return selectedUserCheckbox.includes(assignment.assignee) && assignment.inheritFrom === lizenz_id
+                                })
 
-
-                            })
-
-
-                            for (const filter of filtered) {
-                                deleteLicenseAssignment(filter.uid)
-                            }
-                            setToastProps('Lizenz wurde erfolgreich entzogen')
-                            let id = selectedLicenseId
-                            setSelectedLicenseId(null)
+                                for (const filter of filtered) {
+                                    deleteLicenseAssignment(filter.uid)
+                                }
+                                setToastProps('Lizenz wurde erfolgreich entzogen')
+                                setSelectedLicenseId(null)
+                                setSelectedUserCheckbox([])
+                            }}
 
 
+                        >Zuweisung entziehen</Button>
+                    </div>
 
-                        }}
+                }
 
-
-                    >Zuweisung entziehen</Button>
-                </div>
             </div>
         </>
     )

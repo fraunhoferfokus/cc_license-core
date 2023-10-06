@@ -92,7 +92,7 @@ export default function AssignmentTableContainer({
             key={row[identifier]}
             sx={{
                 '&:last-child td, &:last-child th': { border: 0 },
-                backgroundColor: highlightedEntry === row[identifier] && pickedColor ? pickedColor :
+                backgroundColor: highlightedEntry === row?.[identifier] && pickedColor ? pickedColor :
                     entryBackgroundColor ? entryBackgroundColor : "inherit",
                 '&:hover': {
                     backgroundColor: highlightOnHover ? "#e0e0e0" : "inherit"

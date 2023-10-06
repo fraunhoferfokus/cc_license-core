@@ -150,7 +150,7 @@ app.prepare().then(() => {
             const user = user_with_context_resp.data
             const rolle = user.personenkontexte[0]?.rolle
             const id_token = keycloak_response.data.id_token
-            const self_url = process.env.NEXT_PUBLIC_SELF_URL?.replace('/api', '')
+            const self_url = process.env.NEXT_PUBLIC_SELF_URL?.replace('/api', '') + '/dashboard'
 
             if (rolle !== 'Leit') {
                 const id_token_hint = id_token

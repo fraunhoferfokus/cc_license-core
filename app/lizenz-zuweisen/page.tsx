@@ -32,6 +32,9 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
     const [pickedSelect, setPickedSelect] = useState('placeholder')
     const [selectedUsersId, setSelectedUsers] = useState<any>([])
     const [selectedGroups, setSelectedGroups] = useState<any>([])
+    console.log({
+        stepper
+    })
     // let constraints = pickedLicenses ? (pickedLicenses![0]!.action![0].refinement as Constraint[]) : null
 
     let pickedLicense: (Policy & { metadata: any }) | null = pickedLicenses ? pickedLicenses[0] as any : null
@@ -57,7 +60,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         fetchUsers()
         fetchLicenseAssignments()
 
-    
+
         // const interval = setInterval(() => {
         //     console.log('fetching license assignments2')
 
@@ -148,12 +151,15 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
         }
 
         if (stepper === 3) {
+            console.log(selectedLicenses)
+            console.log(selectedUsersId)
             for (let i = 0; i < selectedLicenses?.length; i++) {
+                console.log('create license assignment')
                 createLicenseAssignment(selectedLicenses[i].lizenz_id, selectedUsersId[i])
             }
             setStepper(0)
             setSelectedUsers([])
-            setPickedLicenseType('Einzel')
+            setPickedLicenseType('Einzellizenz')
             setSelectedLicenses([])
         }
     }, [stepper])
@@ -262,28 +268,28 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
                             2. Lerngruppe oder Klasse auswählen
                         </p>
                         {
-                            
+
                             pickedLicenseType === 'Einzellizenz' &&
 
                             <UserGroupTable
-                            onChangedUsers={(selectedUserIds) => {
-                                setSelectedUsers(selectedUserIds)
-                            }}
-                            users={users}
-                            onChangedGroups={(groups) => { }}
-                        />}
+                                onChangedUsers={(selectedUserIds) => {
+                                    setSelectedUsers(selectedUserIds)
+                                }}
+                                users={users}
+                                onChangedGroups={(groups) => { }}
+                            />}
 
                         {
-                            (pickedLicenseType === 'Volumenlizenz' || pickedLicenseType === 'Lerngruppenlizenz' )&&
-                             <UserGroupTable
-                             onChangedUsers={(selectedUserIds) => {
-                                 setSelectedUsers(selectedUserIds)
-                             }}
-                             users={[]}
-                             onChangedGroups={(groups) => { }}
-                         />
+                            (pickedLicenseType === 'Volumenlizenz' || pickedLicenseType === 'Lerngruppenlizenz') &&
+                            <UserGroupTable
+                                onChangedUsers={(selectedUserIds) => {
+                                    setSelectedUsers(selectedUserIds)
+                                }}
+                                users={[]}
+                                onChangedGroups={(groups) => { }}
+                            />
                         }
-                     
+
                     </div>
                 </>
 
@@ -442,7 +448,7 @@ export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLic
 
                                         checkBoxDisabledFunction={(identifier: any) => {
                                             const product = products.find((product) => product.medien_id === identifier)
-                                            if (product.verfügbar < selectedUsersId.length) return true
+                                            if (product?.verfügbar < selectedUsersId.length) return true
                                         }}
                                         checkBoxDisabledMessage={
                                             "Die Anzahl der verfügbaren Lizenzen ist geringer als die Anzahl der ausgewählten Nutzer."
