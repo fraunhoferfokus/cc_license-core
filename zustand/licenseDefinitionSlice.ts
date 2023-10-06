@@ -9,7 +9,8 @@ export type PolicyWithMetadata = Policy & { metadata: any }
 
 export interface LicenseDefinitionState {
     fetchLicenseDefinitionsV2: any;
-    licenseDefinitions: (Policy & { metadata: any })[][]
+    licenseDefinitions: (Policy & { metadata: any })[][],
+    licensesLoading: boolean
 }
 
 export const licenseDefinitionSlice: StateCreator<
@@ -21,6 +22,7 @@ export const licenseDefinitionSlice: StateCreator<
     = ((set, get) =>
     ({
         fetchLicenseDefinitionsV2: async () => {
+            set({ licensesLoading: true })
             const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseDefinitions`,
                 {
                     withCredentials: true,
@@ -72,8 +74,9 @@ export const licenseDefinitionSlice: StateCreator<
                     ele.metadata = metadata
                 }
             }
-            set({ licenseDefinitions: groupedLicenses as (Policy & { metadata: any })[][] })
+            set({ licenseDefinitions: groupedLicenses as (Policy & { metadata: any })[][], licensesLoading: false})
         },
+        licensesLoading: true,
         licenseDefinitions: []
     }))
 

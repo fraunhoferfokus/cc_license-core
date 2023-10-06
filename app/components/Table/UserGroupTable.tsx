@@ -47,6 +47,7 @@ export default function UserGroupTable({
         setPickedUserIds,
         fetchLicenseDefinitionsV2,
         fetchLicenseAssignments,
+        loadingUsers
     } = useStore(state => state)
 
     let [groupOptions, setGroupOptions] = useState<any[]>([])
@@ -64,16 +65,8 @@ export default function UserGroupTable({
         [selectedGroupsSelect, selectedUser]
     )
 
-
-    useEffect(() => {
-        fetchLicenseDefinitionsV2()
-        fetchUsers()
-        fetchLicenseAssignments()
-    }, [])
-
     useEffect(() => {
         if (onChangedUsers) {
-            console.log({ pickedUserIds })
             onChangedUsers(pickedUserIds)
         }
     },
@@ -202,13 +195,13 @@ export default function UserGroupTable({
                         { label: 'Rolle', id: 'role'}
                     ]}
                     onChangeCheckBox={(identifiers: any[]) => {
-                        console.log('picked user ids', identifiers)
                         setPickedUserIds(identifiers)
                     }}
                     onChangeFilteredEntries={(entries: any[]) => {
                         console.log({ entries })
                         // setFilteredEntries(entries)
                     }}
+                    isLoading={loadingUsers}
                 />
             </div>
 

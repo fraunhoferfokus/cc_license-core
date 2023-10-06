@@ -1,12 +1,10 @@
 "use client"
 
-import { Button } from "@mui/material"
-import TableComponent from "../../components/Table/TableComponent"
-import { useState } from "react"
-import { useStore } from "../../../zustand/store"
-import { PolicyWithMetadata } from "../../../zustand/licenseDefinitionSlice"
-import Select from 'react-select';
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import Select from 'react-select'
+import { useStore } from "../../../zustand/store"
+import TableComponent from "../../components/Table/TableComponent"
 
 export default function DashboardLayout({
     children, // will be a page or nested layout
@@ -19,21 +17,10 @@ export default function DashboardLayout({
 }) {
     let [licenseTypes, setLicenseTypes] = useState<any[]>([])
     let router = useRouter()
-
+    
     const {
         licenseDefinitions,
-        fetchLicenseAssignments,
         licenseAssignments,
-        users,
-        fetchUsersAndGroups,
-        fetchLicenseDefinitionsV2,
-        deleteLicenseAssignment,
-        setToastProps,
-        selectedLicenseId,
-        setSelectedLicenseId,
-        selectedMedia,
-        setSelectedMedia,
-        myself
     } = useStore(state => state)
 
     const [mediumtrigger2, setMediumTrigger2] = useState(false)

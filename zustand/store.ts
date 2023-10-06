@@ -11,6 +11,7 @@ import { SANIS_USER } from '../server'
 export interface GeneralState {
     fetchLicenseDefinitionsV2: () => any,
     users: any[],
+    loadingUsers: boolean,
     groups: any[],
     fetchUsersAndGroups: () => any,
     notification: {
@@ -45,6 +46,8 @@ export interface GeneralState {
     modalProps: {
         open: boolean
     },
+    selectedUserIds: string[],
+    setSelectedUserIds: (ids: string[]) => void,
     setModalProps: (props: any) => void
 }
 
@@ -53,6 +56,11 @@ export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignm
 export const useStore = create<MergedState>()(
     persist(
         (set, get, props) => ({
+            loadingUsers: true,
+            selectedUserIds: [],
+            setSelectedUserIds: (ids: string[]) => {
+                set({ selectedUserIds: ids })
+            },
             modalProps: {
                 open: false
             },
@@ -93,9 +101,10 @@ export const useStore = create<MergedState>()(
             groups: [],
             fetchUsersAndGroups: async () => {
                 const config = get().config
+                set({ loadingUsers: true })
                 const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`, { withCredentials: true })
                 const resp2 = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`, { withCredentials: true })
-                set({ groups: resp2.data, users: resp.data })
+                set({ groups: resp2.data, users: resp.data, loadingUsers: false })
             },
 
             notification: {

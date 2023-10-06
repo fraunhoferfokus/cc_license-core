@@ -1,37 +1,18 @@
 "use client"
-import { Autocomplete, AutocompleteRenderInputParams, Button, TextField } from '@mui/material';
-import { useStore } from '../../zustand/store';
-import { ReactNode, use, useEffect, useState } from 'react';
-import TableComponent from '../components/Table/TableComponent';
-import { transformUserToData } from '../components/Table/UserGroupTable';
-import Select from 'react-select';
-import { useParams } from "react-router-dom";
 import { useRouter } from 'next/navigation';
-
+import { useEffect, useState } from 'react';
+import { useStore } from '../../zustand/store';
+import TableComponent from '../components/Table/TableComponent';
 
 export default function Medien({ setLicenseModal }: {
     setLicenseModal: any,
 }) {
-    const router =useRouter()
-
-    // let [selectedLicenseId, setSelectedLicenseId] = useState<any>(null)
-
-    const { id } = useParams<any>();
-
-
+    const router = useRouter()
     const {
+        licensesLoading,
         licenseDefinitions,
-        fetchLicenseAssignments,
         licenseAssignments,
-        users,
-        fetchUsersAndGroups,
-        fetchLicenseDefinitionsV2,
-        deleteLicenseAssignment,
-        setToastProps,
         selectedLicenseId,
-        setSelectedLicenseId,
-        selectedMedia,
-        setSelectedMedia,
         myself
     } = useStore(state => state)
     let org = myself?.personenkontexte[0]?.organisation
@@ -99,36 +80,12 @@ export default function Medien({ setLicenseModal }: {
     })
 
 
-    // let [selectedMedia, setSelectedMedia] = useState<any>('')
     let [medium_value, set_medium_value] = useState('')
     const [mediumtrigger, setMediumTrigger] = useState(false)
     const [mediumtrigger2, setMediumTrigger2] = useState(false)
     const [mediumtrigger3, setMediumTrigger3] = useState(false)
-
-
-    let product = products.find((item) => item.medien_id === selectedMedia)
     let [licenseTypes, setLicenseTypes] = useState<any[]>([])
-
-
     let selectedLicense = licenses.find((item) => item.lizenz_id === selectedLicenseId)
-
-
-    useEffect(() => {
-        fetchLicenseDefinitionsV2()
-        fetchUsersAndGroups()
-        fetchLicenseAssignments()
-
-
-    }, [])
-
-
-
-
-    let userLicenseAssignments = licenseAssignments.filter((assignment) => assignment.inheritFrom === selectedLicense?.lizenz_id)
-
-
-
-    const [selectedUserIds, setSelectedUsers] = useState<any[]>([])
     let targetedUserId = licenseAssignments.filter((assignment) => assignment.inheritFrom === selectedLicense?.lizenz_id).map((assignment) => assignment.assignee)[0]
 
     useEffect(() => {
@@ -139,12 +96,6 @@ export default function Medien({ setLicenseModal }: {
     useEffect(() => {
         setMediumTrigger3(!mediumtrigger3)
     }, [targetedUserId])
-
-    let user = users.find((user) => {
-        return user.id === targetedUserId
-    })
-
-
 
     return (
         <div className='h-full flex flex-col'>
@@ -199,7 +150,7 @@ export default function Medien({ setLicenseModal }: {
                             highlightOnHover={true}
                             onChangeClickedRow={(identifier: string) => {
 
-                                if(identifier) router.push(`/medien/${identifier}`)
+                                if (identifier) router.push(`/medien/${identifier}`)
                                 // if (identifier) setSelectedMedia(identifier)
 
                             }}
@@ -225,6 +176,7 @@ export default function Medien({ setLicenseModal }: {
                             }}
                             trigger={mediumtrigger}
                             setTrigger={setMediumTrigger}
+                            isLoading={licensesLoading}
                         />
                     </div>
                 </div>

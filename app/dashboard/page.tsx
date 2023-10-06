@@ -1,13 +1,10 @@
 "use client"
-import { Divider, Link, MenuItem, MenuList, Paper } from "@mui/material"
-import { useEffect, useState } from "react"
-
+import { useRouter } from 'next/navigation'
 import { useStore } from '../../zustand/store'
-import { useRouter } from "next/router"
 import FunctionButton from "../components/Buttons/FunctionButton"
 
 export default function Dashboardview() {
-    // const router = useRouter()
+    const router = useRouter()
     const [myself, setModalProps] = useStore(state => [state.myself, state.setModalProps])
     const org = myself?.personenkontexte[0]?.organisation
 
@@ -58,7 +55,7 @@ export default function Dashboardview() {
                     iconPath={'/plusicon.svg'}
                     callback={async () => {
                         setModalProps({ open: true })
-                        // setLicenseModal(true)
+
                     }}
                     color="#F0B3AB"
                 />
@@ -68,7 +65,7 @@ export default function Dashboardview() {
                     buttonTitle={'Lizenzen zuweisen'}
                     iconPath={'/usericon.svg'}
                     callback={() => {
-                        // setView('assignment')
+                        router.push('/lizenz-zuweisen')
                     }}
                     color="#EAF3F8"
                 />
@@ -78,7 +75,7 @@ export default function Dashboardview() {
                     buttonTitle={'Medien'}
                     iconPath={'/medienicon.svg'}
                     callback={() => {
-                        // setView('media')
+                        router.push('/medien')
                     }}
                     color="#B7DEB0"
                 />
@@ -88,45 +85,11 @@ export default function Dashboardview() {
                     buttonTitle={'Lizenz Übersicht'}
                     iconPath={'/lizenzübersichticon.svg'}
                     callback={() => {
-                        // setView('licenses')
+                        router.push('/lizenzen')
                     }}
                     color="#FFEED7"
                 />
 
-                {/* <div className="w-[372px]">
-
-                    <div className="flex items-center h-[58px] bg-[#FFEED7] bg-opacity-[50%] rounded-[10px] cursor-pointer">
-                        <div className="IconContainer w-[40px] h-[40px] flex items-center justify-center
-                         bg-[#FFEED7]
-                         ml-[10px]
-                            rounded-[10px]
-                        ">
-                            <img src="/lizenzübersichticon.svg" alt=""
-                                width={30}
-                                height={30}
-                            />
-                        </div>
-                        <p className="ml-[13px] font-bold text-[24px] "
-                        >
-                            Lizenz Übersicht
-                        </p>
-                    </div>
-
-                    <div className="flex items-center justify-center text-center">
-                        <img
-                            src="/infoicon.svg"
-                            width={18}
-                            height={18}
-                        />
-                        <p
-                            className="mt-[10px] text-[#404045] text-[15px] ml-[10px]"
-                        >
-                            Medien Lizenzen im Lizenzmanager anzeigen, suchen und entziehen
-                        </p>
-                    </div>
-
-
-                </div> */}
 
             </div>
 
@@ -143,7 +106,7 @@ export default function Dashboardview() {
                     <div
                         className="w-[70px] h-[70px] bg-[#48AAF0] bg-opacity-[40%] rounded-[10px] flex justify-center items-center cursor-pointer"
                         onClick={() => {
-                            console.log('see help')
+                            router.push('/help')
                             // router.push('/help')
                         }}
                     >

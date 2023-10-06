@@ -12,7 +12,8 @@ export default function Licenses() {
         licenseAssignments,
         setSelectedLicenseId,
         setSelectedMedia,
-        myself
+        myself,
+        licensesLoading
     } = useStore(state => state)
     let org = myself?.personenkontexte[0].organisation
     let products: any[] = []
@@ -35,14 +36,6 @@ export default function Licenses() {
         medium: ''
 
     })
-
-
-
-
-
-
-
-    // let [selectedMedia, setSelectedMedia] = useState<any>('')
 
     licenseDefinitions?.forEach((grouped_liceses) => {
         let license = grouped_liceses[0]
@@ -87,7 +80,6 @@ export default function Licenses() {
 
     })
 
-
     useEffect(() => {
         setMediumTrigger2(!mediumtrigger2)
 
@@ -96,14 +88,15 @@ export default function Licenses() {
     return (
         <>
             <div
-                className="h-full flex flex-col p-[10px]"
+                className="h-full flex flex-col p-[10px] "
 
             >
                 <div
                     className="flex justify-between"
-                >                    <label
-                    className="text-[#404045] font-bold text-[28px]"
                 >
+                    <label
+                        className="text-[#404045] font-bold text-[28px]"
+                    >
                         Lizenz Übersicht
                     </label>
                     <div>
@@ -126,7 +119,7 @@ export default function Licenses() {
                 </div>
 
                 <div
-                    className='flex flex-col flex-1 mt-[10px]'
+                    className='flex flex-col flex-1 mt-[10px] overflow-hidden'
                 >
                     <div
                         className='flex flex-wrap gap-[5px]'
@@ -285,7 +278,7 @@ export default function Licenses() {
                     </div>
 
                     <div
-                        className='flex-1 flex flex-col bg-white mt-[20px] pt-[30px] pl-[30px] pr-[30px] rounded-[10px]'
+                        className='flex-1 flex flex-col bg-white mt-[20px] pt-[30px] pl-[30px] pr-[30px] rounded-[10px] overflow-hidden'
                     >
 
                         <TableComponent
@@ -309,33 +302,32 @@ export default function Licenses() {
                             filterFunction={(entries: any) => {
 
                                 if (filterMap.lizenztyp.value) {
-                                    entries = entries.filter((item:any) => {
+                                    entries = entries.filter((item: any) => {
                                         return item.lizenztyp.toLowerCase().indexOf(filterMap.lizenztyp.value.toLowerCase()) > -1
                                     })
                                 }
 
                                 if (filterMap.verlag) {
-                                    entries = entries.filter((item:any) => {
+                                    entries = entries.filter((item: any) => {
                                         return item.verlag.toLowerCase().indexOf(filterMap.verlag.toLowerCase()) > -1
                                     })
                                 }
 
                                 if (filterMap.medien_id) {
-                                    entries = entries.filter((item:any) => {
+                                    entries = entries.filter((item: any) => {
                                         return item.medien_id.toLowerCase().indexOf(filterMap.medien_id.toLowerCase()) > -1
                                     })
                                 }
 
                                 if (filterMap.medium) {
-                                    entries = entries.filter((item:any) => {
+                                    entries = entries.filter((item: any) => {
                                         return item.medium.toLowerCase().indexOf(filterMap.medium.toLowerCase()) > -1
                                     })
                                 }
-                                
+
                                 return entries
                             }}
-
-
+                            isLoading={licensesLoading}
                             highlightOnHover={true}
                             pickedColor={'#EEF7FE'}
                             onChangeClickedRow={(identifier: string) => {

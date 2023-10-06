@@ -27,6 +27,7 @@ export default function AssignmentTableContainer({
     highlightOnHover,
     triggerSetBoxFunction,
     checkBoxDisabledMessage,
+    isLoading
 }: any
 
 ) {
@@ -85,105 +86,134 @@ export default function AssignmentTableContainer({
         set_paginated_rows(filtered_rows.slice(page * entriesPerPage, page * entriesPerPage + entriesPerPage))
     }, [data])
 
-    const tableRows = paginated_rows.map((row) => (
-        <TableRow
+    const tableRows =
+        isLoading ?
+            <>
+                {Array(20).fill(0).map(() => {
+                    return <TableRow>
+                        {
+                            Array(checkbox ? header.length + 1 : header.length).fill(0).map(() => {
+                                return <TableCell
+                                    align="left"
+                                    sx={{
+                                        padding: '5px',
+                                        fontWeight: 600,
+                                        height: 40,
+                                        backgroundColor: headerBackgroundColor ? headerBackgroundColor : "#EEF7FE",
+                                    }}
+
+                                >
+                                    <div>
+                                        <div className="animate-pulse h-[20px] bg-gray-300 rounded"></div>
+                                    </div>
+                                </TableCell>
+                            })
+                        }
+
+                    </TableRow>
+                })}
+            </>
+            :
+
+            paginated_rows.map((row) => (
+                <TableRow
 
 
-            key={row[identifier]}
-            sx={{
-                '&:last-child td, &:last-child th': { border: 0 },
-                backgroundColor: highlightedEntry === row?.[identifier] && pickedColor ? pickedColor :
-                    entryBackgroundColor ? entryBackgroundColor : "inherit",
-                '&:hover': {
-                    backgroundColor: highlightOnHover ? "#e0e0e0" : "inherit"
-                }
-
-            }}
-            className="max-h-[50px] cursor-pointer"
-            onClick={() => {
-                if (row[identifier] === highlightedEntry) {
-                    setHighlightedEntry(null)
-                } else {
-                    setHighlightedEntry(row[identifier])
-                }
-            }}
-
-
-        // style={{ height: '50px', maxHeight: '50px' }}
-        >
-            {checkbox &&
-                <TableCell
+                    key={row[identifier]}
                     sx={{
-                        padding: '5px',
-                        height: 40,
-                        width: "40px",
-                        maxHeight: 40,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        '&:last-child td, &:last-child th': { border: 0 },
+                        backgroundColor: highlightedEntry === row?.[identifier] && pickedColor ? pickedColor :
+                            entryBackgroundColor ? entryBackgroundColor : "inherit",
+                        '&:hover': {
+                            backgroundColor: highlightOnHover ? "#e0e0e0" : "inherit"
+                        }
+
                     }}
+                    className="max-h-[50px] cursor-pointer"
+                    onClick={() => {
+                        if (row[identifier] === highlightedEntry) {
+                            setHighlightedEntry(null)
+                        } else {
+                            setHighlightedEntry(row[identifier])
+                        }
+                    }}
+
+
+                // style={{ height: '50px', maxHeight: '50px' }}
                 >
-                    <Checkbox
-                        className="p-[0px] h-[15px] w-[15px] ml-[10px]"
-                        checked={
-                            pickedIdentifiers.includes(row[identifier]) ? true : false
-                                ||
-                                (checkBoxCheckedFunction && checkBoxCheckedFunction(row[identifier])) ? true : false
-                        }
-                        disabled={
-                            singleCheckBox && pickedIdentifiers.length > 0 && !pickedIdentifiers.includes(row[identifier]) ? true : false
-                                ||
-                                checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier]) ? true : false
+                    {checkbox &&
+                        <TableCell
+                            sx={{
+                                padding: '5px',
+                                height: 40,
+                                width: "40px",
+                                maxHeight: 40,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Checkbox
+                                className="p-[0px] h-[15px] w-[15px] ml-[10px]"
+                                checked={
+                                    pickedIdentifiers.includes(row[identifier]) ? true : false
+                                        ||
+                                        (checkBoxCheckedFunction && checkBoxCheckedFunction(row[identifier])) ? true : false
+                                }
+                                disabled={
+                                    singleCheckBox && pickedIdentifiers.length > 0 && !pickedIdentifiers.includes(row[identifier]) ? true : false
+                                        ||
+                                        checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier]) ? true : false
 
-                        }
-                        onChange={(event) => {
-                            if (event.target.checked) {
-                                setPickedIdentifiers([...pickedIdentifiers, row[identifier]])
-                            } else {
-                                setPickedIdentifiers(pickedIdentifiers.filter((id: string) => id !== row[identifier]))
+                                }
+                                onChange={(event) => {
+                                    if (event.target.checked) {
+                                        setPickedIdentifiers([...pickedIdentifiers, row[identifier]])
+                                    } else {
+                                        setPickedIdentifiers(pickedIdentifiers.filter((id: string) => id !== row[identifier]))
+                                    }
+                                }}
+                            />
+                            {
+                                checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier]) && checkBoxDisabledMessage ?
+                                    <Tooltip title={checkBoxDisabledMessage} placement="top">
+                                        <GppMaybeIcon
+                                            color='warning'
+                                        ></GppMaybeIcon>
+                                    </Tooltip> : <></>
+
                             }
-                        }}
-                    />
-                    {
-                        checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier]) && checkBoxDisabledMessage ?
-                            <Tooltip title={checkBoxDisabledMessage} placement="top">
-                                <GppMaybeIcon
-                                    color='warning'
-                                ></GppMaybeIcon>
-                            </Tooltip> : <></>
 
+                        </TableCell>
                     }
 
-                </TableCell>
-            }
+                    {header.map(({ label, id }: any) => {
 
-            {header.map(({ label, id }: any) => {
+                        let header_item = header.find((item: any) => item.id === id)
+                        if (header_item?.disabled) return (<></>)
 
-                let header_item = header.find((item: any) => item.id === id)
-                if (header_item?.disabled) return (<></>)
-
-                return (
-                    <TableCell align="left"
-                        className="overflow-hidden"
-                        sx={{
-                            padding: "5px",
-                            maxHeight: 40,
-                            height: 40,
-                            // backgroundColor: entryBackgroundColor ? entryBackgroundColor : "inherit",
-                            backgroundColor: 'none'
-                            // textWrap: 'nowrap',
-                        }}
-                    >
-                        {row[id]}
+                        return (
+                            <TableCell align="left"
+                                className="overflow-hidden"
+                                sx={{
+                                    padding: "5px",
+                                    maxHeight: 40,
+                                    height: 40,
+                                    // backgroundColor: entryBackgroundColor ? entryBackgroundColor : "inherit",
+                                    backgroundColor: 'none'
+                                    // textWrap: 'nowrap',
+                                }}
+                            >
+                                {row[id]}
 
 
-                    </TableCell>
-                )
+                            </TableCell>
+                        )
 
 
-            })}
-        </TableRow>
-    ))
+                    })}
+                </TableRow>
+            ))
 
 
     return (

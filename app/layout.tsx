@@ -24,7 +24,7 @@ export default function RootLayout({
   const {
     fetchLicenseAssignments,
     users,
-    fetchUsersAndGroups: fetchUsers,
+    fetchUsersAndGroups,
     fetchLicenseDefinitionsV2,
     fetchMyself,
     myself,
@@ -46,9 +46,10 @@ export default function RootLayout({
 
   useEffect(() => {
     fetchLicenseDefinitionsV2()
-    fetchUsers()
+    fetchUsersAndGroups()
     fetchLicenseAssignments()
     fetchMyself()
+
     // const interval = setInterval(() => {
     //   console.log('fetching license assignments')
     //   fetchLicenseAssignments()
