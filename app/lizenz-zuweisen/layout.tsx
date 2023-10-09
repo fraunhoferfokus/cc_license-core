@@ -545,7 +545,7 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
                         }
 
                         if (currentPath === 'medium') {
-                            let userIds = (params?.user_ids as string)?.split(',')
+                            let userIds = (decodeURIComponent(params?.user_ids as string))?.split(',')
                             let medien_id = decodeURIComponent(params?.medium_id as string || '')
                             
                             let availableLicenses = licenseDefinitions?.filter((grouped_license) => {
