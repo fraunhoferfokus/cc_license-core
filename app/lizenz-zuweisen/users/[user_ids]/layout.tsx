@@ -17,7 +17,7 @@ export default function LizenzUserLayout({
         user_ids: string
     }
 }) {
-    
+
     // console.log(children.props.childProp.current)
 
 
@@ -42,12 +42,26 @@ export default function LizenzUserLayout({
         let medien_id = metadata.general.identifier
         let verlag = license.assignee
         let zugewiesen = licenseAssignments.filter((item) => item.target === product_id).length
-        let verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
+        let lizenztyp = license.action![0].refinement.find((item) => item.uid === 'lizenztyp')?.rightOperand
+        let verfügbar
+
+        switch (lizenztyp) {
+            case 'Einzellizenz':
+                verfügbar = zugewiesen ? 0 : 1
+                break;
+            case 'Volumenlizenz':
+                verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
+                break;
+        }
+
+
+
+
+
         let medium = license.metadata.general.title.value
 
         // get the last slash after splitting 
         let lizenzcode = license.uid.split('/').pop()
-        let lizenztyp = license.action![0].refinement.find((item) => item.uid === 'lizenztyp')?.rightOperand
 
 
         let aggregate = {
@@ -139,7 +153,7 @@ export default function LizenzUserLayout({
                     //     setSelectedUsers(selected)
                     // }}
 
-                        
+
                     />
 
                 </div>
@@ -252,7 +266,7 @@ export default function LizenzUserLayout({
 
                 </div>
             }
-            
+
 
             {/* {
                     stepper === 2 && <div className="w-full flex-1 flex flex-col">
@@ -301,7 +315,7 @@ export default function LizenzUserLayout({
                 } */}
 
 
-                {children}
+            {children}
 
 
 
