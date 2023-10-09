@@ -38,7 +38,8 @@ export interface GeneralState {
     toastProps: { message: string, severity: 'success' | 'error' | 'warning' | 'info', duration: number },
     setToastProps: (message: string, severity?: 'success' | 'error' | 'warning' | 'info', duration?: number) => any,
     selectedLicenseId: string | null,
-    setSelectedLicenseId: (id: string | null) => any,
+    setSelectedLicenseIds: (ids: any[]) => any,
+    selectedLicenseIds: string[],
     selectedMedia: any,
     setSelectedMedia: (media: any) => any,
     myself: SANIS_USER | null,
@@ -58,6 +59,7 @@ export const useStore = create<MergedState>()(
         (set, get, props) => ({
             loadingUsers: true,
             selectedUserIds: [],
+            selectedLicenseIds: [],
             setSelectedUserIds: (ids: string[]) => {
                 set({ selectedUserIds: ids })
             },
@@ -76,8 +78,8 @@ export const useStore = create<MergedState>()(
             },
 
             selectedLicenseId: null,
-            setSelectedLicenseId: (id: string | null) => {
-                set({ selectedLicenseId: id })
+            setSelectedLicenseIds: (ids: any[]) => {
+                set({ selectedLicenseIds: ids })
             },
             selectedMedia: '',
             setSelectedMedia: (media: any) => {

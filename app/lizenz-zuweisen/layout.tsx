@@ -15,8 +15,7 @@ import { usePathname, useParams } from 'next/navigation'
 
 
 
-export default function LizenzLayout({ setLicenseModal, setView, children }: { setLicenseModal: any, setView: any, children: React.ReactNode }) {
-
+export default function LizenzLayout({ setLicenseModal, setView, children }: { setLicenseModal: any, setView: any, children: any }) {
     const params = useParams()
 
     const paths = usePathname()?.split('/')
@@ -38,7 +37,8 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
         myself,
         selectedMedia,
         selectedUserIds,
-        setSelectedUserIds
+        setSelectedUserIds,
+        selectedLicenseIds
     } = useStore(state => state)
     const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
     const [mediumtrigger, setMediumTrigger] = useState(false)
@@ -122,7 +122,6 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
             verfügbar,
         })
     })
-    let [selectedLicenses, setSelectedLicenses] = useState<any>([])
     let [medium_value, set_medium_value] = useState('')
 
 
@@ -156,9 +155,6 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
     useEffect(() => {
         console.log(checkedUserIds)
     }, [checkedUserIds])
-
-    useEffect(() => console.log(selectedLicenses), [selectedLicenses])
-
 
     let picked_users = users.filter((user) => checkedUserIds.includes(user.id)).map((user) => (transformUserToData(user)))
 
@@ -534,6 +530,7 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
 
                     }
                     onClick={() => {
+                        console.log('stepper', currentPath)
                         if (currentPath === 'lizenz-zuweisen') {
                             setSelectedUserIds(checkedUserIds)
                             router.push(`/lizenz-zuweisen/users/${checkedUserIds.join(',')}`)
@@ -541,6 +538,17 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
                         if (currentPath === 'users') {
                             router.push(`/lizenz-zuweisen/users/${selectedUserIds.join(',')}/medium/${selectedMedia}`)
                         }
+
+                        if (currentPath === 'medium') {
+                            let userIds = (params?.user_ids as string)?.split(',')
+                            for (let i = 0; i < userIds?.length; i++) {
+                                createLicenseAssignment(selectedLicenseIds[i], userIds[i])
+                            }
+                            setPickedLicenseType('Einzellizenz')
+                            router.push('/lizenz-zuweisen')
+
+                        }
+
 
                         // if (stepper < 4) {
                         //     setStepper(stepper + 1)

@@ -1,7 +1,8 @@
 "use client"
+import { useEffect } from "react"
+import TableItemConverter from "../../../../../../helper/table/TableItemConverter"
 import { useStore } from "../../../../../../zustand/store"
 import TableComponent from "../../../../../components/Table/TableComponent"
-
 
 export default function Medium({ params }: {
     params: {
@@ -9,26 +10,19 @@ export default function Medium({ params }: {
         user_ids: string
     }
 }) {
-
+    
     const medium_id = params.medium_id
     const userIds = decodeURIComponent(params?.user_ids || '').split(',')
-    console.log({
-        length: userIds?.length
-    })
-    const { licenseDefinitions, licenseAssignments } = useStore(state => state)
+
+    const { licenseDefinitions, licenseAssignments, setSelectedLicenseIds } = useStore(state => state)
 
     let medien_id = decodeURIComponent(medium_id || '')
 
-    let targeted_license_deifnitions = licenseDefinitions?.find((grouped_license) => {
+    let targeted_license_definitions = licenseDefinitions?.find((grouped_license) => {
         let license = grouped_license[0]
         return license.target === medien_id
     })
-
-    console.log({
-        targeted_license_deifnitions
-    })
-
-    let targeted_license_definition = targeted_license_deifnitions?.[0]
+    let targeted_license_definition = targeted_license_definitions?.[0]
 
     let product = {
         product_id: targeted_license_definition?.target,
@@ -42,31 +36,34 @@ export default function Medium({ params }: {
     }
 
 
+    useEffect(() => {
+        setSelectedLicenseIds(targeted_license_definitions?.slice(0, userIds?.length).map((item) => item.uid) || [])
+    }, [targeted_license_definitions])
 
-    console.log(targeted_license_deifnitions?.slice(0, userIds?.length ))
+    return (<>
 
-    return (<><div>
-        <p
-            className="mt-[30px] font-bold text-[#404045] text-[20px]"
-        >
-            3. Gewähltes Medium
-        </p>
-        <TableComponent
-            data={[product]}
-            checkbox={false}
-            header={[
-                { label: 'Medien-ID', id: 'medien_id' },
-                { label: 'Medium', id: 'medium' },
-                { label: 'Arbeitsgruppe', id: 'verlag' },
-                { label: 'Klasse', id: 'max_nutzer' },
-                { label: 'Zugewiesen', id: 'zugewiesen' },
-                { label: 'Verfügbar', id: 'verfügbar' }
-            ]}
-            disableFooter={true}
-            entryBackgroundColor={'transparent'}
-            headerBackgroundColor={'#DFDFDF'}
-        />
-    </div>
+        <div>
+            <p
+                className="mt-[30px] font-bold text-[#404045] text-[20px]"
+            >
+                3. Gewähltes Medium
+            </p>
+            <TableComponent
+                data={[product]}
+                checkbox={false}
+                header={[
+                    { label: 'Medien-ID', id: 'medien_id' },
+                    { label: 'Medium', id: 'medium' },
+                    { label: 'Arbeitsgruppe', id: 'verlag' },
+                    { label: 'Klasse', id: 'max_nutzer' },
+                    { label: 'Zugewiesen', id: 'zugewiesen' },
+                    { label: 'Verfügbar', id: 'verfügbar' }
+                ]}
+                disableFooter={true}
+                entryBackgroundColor={'transparent'}
+                headerBackgroundColor={'#DFDFDF'}
+            />
+        </div>
 
 
 
@@ -80,7 +77,19 @@ export default function Medium({ params }: {
                 className="w-full bg-white flex-1 flex"
             >
                 <TableComponent
-                    data={targeted_license_deifnitions?.slice(0, userIds?.length + 1)}
+                    data={targeted_license_definitions?.slice(0, userIds?.length).map((item) => {
+                        return TableItemConverter.transformToLicenseRow(item, licenseAssignments, licenseDefinitions)
+                    }
+
+
+
+                    )
+
+                        ||
+
+                        []
+
+                    }
                     header={[
                         { label: 'Lizenz_id', id: 'lizenz_id', disabled: true },
                         { label: 'Lizenz-Code', id: 'lizenzcode' },

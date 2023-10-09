@@ -5,6 +5,8 @@ import axios from 'axios';
 import { useState } from "react";
 import CustomModal from "./CustomModal";
 import { useStore } from "../../../zustand/store";
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+
 export default function AddLicenseModal({ open, setOpen }: any) {
 
     const { fetchLicenseDefinitionsV2 } = useStore(state => state)
@@ -54,7 +56,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                 <div className="flex">
                                     <TextField
                                         id="filled-start-adornmen"
-
+                                        value={element.downloadID}
                                         label="Abholnummer"
 
                                         variant="outlined"
@@ -98,20 +100,39 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                     let lizenz_geber = data?.lizenzgeber
                                     let lizenz_typ = data?.lizenztyp
                                     let description = metadata?.general?.description[0]?.value
-                                   
+
                                     return (
                                         <>
                                             <div
                                                 className='h-[341px] flex pt-[20px] pl-[10px] pr-[10px]'
                                             >
                                                 <div
-                                                    className='h-full w-[250px] mr-[25px]'
+                                                    className='h-full w-[250px] mr-[25px] relative'
                                                 >
                                                     <img
                                                         className='w-full'
                                                         src={image}
                                                     >
                                                     </img>
+                                                    {
+                                                        element.status === 409 &&
+                                                        <div
+                                                            className='absolute top-[200px] right-[10px] cursor-pointer'
+                                                        >
+                                                            <Tooltip
+                                                                title="Diese Medium wurde bereits importiert!"
+                                                                placement="top"
+                                                            >
+
+                                                                <HighlightOffIcon
+                                                                    className='text-[red] text-[60px] stroke-[red]'
+                                                                >
+
+                                                                </HighlightOffIcon>
+                                                            </Tooltip>
+                                                        </div>
+                                                    }
+
                                                 </div>
                                                 <div
                                                     className='p-[25px]'
@@ -125,9 +146,9 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                     <div
                                                         className='text-[20px] text-[#585867]'
                                                     >
-                                                        <div 
+                                                        <div
                                                             className='mt-[10px]'
-                                                        
+
                                                         >
                                                             {description}
                                                         </div>
@@ -154,7 +175,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                                         </>
 
-            
+
 
                                     )
                                 })}
@@ -167,15 +188,20 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                         <div className="flex justify-end">
 
                             <Button variant="contained"
+                                disabled={!element.downloadID}
                                 onClick={() => {
+                                    setElement({
+                                        ...element,
+                                        downloadID: "",
+                                    })
 
                                     // import via downloadID
                                     if (element.isDownloadID) {
                                         axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseInformations/import2/${element.downloadID}`,
-                                            {  
+                                            {
                                                 withCredentials: true,
                                             }
-                                        
+
                                         )
                                             .then(async (resp) => {
                                                 setElement((el) => ({ ...el, isValidDownloadID: true }))
@@ -222,10 +248,11 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                         let metadata = resp2.data[i].data.lom
                                                         ele.metadata = metadata
                                                     }
-
                                                 }
+
                                                 setLicenseDefinitions(data)
                                                 fetchLicenseDefinitionsV2()
+                                       
                                             })
                                             .catch((e) => {
                                                 setElement((el) => ({ ...el, isValidDownloadID: false }))

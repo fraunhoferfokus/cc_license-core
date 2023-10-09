@@ -2,7 +2,7 @@
 
 import { TextField } from "@mui/material"
 import { usePathname } from "next/navigation"
-import React, { useState } from "react"
+import React, { ReactNode, useEffect, useState } from "react"
 import { useStore } from "../../../../zustand/store"
 import FunctionButton from "../../../components/Buttons/FunctionButton"
 import TableComponent from "../../../components/Table/TableComponent"
@@ -17,13 +17,13 @@ export default function LizenzUserLayout({
         user_ids: string
     }
 }) {
+    
+    // console.log(children.props.childProp.current)
 
-    console.log({
-        children
-    })
+
 
     const pathName = usePathname()
-    const { licenseDefinitions, licenseAssignments, users, setSelectedMedia} = useStore(state => state)
+    const { licenseDefinitions, licenseAssignments, users, setSelectedMedia, setSelectedUserIds } = useStore(state => state)
     const selectedUserIds = decodeURIComponent(params.user_ids)?.split(',')
     let picked_users = users.filter((item) => selectedUserIds.includes(item.id)).map((user) => (transformUserToData(user)))
     const [stepper, setStepper] = useState(1)
@@ -74,6 +74,11 @@ export default function LizenzUserLayout({
             verfügbar,
         })
     })
+
+
+    useEffect(() => {
+        // setSelectedUserIds(selectedUserIds)
+    }, [selectedUserIds])
 
     // const childrenArray: any = React.Children.toArray(children);
     // const [selected_medium_table, pick_license_table] = childrenArray?.[0]?.props?.childProp?.current
@@ -136,10 +141,6 @@ export default function LizenzUserLayout({
                 </div>
 
 
-                <>
-                    {children}
-
-                </>
                 {/* {children} */}
 
 
@@ -245,6 +246,7 @@ export default function LizenzUserLayout({
 
                 </div>
             }
+            
 
             {/* {
                     stepper === 2 && <div className="w-full flex-1 flex flex-col">
@@ -293,7 +295,7 @@ export default function LizenzUserLayout({
                 } */}
 
 
-
+                {children}
 
 
 
