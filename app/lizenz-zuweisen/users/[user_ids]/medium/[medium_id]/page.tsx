@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import TableItemConverter from "../../../../../../helper/table/TableItemConverter"
 import { useStore } from "../../../../../../zustand/store"
 import TableComponent from "../../../../../components/Table/TableComponent"
+import { it } from "node:test"
 
 export default function Medium({ params }: {
     params: {
@@ -18,27 +19,42 @@ export default function Medium({ params }: {
 
     let medien_id = decodeURIComponent(medium_id || '')
 
-    let targeted_license_definitions = licenseDefinitions?.find((grouped_license) => {
-        let license = grouped_license[0]
-        return license.target === medien_id
+    console.log({
+        licenseAssignments,
+        licenseDefinitions
     })
-    let targeted_license_definition = targeted_license_definitions?.[0]
+
+
+    let availableLicenses = licenseDefinitions?.filter((grouped_license) => {
+        let license = grouped_license[0]
+        console.log(license._id)
+        let found = licenseAssignments.find((item) => item.inheritFrom === license._id)
+        console.log({ found_id: found?._id })
+
+        return license.target === medien_id && !found
+
+    }).map((arr) => arr[0])
+
 
     let product = {
-        product_id: targeted_license_definition?.target,
-        medien_id: targeted_license_definition?.metadata.general.identifier,
-        medium: targeted_license_definition?.metadata.general.title.value,
-        verlag: targeted_license_definition?.assignee,
-        max_nutzer: targeted_license_definition?.action![0]?.refinement.find((item) => item.uid === 'lizenzanzahl')?.rightOperand,
-        zugewiesen: licenseAssignments.filter((item) => item.target === targeted_license_definition?.target).length,
-        verfügbar: licenseDefinitions.filter((item) => item[0].target === targeted_license_definition?.target).length - licenseAssignments.filter((item) => item.target === targeted_license_definition?.target).length,
-        cover: targeted_license_definition?.metadata.annotation[0].description.value,
+        product_id: availableLicenses[0]?.target,
+        medien_id: availableLicenses[0]?.metadata.general.identifier,
+        medium: availableLicenses[0]?.metadata.general.title.value,
+        verlag: availableLicenses[0]?.assignee,
+        max_nutzer: availableLicenses[0]?.action![0]?.refinement.find((item) => item.uid === 'lizenzanzahl')?.rightOperand,
+        zugewiesen: licenseAssignments.filter((item) => item.target === availableLicenses[0]?.target).length,
+        verfügbar: licenseDefinitions.filter((item) => item[0].target === availableLicenses[0]?.target).length - licenseAssignments.filter((item) => item.target === availableLicenses[0]?.target).length,
+        cover: availableLicenses[0]?.metadata.annotation[0].description.value,
     }
 
 
-    useEffect(() => {
-        setSelectedLicenseIds(targeted_license_definitions?.slice(0, userIds?.length).map((item) => item.uid) || [])
-    }, [targeted_license_definitions])
+    // useEffect(() => {
+    //     setSelectedLicenseIds(availableLicenses?.slice(0, userIds?.length).map((item) => {
+    //         console.log(item._id)
+
+    //         return item._id
+    //     }) || [])
+    // }, [availableLicenses])
 
     return (<>
 
@@ -80,7 +96,7 @@ export default function Medium({ params }: {
                 className="w-full bg-white flex-1 flex overflow-hidden"
             >
                 <TableComponent
-                    data={targeted_license_definitions?.slice(0, userIds?.length).map((item) => {
+                    data={availableLicenses?.slice(0, userIds?.length).map((item) => {
                         return TableItemConverter.transformToLicenseRow(item, licenseAssignments, licenseDefinitions)
                     }
 

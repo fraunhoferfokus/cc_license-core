@@ -13,7 +13,10 @@ export default class TableTransformer {
         let verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
         let medium = license.metadata.general.title.value
 
-        let lizenzcode = license.uid.split('/').pop()
+        let action = license.action![0]
+        let refinement = action.refinement
+        let lizenzcode = refinement.find((item: any) => item.uid === 'lizenzcode')?.rightOperand
+
         let lizenztyp = license.action![0].refinement.find((item: any) => item.uid === 'lizenztyp')?.rightOperand
 
         return {

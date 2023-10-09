@@ -546,8 +546,16 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
 
                         if (currentPath === 'medium') {
                             let userIds = (params?.user_ids as string)?.split(',')
+                            let medien_id = decodeURIComponent(params?.medium_id as string || '')
+                            
+                            let availableLicenses = licenseDefinitions?.filter((grouped_license) => {
+                                let license = grouped_license[0]
+                                let found = licenseAssignments.find((item) => item.inheritFrom === license._id)                        
+                                return license.target === medien_id && !found
+                            }).map((arr) => arr[0]._id)
+
                             for (let i = 0; i < userIds?.length; i++) {
-                                createLicenseAssignment(selectedLicenseIds[i], userIds[i])
+                                createLicenseAssignment(availableLicenses[i], userIds[i])
                             }
                             setPickedLicenseType('Einzellizenz')
                             router.push('/lizenz-zuweisen')
