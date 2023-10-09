@@ -70,8 +70,8 @@ export default function Page({ params }: { params: { lizenz_id: string } }) {
                                     deleteLicenseAssignment(filter.uid)
                                 }
                                 setToastProps('Lizenz wurde erfolgreich entzogen')
-                                setSelectedLicenseId(null)
-                                setSelectedUserCheckbox([])
+                                if(setSelectedLicenseId) setSelectedLicenseId(null)
+                                if(selectedUserCheckbox) setSelectedUserCheckbox([])
                             }}
 
 

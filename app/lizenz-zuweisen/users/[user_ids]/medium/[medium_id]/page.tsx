@@ -10,11 +10,11 @@ export default function Medium({ params }: {
         user_ids: string
     }
 }) {
-    
+
     const medium_id = params.medium_id
     const userIds = decodeURIComponent(params?.user_ids || '').split(',')
 
-    const { licenseDefinitions, licenseAssignments, setSelectedLicenseIds } = useStore(state => state)
+    const { licenseDefinitions, licenseAssignments, setSelectedLicenseIds, licensesLoading } = useStore(state => state)
 
     let medien_id = decodeURIComponent(medium_id || '')
 
@@ -59,6 +59,9 @@ export default function Medium({ params }: {
                     { label: 'Zugewiesen', id: 'zugewiesen' },
                     { label: 'Verfügbar', id: 'verfügbar' }
                 ]}
+
+                loadingAmount={2}
+                isLoading={licensesLoading}
                 disableFooter={true}
                 entryBackgroundColor={'transparent'}
                 headerBackgroundColor={'#DFDFDF'}
@@ -74,7 +77,7 @@ export default function Medium({ params }: {
                 4. Lizenzen auswählen
             </p>
             <div
-                className="w-full bg-white flex-1 flex"
+                className="w-full bg-white flex-1 flex overflow-hidden"
             >
                 <TableComponent
                     data={targeted_license_definitions?.slice(0, userIds?.length).map((item) => {
@@ -90,6 +93,9 @@ export default function Medium({ params }: {
                         []
 
                     }
+
+                    loadingAmount={8}
+                    isLoading={licensesLoading}
                     header={[
                         { label: 'Lizenz_id', id: 'lizenz_id', disabled: true },
                         { label: 'Lizenz-Code', id: 'lizenzcode' },

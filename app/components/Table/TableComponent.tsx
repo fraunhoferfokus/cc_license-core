@@ -27,7 +27,8 @@ export default function AssignmentTableContainer({
     highlightOnHover,
     triggerSetBoxFunction,
     checkBoxDisabledMessage,
-    isLoading
+    isLoading,
+    loadingAmount
 }: any
 
 ) {
@@ -89,7 +90,7 @@ export default function AssignmentTableContainer({
     const tableRows =
         isLoading ?
             <>
-                {Array(20).fill(0).map(() => {
+                {Array(loadingAmount || 20).fill(0).map(() => {
                     return <TableRow>
                         {
                             Array(checkbox ? header.length + 1 : header.length).fill(0).map(() => {

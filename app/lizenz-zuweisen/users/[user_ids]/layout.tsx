@@ -23,7 +23,7 @@ export default function LizenzUserLayout({
 
 
     const pathName = usePathname()
-    const { licenseDefinitions, licenseAssignments, users, setSelectedMedia, setSelectedUserIds } = useStore(state => state)
+    const { licenseDefinitions, licenseAssignments, users, setSelectedMedia, setSelectedUserIds, loadingUsers, licensesLoading } = useStore(state => state)
     const selectedUserIds = decodeURIComponent(params.user_ids)?.split(',')
     let picked_users = users.filter((item) => selectedUserIds.includes(item.id)).map((user) => (transformUserToData(user)))
     const [stepper, setStepper] = useState(1)
@@ -133,9 +133,13 @@ export default function LizenzUserLayout({
                             { label: 'NutzerId', id: 'nutzerId' }
                         ]}
                         disableFooter={true}
+                        loadingAmount={2}
+                        isLoading={loadingUsers}
                     // onChangeCheckBox={(selected: any) => {
                     //     setSelectedUsers(selected)
                     // }}
+
+                        
                     />
 
                 </div>
@@ -213,6 +217,8 @@ export default function LizenzUserLayout({
                             checkbox={true}
                             singleCheckBox={true}
                             identifier={'medien_id'}
+                            loadingAmount={2}
+                            isLoading={licensesLoading}
                             filterFunction={(data: any[]) => {
 
                                 if (medium_value === '') return data

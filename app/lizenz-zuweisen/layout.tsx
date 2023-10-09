@@ -38,7 +38,9 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
         selectedMedia,
         selectedUserIds,
         setSelectedUserIds,
-        selectedLicenseIds
+        selectedLicenseIds,
+        licensesLoading,
+        loadingUsers
     } = useStore(state => state)
     const [pickedLicenses, setPickedLicenses] = useState<PolicyWithMetadata[]>([])
     const [mediumtrigger, setMediumTrigger] = useState(false)
@@ -526,7 +528,10 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
                         (currentPath === 'lizenz-zuweisen' && !validStepOne)
                         ||
                         (currentPath === 'users' && !validStepTwo)
-
+                        ||
+                        licensesLoading
+                        ||
+                        loadingUsers
 
                     }
                     onClick={() => {
