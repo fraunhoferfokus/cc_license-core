@@ -37,7 +37,7 @@ export default function AssignmentTableContainer({
     const [pickedIdentifiers, setPickedIdentifiers] = useState<any[]>([])
     const [highlightedEntry, setHighlightedEntry] = useState<any>(null)
     let [page, setPage] = useState(0)
-    let [entriesPerPage, setEntriesPerPage] = useState(5)
+    let [entriesPerPage, setEntriesPerPage] = useState(0)
 
     useEffect(() => {
         if (trigger) {
@@ -79,9 +79,12 @@ export default function AssignmentTableContainer({
     }, [pickedIdentifiers])
 
     useEffect(() => {
+        setEntriesPerPage(100)
         if (filterFunction) {
             set_filtered_rows(filterFunction(data))
         } else {
+
+
             set_filtered_rows(data)
         }
         set_paginated_rows(filtered_rows.slice(page * entriesPerPage, page * entriesPerPage + entriesPerPage))
@@ -254,7 +257,9 @@ export default function AssignmentTableContainer({
                                         backgroundColor: headerBackgroundColor ? headerBackgroundColor : "#EEF7FE",
                                         // boxSizing: 'content-box',
                                     }}
-                                >Checkbox</TableCell>}
+                                >
+                                    {/* Checkbox */}
+                                </TableCell>}
 
                                 {
                                     header.map(({ label, id }: any) => {
@@ -326,9 +331,13 @@ export default function AssignmentTableContainer({
                                 }}
 
                             >
-                                <option>5</option>
-                                <option>10</option>
-                                <option>25</option>
+                                <option>50</option>
+                                <option
+                                    selected={entriesPerPage === 100}
+                                >100</option>
+                                <option>500</option>
+                                <option>1000</option>
+                                {/* <option>25</option> */}
                             </select>
                         </div>
                         <div

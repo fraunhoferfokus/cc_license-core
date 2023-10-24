@@ -4,9 +4,19 @@ import Select from 'react-select';
 import { useStore } from "../../../zustand/store";
 import TableComponent from "./TableComponent";
 
+const RolleCodeList = {
+    LERN: 'Lernende/r',
+    LEHR: 'Lehrende/r',
+    EXTERN: 'Externe Person',
+    ORGADMIN: 'Organisationsadministrator/in',
+    LEIT: 'Organisationsleitung',
+    SYSADMIN: 'Systemadministrator/in',
+}
+
+
 export function transformUserToData(user: any) {
     if (user) {
-        let [nachname, vorname] = user?.email.split(' ')
+            let { lastName: nachname, firstName: vorname } = user
         return {
             nachname,
             vorname,
@@ -14,7 +24,7 @@ export function transformUserToData(user: any) {
             arbeitsgruppe: user.groups.filter((group: any) => group.type !== 'Klasse').map((group: any) => group.displayName).join(', '),
             nutzerId: user.id,
             groupIds: user.groups.map((group: any) => group.id),
-            role: user.role
+            role: RolleCodeList[user.role.toUpperCase() as keyof typeof RolleCodeList]
         }
 
     }
@@ -31,10 +41,7 @@ export default function UserGroupTable({
         onChangedGroups?: (groups: any[]) => void,
         users: any[]
     }
-) { 
-
-
-
+) {
     const [triggerChild, setTriggerChild] = useState(false)
 
 
@@ -75,7 +82,7 @@ export default function UserGroupTable({
 
     useEffect(() => {
         setGroupOptions(groups.map((group: any) => ({ value: group.id, label: group.displayName })))
-    },[groups])
+    }, [groups])
 
     return (
         <>
@@ -189,16 +196,16 @@ export default function UserGroupTable({
                     header={[
                         { label: 'Vorname', id: 'vorname' },
                         { label: 'Nachname', id: 'nachname' },
-                        { label: 'Arbeitsgruppe', id: 'arbeitsgruppe' },
+                        { label: 'Rolle', id: 'role' },
+                        { label: 'Lerngruppe', id: 'arbeitsgruppe' },
                         { label: 'Klasse', id: 'klasse' },
-                        { label: 'NutzerId', id: 'nutzerId' },
-                        { label: 'Rolle', id: 'role'}
+                        // { label: 'NutzerId', id: 'nutzerId' },
                     ]}
                     onChangeCheckBox={(identifiers: any[]) => {
                         setPickedUserIds(identifiers)
                     }}
                     onChangeFilteredEntries={(entries: any[]) => {
-                        console.log({ entries })
+                        console.log({})
                         // setFilteredEntries(entries)
                     }}
                     isLoading={loadingUsers}

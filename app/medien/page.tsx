@@ -140,7 +140,7 @@ export default function Medien({ setLicenseModal }: {
                             header={[
                                 { label: 'Medien-ID', id: 'medien_id' },
                                 { label: 'Medium', id: 'medium' },
-                                { label: 'Arbeitsgruppe', id: 'verlag' },
+                                { label: 'Verlag', id: 'verlag' },
                                 { label: 'Klasse', id: 'max_nutzer' },
                                 { label: 'Zugewiesen', id: 'zugewiesen' },
                                 { label: 'Verfügbar', id: 'verfügbar' }

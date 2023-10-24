@@ -11,6 +11,9 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
     const { fetchLicenseDefinitionsV2 } = useStore(state => state)
 
+    const [isLoading, setIsLoading] = useState(false)
+
+
     const [users, setUsers] = useState([])
 
     const [element, setElement] = useState({
@@ -90,6 +93,71 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                 "
 
                             >
+                                {
+                                    isLoading && Array(10).fill(0).map((el, index) => {
+                                        return <div className="animate-pulse bg-gray-300 rounded">
+                                            <div
+                                                className='h-[241px] flex pt-[20px] pl-[10px] pr-[10px]'
+                                            >
+                                                <div
+                                                    className='h-full w-[250px] mr-[25px] relative bg-[#E0E0E0]'
+                                                >
+                                                    <img
+                                                        className='w-full'
+                                                    >
+                                                    </img>
+                                                </div>
+
+                                                <div
+                                                    className='p-[25px] w-full'
+                                                >
+
+                                                    <div
+                                                        className='mt-[10px] w-full bg-[#E0E0E0] h-[40px] rounded'
+
+                                                    >
+
+                                                    </div>
+                                                    <div
+                                                        className='mt-[10px] w-full bg-[#E0E0E0] h-[40px] rounded mb-[50px]'
+
+                                                    >
+
+                                                    </div>
+
+                                                    <div
+                                                        className='mt-[10px] w-full bg-[#E0E0E0] h-[40px] rounded'
+
+                                                    >
+
+                                                    </div>
+
+
+                                                    <div
+                                                        className='mt-[10px] w-full bg-[#E0E0E0] h-[40px] rounded'
+
+                                                    >
+
+                                                    </div>
+                                                    <div
+                                                        className='mt-[10px] w-full bg-[#E0E0E0] h-[40px] rounded'
+
+                                                    >
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                    })
+                                }
+
+
+
+
                                 {licenseDefinitions.map((el: any, index) => {
                                     let element = el[0]
                                     let metadata = element.metadata
@@ -190,6 +258,8 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                             <Button variant="contained"
                                 disabled={!element.downloadID}
                                 onClick={() => {
+                                    setIsLoading(true)
+
                                     setElement({
                                         ...element,
                                         downloadID: "",
@@ -252,14 +322,17 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                                                 setLicenseDefinitions(data)
                                                 fetchLicenseDefinitionsV2()
-                                       
+                                                setIsLoading(false)
                                             })
                                             .catch((e) => {
                                                 setElement((el) => ({ ...el, isValidDownloadID: false }))
                                             })
 
                                     }
-                                }}
+
+
+                                }
+                                }
 
 
                             >Lizenz IMPORTIEREN</Button>
