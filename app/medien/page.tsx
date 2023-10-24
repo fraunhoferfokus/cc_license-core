@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import { useStore } from '../../zustand/store';
 import TableComponent from '../components/Table/TableComponent';
 
-export default function Medien({ setLicenseModal }: {
-    setLicenseModal: any,
-}) {
+export default function Medien() {
     const router = useRouter()
     const {
         licensesLoading,

@@ -1,4 +1,4 @@
 "use client"
-export default function LizenzZuweisungV2({ setLicenseModal, setView }: { setLicenseModal: any, setView: any }) {
+export default function LizenzZuweisungV2() {
     return <></>
 }

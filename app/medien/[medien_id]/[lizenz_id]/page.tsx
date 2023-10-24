@@ -8,7 +8,7 @@ export default function Page({ params }: { params: { lizenz_id: string } }) {
     let { lizenz_id } = params
     lizenz_id = decodeURIComponent(lizenz_id)
 
-    const { licenseAssignments, deleteLicenseAssignment, setToastProps, setSelectedLicenseId, users, licenseDefinitions } = useStore(state => state)
+    const { licenseAssignments, deleteLicenseAssignment, setToastProps, users, licenseDefinitions } = useStore(state => state)
 
     const [mediumtrigger3, setMediumTrigger3] = useState(false)
     const license = licenseDefinitions?.find((grouped_license) => grouped_license.some((item) => item.uid === lizenz_id))?.find((item) => item.uid === lizenz_id)
@@ -70,8 +70,8 @@ export default function Page({ params }: { params: { lizenz_id: string } }) {
                                     deleteLicenseAssignment(filter.uid)
                                 }
                                 setToastProps('Lizenz wurde erfolgreich entzogen')
-                                if(setSelectedLicenseId) setSelectedLicenseId(null)
-                                if(selectedUserCheckbox) setSelectedUserCheckbox([])
+                                // if (setSelectedLicenseId) setSelectedLicenseId(null)
+                                if (selectedUserCheckbox) setSelectedUserCheckbox([])
                             }}
 
 

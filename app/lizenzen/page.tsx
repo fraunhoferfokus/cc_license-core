@@ -10,7 +10,6 @@ export default function Licenses() {
     const {
         licenseDefinitions,
         licenseAssignments,
-        setSelectedLicenseId,
         setSelectedMedia,
         myself,
         licensesLoading
@@ -334,7 +333,7 @@ export default function Licenses() {
                                 let license = licenses.find((item) => item.lizenz_id === identifier)
                                 if (identifier) {
                                     setSelectedMedia(license.medien_id)
-                                    setSelectedLicenseId(identifier)
+                                    // setSelectedLicenseId(identifier)
                                     // setView('media')
                                     // console.log('setting view')
                                 }
