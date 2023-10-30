@@ -17,7 +17,7 @@ export default function DashboardLayout({
 }) {
     let [licenseTypes, setLicenseTypes] = useState<any[]>([])
     let router = useRouter()
-    
+
     const {
         licenseDefinitions,
         licenseAssignments,
@@ -75,7 +75,7 @@ export default function DashboardLayout({
 
     return (
 
-        <div className='flex'>
+        <div className='flex h-full'>
 
             <img
                 className='cursor-pointer bg-[#585867] rounded-[40%] mr-[20px] self-start h-[30px] w-[30px]'
@@ -90,7 +90,7 @@ export default function DashboardLayout({
             />
 
             <div
-                className='flex-1'
+                className='flex-1 h-full'
             >
                 <div>
                     <label
@@ -130,7 +130,7 @@ export default function DashboardLayout({
                 </div>
 
                 <div
-                    className='h-[300px] w-full flex flex-wrap'
+                    className='w-full flex flex-wrap gap-[20px]'
                 >
                     <div
                         className='h-full flex text-[20px] text-[#585867]'
@@ -168,11 +168,13 @@ export default function DashboardLayout({
                     </div>
 
                     <div
-                        className='p-[24px] bg-white flex-1'
+                        className='p-[24px] bg-white flex-1 min-w-[950px] h-[500px] rounded-[10px] flex flex-col'
                     >
                         <h4>
                             Alle Lizenzen für: {product?.medium?.split(' ').slice(1).join(' ')}
                         </h4>
+
+
                         <TableComponent
                             data={licenses_of_product}
                             header={[
@@ -209,6 +211,8 @@ export default function DashboardLayout({
                             // singleCheckBox={true}
                             identifier={'lizenz_id'}
                         />
+
+
 
                     </div>
 

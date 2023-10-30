@@ -26,7 +26,7 @@ export default function Page({ params }: { params: { lizenz_id: string } }) {
     return (
         <>
             <div
-                className='p-[24px] bg-white flex-1 mt-[64px]'
+                className='p-[24px] bg-white flex-1 mt-[14px]'
             >
                 <h4>
                     Freigaben der Lizenz: {lizenzcode}
