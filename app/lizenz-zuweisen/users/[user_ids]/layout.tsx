@@ -47,8 +47,6 @@ export default function LizenzUserLayout({
 
         switch (lizenztyp) {
             case 'Einzellizenz':
-                verfügbar = zugewiesen ? 0 : 1
-                break;
             case 'Volumenlizenz':
                 verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
                 break;
