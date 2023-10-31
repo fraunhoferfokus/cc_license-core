@@ -123,7 +123,7 @@ export default function AssignmentTableContainer({
                 <TableRow
 
 
-                    key={row[identifier]}
+                    key={row?.[identifier]}
                     sx={{
                         '&:last-child td, &:last-child th': { border: 0 },
                         backgroundColor: highlightedEntry === row?.[identifier] && pickedColor ? pickedColor :
@@ -135,10 +135,10 @@ export default function AssignmentTableContainer({
                     }}
                     className="max-h-[50px] cursor-pointer"
                     onClick={() => {
-                        if (row[identifier] === highlightedEntry) {
+                        if (row?.[identifier] === highlightedEntry) {
                             setHighlightedEntry(null)
                         } else {
-                            setHighlightedEntry(row[identifier])
+                            setHighlightedEntry(row?.[identifier])
                         }
                     }}
 
@@ -160,21 +160,21 @@ export default function AssignmentTableContainer({
                             <Checkbox
                                 className="p-[0px] h-[15px] w-[15px] ml-[10px]"
                                 checked={
-                                    pickedIdentifiers.includes(row[identifier]) ? true : false
+                                    pickedIdentifiers.includes(row?.[identifier]) ? true : false
                                         ||
-                                        (checkBoxCheckedFunction && checkBoxCheckedFunction(row[identifier])) ? true : false
+                                        (checkBoxCheckedFunction && checkBoxCheckedFunction(row?.[identifier])) ? true : false
                                 }
                                 disabled={
-                                    singleCheckBox && pickedIdentifiers.length > 0 && !pickedIdentifiers.includes(row[identifier]) ? true : false
+                                    singleCheckBox && pickedIdentifiers.length > 0 && !pickedIdentifiers.includes(row?.[identifier]) ? true : false
                                         ||
-                                        checkBoxDisabledFunction && checkBoxDisabledFunction(row[identifier]) ? true : false
+                                        checkBoxDisabledFunction && checkBoxDisabledFunction(row?.[identifier]) ? true : false
 
                                 }
                                 onChange={(event) => {
                                     if (event.target.checked) {
-                                        setPickedIdentifiers([...pickedIdentifiers, row[identifier]])
+                                        setPickedIdentifiers([...pickedIdentifiers, row?.[identifier]])
                                     } else {
-                                        setPickedIdentifiers(pickedIdentifiers.filter((id: string) => id !== row[identifier]))
+                                        setPickedIdentifiers(pickedIdentifiers.filter((id: string) => id !== row?.[identifier]))
                                     }
                                 }}
                             />
@@ -208,7 +208,7 @@ export default function AssignmentTableContainer({
                                     // textWrap: 'nowrap',
                                 }}
                             >
-                                {row[id]}
+                                {row?.[id]}
 
 
                             </TableCell>

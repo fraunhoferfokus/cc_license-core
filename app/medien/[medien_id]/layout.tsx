@@ -48,8 +48,10 @@ export default function DashboardLayout({
     }).map((grouped_license) => {
         let license = grouped_license[0]
         let lizenzcode = license.uid.split('/').pop()
+        if (!lizenzcode?.includes(product.verlag as string)) lizenzcode = product.verlag + '-' + lizenzcode
+
         let lizenztyp = license.action![0].refinement.find((item) => item.uid === 'lizenztyp')?.rightOperand
-        let zugewiesen = licenseAssignments.filter((item) => item.target === license.target).length
+        let zugewiesen = licenseAssignments.filter((item) => item.inheritFrom === license._id).length
         let max_nutzer = license.action![0].refinement.find((item) => item.uid === 'lizenzanzahl')?.rightOperand
 
         let verfügbar

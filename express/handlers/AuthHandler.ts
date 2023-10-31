@@ -38,7 +38,6 @@ export class AuthHandler {
             req.session.user = sanis_user_resp.data
             return next()
         } catch (err: any) {
-            
 
             // if response status of err is 401, then try refresh token
             if (err.response?.status === 401 || err.response?.status === 400) {
@@ -68,9 +67,9 @@ export class AuthHandler {
                     req.session.user = sanis_user_resp.data
                     return next()
                 } catch (err: any) {
-                    console.log({refresho: req.session.sanis_refresh_token})
+                    console.log({ refresho: req.session.sanis_refresh_token })
                     if (access_token) return res.status(err?.response?.status || 500).json({ status: err?.response?.status, message: err?.response?.data })
-        
+
                 }
             }
 
