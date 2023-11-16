@@ -8,8 +8,18 @@ import { LicenseDefinitionState, licenseDefinitionSlice } from './licenseDefinit
 import { LicenseAssignmentState, licenseAssignmentSlice } from './licenseAssignmentSlice'
 import { SANIS_USER } from '../server'
 
+const wait = (time: number): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(true)
+        }, time)
+    })
+}
+
+
 export interface GeneralState {
     fetchLicenseDefinitionsV2: () => any,
+    fetchDashboard: () => any,
     users: any[],
     loadingUsers: boolean,
     groups: any[],
@@ -57,6 +67,16 @@ export type MergedState = GeneralState & LicenseDefinitionState & LicenseAssignm
 export const useStore = create<MergedState>()(
     persist(
         (set, get, props) => ({
+            fetchDashboard: async () => {
+                get().fetchLicenseDefinitionsV2()
+                
+                await wait(300)
+                get().fetchMyself()
+                await wait(300)
+                get().fetchLicenseAssignments()
+                await wait(300)
+                get().fetchUsersAndGroups()
+            },
             loadingUsers: true,
             selectedUserIds: [],
             selectedLicenseIds: [],
@@ -107,6 +127,7 @@ export const useStore = create<MergedState>()(
                 const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`, { withCredentials: true })
                 const resp2 = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`, { withCredentials: true })
                 set({ groups: resp2.data, users: resp.data, loadingUsers: false })
+                return new Promise((resolve) => resolve(true))
             },
 
             notification: {

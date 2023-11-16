@@ -31,7 +31,7 @@ export const licenseAssignmentSlice: StateCreator<MergedState,
             ).then(async () => {
                 get().setToastProps('Lizenz wurde zugewiesen', 'success')
                 get().fetchLicenseAssignments()
-            }).catch((err) =>{
+            }).catch((err) => {
                 get().setToastProps('Lizenz konnte nicht zugewiesen werden', 'error')
             })
         },
@@ -44,12 +44,10 @@ export const licenseAssignmentSlice: StateCreator<MergedState,
             })
         },
         fetchLicenseAssignments: async () => {
-            try{
-                const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`)
-                set({ licenseAssignments: resp.data })
-            }catch(err) {
-                window.location.href = `${process.env.NEXT_PUBLIC_REDIRECT_URI}`
-            }
+            const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`, {
+
+            })
+            set({ licenseAssignments: resp.data })
         },
         licenseAssignments: [],
         setPickedUserIds(userIds: string[]) {

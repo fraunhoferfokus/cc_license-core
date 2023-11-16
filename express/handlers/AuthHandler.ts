@@ -16,8 +16,6 @@ export class AuthHandler {
 
     static requireSessison: Handler = async (req, res, next) => {
         const access_token = req.headers.authorization?.split(' ')[1]
-
-
         if (access_token) req.session.access_token = access_token
 
         try {
@@ -33,7 +31,8 @@ export class AuthHandler {
             const sanis_user_resp = await axios.get(`${SANIS_USERINFO_ENDPOINT}`, {
                 headers: {
                     Authorization: `Bearer ${sanis_access_token}`
-                }
+                },
+                maxRedirects: 10
             })
             req.session.user = sanis_user_resp.data
             return next()
@@ -67,16 +66,14 @@ export class AuthHandler {
                     req.session.user = sanis_user_resp.data
                     return next()
                 } catch (err: any) {
-                    console.log({ refresho: req.session.sanis_refresh_token })
+                    console.log('lol here')
                     if (access_token) return res.status(err?.response?.status || 500).json({ status: err?.response?.status, message: err?.response?.data })
 
                 }
             }
-
             return next(err)
         }
 
-        return res.status(403).send('Not session available')
     }
 
 }   

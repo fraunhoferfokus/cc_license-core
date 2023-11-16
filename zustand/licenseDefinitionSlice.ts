@@ -74,7 +74,7 @@ export const licenseDefinitionSlice: StateCreator<
                     ele.metadata = metadata
                 }
             }
-            set({ licenseDefinitions: groupedLicenses as (Policy & { metadata: any })[][], licensesLoading: false})
+            set({ licenseDefinitions: groupedLicenses as (Policy & { metadata: any })[][], licensesLoading: false })
         },
         licensesLoading: true,
         licenseDefinitions: []
