@@ -131,28 +131,6 @@ export default function LizenzLayout({ children, currentlySelectedMedium }: { ch
 
 
     useEffect(() => {
-
-        // if (stepper === 2) {
-        //     const sliced_licenses = licenses.filter((license) => license.medien_id === selectedMedia && !licenseAssignments.find((assignment) => assignment.inheritFrom === license.lizenz_id)).slice(0, selectedUsersId.length)
-        //     setSelectedLicenses(sliced_licenses)
-        // }
-
-        // if (stepper === 3) {
-        //     for (let i = 0; i < selectedLicenses?.length; i++) {
-        //         console.log('create license assignment')
-        //         createLicenseAssignment(selectedLicenses[i].lizenz_id, selectedUsersId[i])
-        //     }
-        //     setStepper(0)
-        //     setSelectedUsers([])
-        //     setPickedLicenseType('Einzellizenz')
-        //     setSelectedLicenses([])
-        // }
-    }, [
-        // stepper
-
-    ])
-
-    useEffect(() => {
         console.log(checkedUserIds)
     }, [checkedUserIds])
 
@@ -235,7 +213,7 @@ export default function LizenzLayout({ children, currentlySelectedMedium }: { ch
                                 />
 
                                 <FunctionButton
-                                    infoText={'Nur selektion einer Klasse oder Lerngruppe mögilch'}
+                                    infoText={'Nur Selektion einer Klasse oder Lerngruppe möglich'}
                                     buttonTitle={'Lerngruppenlizenz'}
                                     iconPath={'/map.svg'}
                                     callback={() => {
@@ -278,7 +256,7 @@ export default function LizenzLayout({ children, currentlySelectedMedium }: { ch
                 >
 
                     {
-                        currentPath !== 'lizenz-zuweisen' ?
+                        currentPath !== '/lizenz-zuweisen' ?
                             <Button
                                 variant="contained"
                                 onClick={() => {
