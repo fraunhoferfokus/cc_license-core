@@ -32,6 +32,7 @@ export default function Licenses() {
         medium: any;
         verlag: string | undefined;
         lizenztyp: string | undefined;
+        verfügbar: string;
     }[] = []
     const [mediumtrigger2, setMediumTrigger2] = useState(false)
     const router = useRouter()
@@ -47,14 +48,14 @@ export default function Licenses() {
         medien_id: string,
         medium: string,
         vorname: string,
-        nachname: string
+        nachname: string,
     }>({
         lizenztyp: { label: 'Einzellizenz', value: 'Einzellizenz' },
         verlag: '',
         medien_id: '',
         medium: '',
         vorname: '',
-        nachname: ''
+        nachname: '',
 
     })
 
@@ -62,6 +63,27 @@ export default function Licenses() {
     licenseAssignments.forEach((assignment) => {
         licenses.push(TableTransformer.transformToLicenseAssingmentRow(assignment, users, licenseDefinitions))
     })
+
+    licenseDefinitions.forEach((grouped_license) => {
+        for (const license of grouped_license) {
+            let found = licenses.find((item) => item.lizenzId === license.uid)
+            if (!found) {
+                licenses.push({
+                    ...TableTransformer.transformToLicenseRow(license, licenseAssignments, licenseDefinitions),
+                    userId: undefined,
+                    lizenzId: license.uid,
+                    vorname: undefined,
+                    nachname: undefined,
+                    assignmentId: license.uid! + 'assignment',
+                    verfügbar: 'Ja'
+                })
+            }
+        }
+    })
+
+
+    console.log(licenses.length)
+
 
     useEffect(() => {
         setMediumTrigger2(!mediumtrigger2)
@@ -261,6 +283,7 @@ export default function Licenses() {
                             <TableComponent
                                 data={licenses}
                                 header={[
+                                    { label: 'Verfugbar Ja/Nein', id: 'verfügbar' },
                                     { label: 'Vorname', id: 'vorname' },
                                     { label: 'Nachname', id: 'nachname' },
                                     { label: 'Lizenz_id', id: 'lizenz_id', disabled: true },
@@ -303,13 +326,13 @@ export default function Licenses() {
                                         })
                                     }
 
-                                    if(filterMap.vorname) {
+                                    if (filterMap.vorname) {
                                         entries = entries.filter((item: any) => {
                                             return item.vorname?.toLowerCase()?.indexOf(filterMap.vorname.toLowerCase()) > -1
                                         })
                                     }
 
-                                    if(filterMap.nachname) {
+                                    if (filterMap.nachname) {
                                         entries = entries.filter((item: any) => {
                                             return item.nachname?.toLowerCase()?.indexOf(filterMap.nachname.toLowerCase()) > -1
                                         })
