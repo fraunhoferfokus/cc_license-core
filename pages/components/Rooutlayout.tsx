@@ -9,6 +9,8 @@ import { useStore } from '../../zustand/store';
 import { toBILO } from '../../helper/helper';
 import { Policy } from 'license_manager';
 import LogoutIcon from '@mui/icons-material/Logout'
+import AddLicenseModal from './modal/AddLicenseModal';
+import { ToastMessage } from './toastMessage';
 
 
 const wait = (time: number): Promise<boolean> => {
@@ -299,15 +301,15 @@ export default function RootLayout(
                     </div>
                 </div>
                 <div className="flex-grow bg-[#F0F0F9] pl-[26px] pt-[50px] h-full flex flex-col pr-[26px] pb-[26px] relative">
-                    {/* <ToastMessage /> */}
+                    <ToastMessage />
                     {children}
                 </div>
             </div>
-            {/* <AddLicenseModal open={modalProps.open} setOpen={(value: boolean) => {
-                    setModalProps({
-                        open: value
-                    })
-                }} /> */}
+            <AddLicenseModal open={modalProps.open} setOpen={(value: boolean) => {
+                setModalProps({
+                    open: value
+                })
+            }} />
         </>
 
 

@@ -24,6 +24,10 @@ export const licenseAssignmentSlice: StateCreator<MergedState,
     [],
     LicenseAssignmentState> = ((set, get) => ({
         createLicenseAssignment(licenseDefinitionID: string, targetID: string) {
+            console.log({
+                licenseDefinitionID, targetID
+            })
+
             axios.post(`${process.env.NEXT_PUBLIC_SELF_URL}/license-assignments`, {
                 licenseDefinitionID,
                 targetID
