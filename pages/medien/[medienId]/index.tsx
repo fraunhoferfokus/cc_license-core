@@ -182,10 +182,10 @@ export default function MedienIdLayout({
                                 header={[
                                     { label: 'Lizenz_id', id: 'lizenz_id', disabled: true },
                                     { label: 'Lizenz-Code', id: 'lizenzcode' },
-                                    { label: 'Medien ID', id: 'medien_id' },
+                                    // { label: 'Medien ID', id: 'medien_id' },
                                     { label: 'Verlag', id: 'verlag' },
                                     { label: 'Lizenztyp', id: 'lizenztyp' },
-                                    { label: 'Max Nutzer', id: 'lizenzanzahl' },
+                                    { label: 'Max Nutzer', id: 'max_nutzer' },
                                     { label: 'Zugewiesen', id: 'zugewiesen' },
                                     { label: 'Verfügbar', id: 'verfügbar' }
                                 ]}

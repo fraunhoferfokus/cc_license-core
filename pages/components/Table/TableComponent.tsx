@@ -86,7 +86,7 @@ export default function AssignmentTableContainer({
                 const filtered = filterFunction(data) as any[]
 
                 const sorted_rows = filtered.sort((a, b) => {
-                    return a[sort].localeCompare(b[sort])
+                    return a[sort]?.localeCompare(b[sort])
                 })
                 set_filtered_rows(
                     [...sorted_rows]
@@ -97,7 +97,7 @@ export default function AssignmentTableContainer({
         } else {
             if (sort) {
                 const sorted_rows = data.sort((a:any, b:any) => {
-                    return a[sort].localeCompare(b[sort])
+                    return a[sort]?.localeCompare(b[sort])
                 })
                 set_filtered_rows(
                     [...sorted_rows]
@@ -116,7 +116,7 @@ export default function AssignmentTableContainer({
     useEffect(() => {
         if (sort) {
             const sorted_rows = filtered_rows.sort((a, b) => {
-                return a[sort].localeCompare(b[sort])
+                return a[sort]?.localeCompare(b[sort])
             })
             set_filtered_rows(
                 [...sorted_rows]
@@ -360,7 +360,7 @@ export default function AssignmentTableContainer({
                             <span
                                 className="mr-[10px] "
                             >
-                                Rows per page:
+                                Zeilen per Seite:
                             </span>
                             <select
                                 onChange={(e) => {
@@ -381,7 +381,7 @@ export default function AssignmentTableContainer({
                             className="ml-[20px] mr-[20px] font-bold"
 
                         >
-                            {page * entriesPerPage + 1}- {page * entriesPerPage + entriesPerPage} of {filtered_rows.length}
+                            {page * entriesPerPage + 1}- {page * entriesPerPage + entriesPerPage} von {filtered_rows.length}
                         </div>
                         <div>
                             <img

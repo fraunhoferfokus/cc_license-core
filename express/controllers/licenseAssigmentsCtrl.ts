@@ -230,9 +230,12 @@ class LicenseAssignmentController {
 
             const config = {
                 headers: {
-                    'Cookie': sessionCookie
-                    // authorization: `Bearer ${req.session.access_token}`
+                    Authorization: `Bearer ${req.session.access_token}`
                 }
+                // headers: {
+                //     'Cookie': sessionCookie
+                //     // authorization: `Bearer ${req.session.access_token}`
+                // }
             }
             for (const userAssignment of userLicenseAssignments) {
                 licenseDefinitions.push((await axios.get(userAssignment.inheritFrom as string, config)).data)
@@ -244,6 +247,32 @@ class LicenseAssignmentController {
                 const { orgs, groups, email } = user
                 const [first_name, last_name] = email.split(' ')
                 let context: { [key: string]: any } = {}
+
+
+                for (const orgIds of orgs) {
+                    for (let orgId in orgIds) {
+                        let org = orgIds[orgId]
+                        if (context[orgId] === undefined) {
+                            context[orgId] = {
+                                school_name: org.school_name,
+                                classes: [],
+                                workgroups: [],
+                                roles: org.roles?.map((role: string) => {
+                                    let map: { [key: string]: any } = {
+                                        "Leit": "staff",
+                                        "Lehr": "teacher",
+                                        "Lern": "student"
+                                    }
+                                    let val = map[role]
+                                    if (!val) return 'student'
+                                    return val
+                                }),
+
+                                licenses: []
+                            }
+                        }
+                    }
+                }
 
 
                 for (const group of groups) {
@@ -289,7 +318,7 @@ class LicenseAssignmentController {
                     } else {
                         if (group.type === 'Klasse') {
                             context[group.orgid]['classes'].push({
-                                name: group.name,
+                                name: group.displayName,
                                 id: group.id,
                                 licenses: groupLicenses
                             })
@@ -319,14 +348,22 @@ class LicenseAssignmentController {
                     return code;
                 })
 
+                console.log({
+                    message: 'we are getting somewhere'
+                })
 
-                return res.json({
+
+                let responsePayload = {
                     id: userID,
                     first_name,
                     last_name,
                     context,
                     licenses,
-                })
+                }
+
+                console.log(responsePayload)
+
+                return res.json(responsePayload)
 
 
 
@@ -336,6 +373,19 @@ class LicenseAssignmentController {
 
             return res.json(userLicenseAssignments)
         } catch (err: any) {
+
+            console.log({
+                err
+            })
+
+            console.log(
+                err.response.status
+            )
+
+            console.log(
+                err.response.data
+            )
+
             return res.status(err?.response?.statusCode || 500).json(err?.response?.data)
         }
 

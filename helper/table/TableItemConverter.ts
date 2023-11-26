@@ -23,7 +23,7 @@ export default class TableTransformer {
 
         return {
             lizenz_id: license.uid,
-            lizenzcode,
+            lizenzcode: lizenzcode?.includes(verlag) ? lizenzcode : `${verlag}-${lizenzcode}`,
             medien_id,
             medium,
             verlag,

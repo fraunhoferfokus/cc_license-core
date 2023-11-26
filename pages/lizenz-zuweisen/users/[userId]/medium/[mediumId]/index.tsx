@@ -60,7 +60,7 @@ export default function Medium() {
                     data={[product]}
                     checkbox={false}
                     header={[
-                        { label: 'Medien-ID', id: 'medien_id' },
+                        // { label: 'Medien-ID', id: 'medien_id' },
                         { label: 'Medium', id: 'medium' },
                         { label: 'Arbeitsgruppe', id: 'verlag' },
                         { label: 'Klasse', id: 'max_nutzer' },
