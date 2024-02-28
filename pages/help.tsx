@@ -14,7 +14,6 @@ export default function Help() {
         }, waitBeforeClose))
         const element = ref.current
         const section = element.querySelector('#' + argument)
-        console.log(section)
         selected !== argument ? setSelected(argument) : setSelected('')
         await new Promise((resolve, reject) => setTimeout(() => {
             resolve(true)
@@ -194,7 +193,6 @@ export default function Help() {
                             &nbsp;
                             <Link
                                 onClick={() => {
-                                    console.log('click')
                                     setSelectedSection('licenses', 500, 100)
                                 }}
                             >

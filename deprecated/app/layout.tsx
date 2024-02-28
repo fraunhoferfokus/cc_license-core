@@ -49,11 +49,6 @@ export default function RootLayout({
     fetchUsersAndGroups()
     fetchLicenseAssignments()
     fetchMyself()
-
-    // const interval = setInterval(() => {
-    //   console.log('fetching license assignments')
-    //   fetchLicenseAssignments()
-    // }, 1000 * 5)
     return () => {
       // clearInterval(interval)
     }

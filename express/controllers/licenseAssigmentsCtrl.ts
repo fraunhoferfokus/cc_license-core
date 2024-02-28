@@ -205,12 +205,6 @@ class LicenseAssignmentController {
         try {
             const schema = req.query.schema
             const requestingUser = req.session.user
-
-            console.log({
-                access_token: req.session.access_token,
-                requestingUser
-            })
-
             const [sanisUserPromise, licenseAssignments] = await Promise.all([(
                 axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${requestingUser?.pid}`, {
                     headers: {
@@ -347,12 +341,6 @@ class LicenseAssignmentController {
 
                     return code;
                 })
-
-                console.log({
-                    message: 'we are getting somewhere'
-                })
-
-
                 let responsePayload = {
                     id: userID,
                     first_name,
@@ -360,32 +348,13 @@ class LicenseAssignmentController {
                     context,
                     licenses,
                 }
-
-                console.log(responsePayload)
-
                 return res.json(responsePayload)
-
-
-
-
             }
 
 
             return res.json(userLicenseAssignments)
         } catch (err: any) {
-
-            console.log({
-                err
-            })
-
-            console.log(
-                err.response.status
-            )
-
-            console.log(
-                err.response.data
-            )
-
+            console.error(err)
             return res.status(err?.response?.statusCode || 500).json(err?.response?.data)
         }
 
@@ -481,16 +450,8 @@ class LicenseAssignmentController {
             switch (licenseType) {
                 case 'Einzellizenz':
                 case 'Volumenlizenz':
-                    console.log('here we are')
                     const found = licenseAssignments.find((assignment) => assignment.inheritFrom === licenseDefinitionID)
-
-                    console.log(process.env.GATEWAY_URL)
-
                     const user = (await axios.get(`${process.env.GATEWAY_URL}/user_manager/users/${targetID}`, config)).data
-                    console.log({ user })
-
-
-
                     if (found) return res.status(400).json({ message: 'Single-License already assigned' })
                     if (role && !user.gruppen.find((gruppe: any) => gruppe.rolle === role)) {
                         return res.status(400).json({ message: 'User has no role to use this license' })
@@ -510,7 +471,6 @@ class LicenseAssignmentController {
                     if (alreadyHave) {
                         return res.status(400).json({ message: 'That group is already enrolled to that license-defintion' })
                     }
-
                     // create for every user 
                     for (const userId of group.users) {
                         const found = licenseAssignments.find((assignment) =>
@@ -547,8 +507,7 @@ class LicenseAssignmentController {
 
             return res.status(204).send()
         } catch (err: any) {
-            console.log('err')
-            console.log(err.response.data)
+            console.error(err)
             return res.status(err?.response?.statusCode || 500).json(err)
         }
     }
@@ -602,7 +561,7 @@ class LicenseAssignmentController {
             return res.status(204).send()
 
         } catch (err: any) {
-            console.log(err)
+            console.error(err)
             return res.status(err?.response?.statusCode || 500).json(err)
         }
     }

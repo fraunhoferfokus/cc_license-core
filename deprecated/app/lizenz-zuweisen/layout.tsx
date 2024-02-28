@@ -126,39 +126,9 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
     })
     let [medium_value, set_medium_value] = useState('')
 
-
     useEffect(() => {
         setMediumTrigger(true)
     }, [medium_value])
-
-
-    useEffect(() => {
-
-        // if (stepper === 2) {
-        //     const sliced_licenses = licenses.filter((license) => license.medien_id === selectedMedia && !licenseAssignments.find((assignment) => assignment.inheritFrom === license.lizenz_id)).slice(0, selectedUsersId.length)
-        //     setSelectedLicenses(sliced_licenses)
-        // }
-
-        // if (stepper === 3) {
-        //     for (let i = 0; i < selectedLicenses?.length; i++) {
-        //         console.log('create license assignment')
-        //         createLicenseAssignment(selectedLicenses[i].lizenz_id, selectedUsersId[i])
-        //     }
-        //     setStepper(0)
-        //     setSelectedUsers([])
-        //     setPickedLicenseType('Einzellizenz')
-        //     setSelectedLicenses([])
-        // }
-    }, [
-        // stepper
-
-    ])
-
-    useEffect(() => {
-        console.log(checkedUserIds)
-    }, [checkedUserIds])
-
-    let picked_users = users.filter((user) => checkedUserIds.includes(user.id)).map((user) => (transformUserToData(user)))
 
     let org = myself?.personenkontexte[0]?.organisation
 
@@ -535,7 +505,6 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
 
                     }
                     onClick={() => {
-                        console.log('stepper', currentPath)
                         if (currentPath === 'lizenz-zuweisen') {
                             setSelectedUserIds(checkedUserIds)
                             router.push(`/lizenz-zuweisen/users/${checkedUserIds.join(',')}`)
@@ -547,10 +516,10 @@ export default function LizenzLayout({ setLicenseModal, setView, children }: { s
                         if (currentPath === 'medium') {
                             let userIds = (decodeURIComponent(params?.user_ids as string))?.split(',')
                             let medien_id = decodeURIComponent(params?.medium_id as string || '')
-                            
+
                             let availableLicenses = licenseDefinitions?.filter((grouped_license) => {
                                 let license = grouped_license[0]
-                                let found = licenseAssignments.find((item) => item.inheritFrom === license._id)                        
+                                let found = licenseAssignments.find((item) => item.inheritFrom === license._id)
                                 return license.target === medien_id && !found
                             }).map((arr) => arr[0]._id)
 

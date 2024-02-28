@@ -9,11 +9,11 @@ const notificationDAOInstance = NotificationDAO
 const assignmentDAOInstance = LicenseAssignmentDAO
 
 export function scheduleEveryDay() {
-    console.log('-------Setting up Scheduler ---------')
+    console.info('-------Setting up Scheduler ---------')
     const job = schedule.scheduleJob('0 0 * * *', async () => {
         const date = new Date()
-        console.log('-----------------')
-        console.log(`Deleting on: ${('0' + date.getDate().toString()).slice(-2)}-${('0' + date.getMonth().toString()).slice(-2)} ${date.getHours()}:${date.getMinutes()}`)
+        console.info('-----------------')
+        console.info(`Deleting on: ${('0' + date.getDate().toString()).slice(-2)}-${('0' + date.getMonth().toString()).slice(-2)} ${date.getHours()}:${date.getMinutes()}`)
         const [definitions, assignments, informations, notifications] = await Promise.all([
             definitionDAOInstance.findAll(),
             assignmentDAOInstance.findAll(),
@@ -40,9 +40,9 @@ export function scheduleEveryDay() {
 
         try {
             await Promise.all(deleteOperations)
-            console.log('succesfully deleted all dependencies')
+            console.info('succesfully deleted all dependencies')
 
-            console.log('-----------------')
+            console.info('-----------------')
 
         } catch (err) {
             console.error(err)

@@ -16,7 +16,6 @@ export default function LizenzUserLayout({
     children: React.ReactNode,
 
 }) {
-    // console.log(children.props.childProp.current)
     const router = useRouter()
     const user_ids = router.query.userId as string
     const pathName = usePathname()

@@ -30,25 +30,10 @@ export default function Medien() {
         let verlag = license.assignee
         let zugewiesen = licenseAssignments.filter((item) => item.target === product_id).length
         let medium = license.metadata.general.title.value
-
-        // get the last slash after splitting 
         let lizenzcode = license.uid.split('/').pop()
         let lizenztyp = license.action![0].refinement.find((item) => item.uid === 'lizenztyp')?.rightOperand
-
-
         let verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
-        // let verfügbar
-
-        // if (lizenztyp === 'Einzellizenz') {
-        //     console.log({ zugewiesen })
-        //     verfügbar = zugewiesen ? 0 : 1
-        // } else {
-        //     verfügbar = licenseDefinitions.filter((item) => item[0].target === product_id).length - zugewiesen
-        // }
-
-
         let cover = license.metadata.annotation[0].description.value
-
 
         let aggregate = {
             product_id,

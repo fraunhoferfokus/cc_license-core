@@ -19,20 +19,10 @@ export default function Medium({ params }: {
 
     let medien_id = decodeURIComponent(medium_id || '')
 
-    console.log({
-        licenseAssignments,
-        licenseDefinitions
-    })
-
-
     let availableLicenses = licenseDefinitions?.filter((grouped_license) => {
         let license = grouped_license[0]
-        console.log(license._id)
         let found = licenseAssignments.find((item) => item.inheritFrom === license._id)
-        console.log({ found_id: found?._id })
-
         return license.target === medien_id && !found
-
     }).map((arr) => arr[0])
 
 
@@ -46,16 +36,7 @@ export default function Medium({ params }: {
         verfügbar: licenseDefinitions.filter((item) => item[0].target === availableLicenses[0]?.target).length - licenseAssignments.filter((item) => item.target === availableLicenses[0]?.target).length,
         cover: availableLicenses[0]?.metadata.annotation[0].description.value,
     }
-
-
-    // useEffect(() => {
-    //     setSelectedLicenseIds(availableLicenses?.slice(0, userIds?.length).map((item) => {
-    //         console.log(item._id)
-
-    //         return item._id
-    //     }) || [])
-    // }, [availableLicenses])
-
+    
     return (<>
 
         <div>

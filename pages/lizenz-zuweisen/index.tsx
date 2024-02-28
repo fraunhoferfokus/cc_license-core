@@ -129,11 +129,6 @@ export default function LizenzLayout({ children, currentlySelectedMedium }: { ch
         setMediumTrigger(true)
     }, [medium_value])
 
-
-    useEffect(() => {
-        console.log(checkedUserIds)
-    }, [checkedUserIds])
-
     let picked_users = users.filter((user) => checkedUserIds.includes(user.id)).map((user) => (transformUserToData(user)))
 
     let org = myself?.personenkontexte[0]?.organisation
@@ -285,7 +280,6 @@ export default function LizenzLayout({ children, currentlySelectedMedium }: { ch
 
                         }
                         onClick={() => {
-                            console.log('stepper', currentPath)
                             if (currentPath === '/lizenz-zuweisen') {
                                 router.push(`/lizenz-zuweisen/users/${checkedUserIds.join(',')}`)
                             }

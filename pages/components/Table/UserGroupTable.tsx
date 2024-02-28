@@ -205,7 +205,6 @@ export default function UserGroupTable({
                         setPickedUserIds(identifiers)
                     }}
                     onChangeFilteredEntries={(entries: any[]) => {
-                        console.log({})
                         // setFilteredEntries(entries)
                     }}
                     isLoading={loadingUsers}

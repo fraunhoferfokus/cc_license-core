@@ -81,10 +81,6 @@ export default function Licenses() {
         }
     })
 
-
-    console.log(licenses.length)
-
-
     useEffect(() => {
         setMediumTrigger2(!mediumtrigger2)
 
@@ -347,17 +343,9 @@ export default function Licenses() {
                                 onChangeClickedRow={(identifier: string) => {
                                     let license = licenses.find((item) => item.assignmentId === identifier)
                                     if (identifier) {
-
                                         router.push(`/medien/${license?.medien_id}/${encodeURIComponent(license?.lizenzId as string)}`)
-
-                                        // setSelectedMedia(license.medien_id)
-                                        // setSelectedLicenseId(identifier)
-                                        // setView('media')
-                                        // console.log('setting view')
                                     }
-                                    // setSelectedLicenseId(identifier)
                                 }}
-                                // singleCheckBox={true}
                                 identifier={'assignmentId'}
                             />
 

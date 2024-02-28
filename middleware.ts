@@ -7,8 +7,6 @@ import cookie from 'cookie';
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
     try {
-        console.log('middleware')
-
         const allCookiesString = (request.cookies.getAll()).map((cookie) => {
             return `${cookie.name}=${cookie.value}`
         })[0]

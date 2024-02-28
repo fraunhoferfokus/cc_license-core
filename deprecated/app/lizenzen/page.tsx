@@ -333,13 +333,9 @@ export default function Licenses() {
                                 let license = licenses.find((item) => item.lizenz_id === identifier)
                                 if (identifier) {
                                     setSelectedMedia(license.medien_id)
-                                    // setSelectedLicenseId(identifier)
-                                    // setView('media')
-                                    // console.log('setting view')
                                 }
-                                // setSelectedLicenseId(identifier)
+
                             }}
-                            // singleCheckBox={true}
                             identifier={'lizenz_id'}
                         />
 

@@ -3,17 +3,7 @@ import { Handler } from "express"
 const TOKEN_EXCHANGE_ENDPOINT = process.env.KEYCLOAK_EXCHANGE_TOKEN_ENDPOINT
 const SANIS_USERINFO_ENDPOINT = process.env.SANIS_USERINFO_ENDPOINT
 const SANIS_TOKEN_ENDPOINT = process.env.SANIS_TOKEN_ENDPOINT
-
-
-console.log({
-    TOKEN_EXCHANGE_ENDPOINT,
-    SANIS_USERINFO_ENDPOINT,
-    SANIS_TOKEN_ENDPOINT
-})
-
 export class AuthHandler {
-
-
     static requireSessison: Handler = async (req, res, next) => {
         const access_token = req.headers.authorization?.split(' ')[1]
         if (access_token) req.session.access_token = access_token
@@ -37,10 +27,8 @@ export class AuthHandler {
             req.session.user = sanis_user_resp.data
             return next()
         } catch (err: any) {
-
             // if response status of err is 401, then try refresh token
             if (err.response?.status === 401 || err.response?.status === 400) {
-                console.log('refresh old access token')
                 try {
                     const refresh_token = req.session.sanis_refresh_token
                     // get new access token from refresh token
@@ -66,9 +54,8 @@ export class AuthHandler {
                     req.session.user = sanis_user_resp.data
                     return next()
                 } catch (err: any) {
-                    console.log('lol here')
+                    console.error(err)
                     if (access_token) return res.status(err?.response?.status || 500).json({ status: err?.response?.status, message: err?.response?.data })
-
                 }
             }
             return next(err)

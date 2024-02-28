@@ -68,11 +68,6 @@ export default class TableTransformer {
             lizenztyp,
             verfügbar: 'Nein'
         }
-
-        console.log({
-            object
-        })
-
         return object
 
     }

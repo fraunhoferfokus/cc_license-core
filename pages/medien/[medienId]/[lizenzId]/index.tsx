@@ -10,32 +10,15 @@ import MedienIdLayout from ".."
 export default function Page() {
     const router = useRouter()
     let lizenz_id = decodeURIComponent(router.query.lizenzId as string)
-
-    console.log({ lizenz_id })
-
     const { licenseAssignments, deleteLicenseAssignment, setToastProps, users, licenseDefinitions } = useStore(state => state)
-
     const [mediumtrigger3, setMediumTrigger3] = useState(false)
     const license = licenseDefinitions?.find((grouped_license) => grouped_license.some((item) => item.uid === lizenz_id))?.find((item) => item.uid === lizenz_id)
-
     const action = license?.action?.[0]
     let refinement = action?.refinement
     let lizenzcode = refinement?.find((item) => item.uid === 'lizenzcode')?.rightOperand
-
-    console.log({
-        licenseAssignments
-    })
-
     let userIds = licenseAssignments?.filter((item) => item.inheritFrom === lizenz_id).map((item) => item.assignee)
-
-
-    console.log({
-        userIds
-    })
-
     let [selectedUserCheckbox, setSelectedUserCheckbox] = useState<any[]>([])
 
-    // let users = usersIds?.map((userId) => {})
     return (
         <>
 

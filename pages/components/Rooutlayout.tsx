@@ -52,20 +52,9 @@ export default function RootLayout(
     let bilo = toBILO(pickedLicense!)
     const autoC = useRef(null);
 
-
-
-
     useEffect(() => {
         fetchDashboard()
-
-        // fetchLicenseAssignments()
-
-        // const interval = setInterval(() => {
-        //   console.log('fetching license assignments')
-        //   fetchLicenseAssignments()
-        // }, 1000 * 5)
         return () => {
-            // clearInterval(interval)
         }
     }, [])
 

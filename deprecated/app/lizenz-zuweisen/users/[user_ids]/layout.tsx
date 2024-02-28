@@ -18,10 +18,6 @@ export default function LizenzUserLayout({
     }
 }) {
 
-    // console.log(children.props.childProp.current)
-
-
-
     const pathName = usePathname()
     const { licenseDefinitions, licenseAssignments, users, setSelectedMedia, setSelectedUserIds, loadingUsers, licensesLoading } = useStore(state => state)
     const selectedUserIds = decodeURIComponent(params.user_ids)?.split(',')

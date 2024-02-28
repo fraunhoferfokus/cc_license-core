@@ -5,9 +5,6 @@ import { ActionObject, Constraint } from "license_manager/dist/models/LicenseDef
 
 export const toBILO = (license?: Policy) => {
     if(!license) return null
-
-    console.log({license})
-
     const constraints = (license.action![0] as ActionObject).refinement as Constraint[]
     const one = constraints.find((item) => item.uid === 'gueltigkeitsbeginn')!.rightOperand!
     const two = constraints.find((item) => item.uid === 'gueltigkeitsende')!.rightOperand!
