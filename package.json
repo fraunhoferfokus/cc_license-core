@@ -42,7 +42,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "license_manager": "git+https://token:glpat-T--qRx6f-GfAXstbiNw3@gitlab.fokus.fraunhofer.de/learning-technologies/projects/control-connect/license_manager#dev",
+    "license_manager": "git+https://github.com/fraunhoferfokus/cc_license_manager.git",
     "moment": "^2.29.4",
     "moment-jalaali": "^0.9.6",
     "next": "^13.5.4",
