@@ -20,7 +20,7 @@ The [Control & Connect](https://www.fokus.fraunhofer.de/de/projekt/fame/control_
 As part of the Fraunhofer FOKUS consortium, which acts as an exemplary implementer of the concept, three key partners have joined forces with the Verband der Bildungsmedien (VBM) , which represents the interests of school associations and publishers, and the n-21 state initiative, which has extensive expertise in the administration and coordination of school and organizational structures in Lower Saxony, in order to meet the challenges effectively.
 
 
-## LICENSE-CORE
+## CC-LICENSE-CORE
 The license core accesses other microservices to allow for license assignments and demand notifications in a GUI. Furthermore, this component verifies the legal consumption of individual users through their license assignments.
 
 # Requirements:
