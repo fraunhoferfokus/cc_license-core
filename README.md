@@ -1,9 +1,13 @@
+**This project incorporates elements from the open-source project CLM to facilitate its functionality.**
+
 # What is the License Management Component?
 
 The developed concept of the license component aims to enable users to use digital educational content from providers in a legally secure manner, while at the same time meeting the requirements of education providers and schools. This component serves to model user rights to digital learning content and facilitates the exchange of data between the education providers' systems and the registration systems. This includes metadata systems for the representation of media, license marketplaces for the acquisition and administration of licenses and registration systems for schools and their users. 
 
 ## Architecture
 The present illustration demonstrates how the concept of the license component aims to ensure legally secure access to educational content for users based on license agreements. The component supports the import of licenses, either through direct communication with a license marketplace or through initiation by the learning resource manager. These licenses can be synchronized via bilateral REST communication. Moreover, it is intended that the organizational structure of an educational institution will be aligned with the license component. This includes the integration of existing user accounts from various Identity Providers as well as the representation of the hierarchical organization structures during the license allocation.
+
+To unlock full functionality, each service component has been developed as a microservice. This module is known as license-core.
 
 ![Architecture](./assets/Architecture_C_C.png)
 
