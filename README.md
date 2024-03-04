@@ -24,7 +24,6 @@ As part of the Fraunhofer FOKUS consortium, which acts as an exemplary implement
 The license core accesses other microservices to allow for license assignments and demand notifications in a GUI. Furthermore, this component verifies the legal consumption of individual users through their license assignments.
 
 # Requirements:
-* Docker Version 20x
 * Node.js Version 20x
 * Kecloak Version 18x
 * [moin.schule](https://www.n-21.de/portal/seiten/moin-schule-900000111-10056.html) (OIDC) authentication service credentials 
