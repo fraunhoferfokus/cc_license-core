@@ -1,4 +1,4 @@
-**This project incorporates elements from the open-source project CLM to facilitate its functionality.**
+**This project incorporates elements from the open-source project [CLM](https://github.com/fraunhoferfokus/clm-core) to facilitate its functionality.**
 
 # What is the License Management Component?
 
