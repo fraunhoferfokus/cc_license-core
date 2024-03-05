@@ -31,7 +31,7 @@ The license core accesses other microservices to allow for license assignments a
 * MariaDB Version 10x setup locally 
 * Redis Version 6x setup locally
 * Node.js Version 20x
-* Kecloak Credentials
+* Kecloak proxy credentials which is configured to forward all requests to moin.schule
 * [moin.schule](https://www.n-21.de/portal/seiten/moin-schule-900000111-10056.html) (OIDC) authentication service credentials
   
 
