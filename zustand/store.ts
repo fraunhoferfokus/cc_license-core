@@ -153,8 +153,8 @@ export const useStore = create<MergedState>()(
             fetchUsersAndGroups: async () => {
                 const config = get().config
                 set({ loadingUsers: true })
-                const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/users`, { withCredentials: true })
-                const resp2 = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/user_manager/groups`, { withCredentials: true })
+                const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/users`, { withCredentials: true })
+                const resp2 = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/groups`, { withCredentials: true })
                 set({ groups: resp2.data, users: resp.data, loadingUsers: false })
                 return new Promise((resolve) => resolve(true))
             },

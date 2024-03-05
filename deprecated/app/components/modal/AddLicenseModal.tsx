@@ -296,7 +296,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
 
                                     // import via downloadID
                                     if (element.isDownloadID) {
-                                        axios.get(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseInformations/import2/${element.downloadID}`,
+                                        axios.get(`${process.env.NEXT_PUBLIC_LICENSE_MANAGER_URL}/licenseInformations/import2/${element.downloadID}`,
                                             {
                                                 withCredentials: true,
                                             }
@@ -334,7 +334,7 @@ export default function AddLicenseModal({ open, setOpen }: any) {
                                                 }
 
                                                 if (data.length > 0) {
-                                                    const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById`,
+                                                    const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_METADATA_MANAGER_URL}/getMetadataById`,
                                                         product_ids
                                                         ,
                                                         {

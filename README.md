@@ -28,7 +28,8 @@ The license core accesses other microservices to allow for license assignments a
 * Redis Version 6x
 * Node.js Version 20x
 * Kecloak Version 18x
-* [moin.schule](https://www.n-21.de/portal/seiten/moin-schule-900000111-10056.html) (OIDC) authentication service credentials 
+* [moin.schule](https://www.n-21.de/portal/seiten/moin-schule-900000111-10056.html) (OIDC) authentication service credentials
+*  
 
 # Quick Start:
 
