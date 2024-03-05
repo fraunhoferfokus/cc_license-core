@@ -24,12 +24,16 @@ As part of the Fraunhofer FOKUS consortium, which acts as an exemplary implement
 The license core accesses other microservices to allow for license assignments and demand notifications in a GUI. Furthermore, this component verifies the legal consumption of individual users through their license assignments.
 
 # Requirements:
-* MariaDB Version 10x
-* Redis Version 6x
+* Before initiating this server, it is mandatory to configure the following microservices. Please adhere to the individual setup guidelines for each microservice:
+  * [CC-Metadata-Manager](https://github.com/fraunhoferfokus/cc_metadata-manager)
+  * [CC-License-Manager](https://github.com/fraunhoferfokus/cc_license-manager)
+  * [CC-User-Context-Manager](https://github.com/fraunhoferfokus/cc_user-context-manager)
+* MariaDB Version 10x setup locally 
+* Redis Version 6x setup locally
 * Node.js Version 20x
-* Kecloak Version 18x
+* Kecloak Credentials
 * [moin.schule](https://www.n-21.de/portal/seiten/moin-schule-900000111-10056.html) (OIDC) authentication service credentials
-*  
+  
 
 # Quick Start:
 
