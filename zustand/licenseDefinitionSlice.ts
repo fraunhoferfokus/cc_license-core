@@ -52,7 +52,7 @@ export const licenseDefinitionSlice: StateCreator<
     ({
         fetchLicenseDefinitionsV2: async () => {
             set({ licensesLoading: true })
-            const resp = await axios(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/license_manager/licenseDefinitions`,
+            const resp = await axios(`${process.env.NEXT_PUBLIC_SELF_URL}/licenseDefinitions`,
                 {
                     withCredentials: true,
                 }
@@ -89,7 +89,7 @@ export const licenseDefinitionSlice: StateCreator<
             }
 
             if (data.length) {
-                const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_DEPLOY_URL}/metadata_manager/getMetadataById`,
+                const resp2 = await axios.post(`${process.env.NEXT_PUBLIC_METADATA_MANAGER_URL}/getMetadataById`,
                     product_ids
                     ,
                     {

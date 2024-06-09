@@ -15,7 +15,7 @@ To unlock full functionality, each service component has been developed as a mic
 
 ## Reference Project
 
-The [Control & Connect](https://www.fokus.fraunhofer.de/de/projekt/fame/control_connect_23-05) project, funded by the Federal Ministry of Education and Research (BMBF), tackled the problem of user-related license allocation in the German education sector. 
+The [Control & Connect](https://www.fokus.fraunhofer.de/de/projekt/fame/control_connect_23-05) project, funded by the Federal Ministry of Education and Research (BMBF) under funding code 16INBI002C, tackled the problem of user-related license allocation in the German education sector. 
 
 As part of the Fraunhofer FOKUS consortium, which acts as an exemplary implementer of the concept, three key partners have joined forces with the Verband der Bildungsmedien (VBM) , which represents the interests of school associations and publishers, and the n-21 state initiative, which has extensive expertise in the administration and coordination of school and organizational structures in Lower Saxony, in order to meet the challenges effectively.
 
@@ -24,11 +24,16 @@ As part of the Fraunhofer FOKUS consortium, which acts as an exemplary implement
 The license core accesses other microservices to allow for license assignments and demand notifications in a GUI. Furthermore, this component verifies the legal consumption of individual users through their license assignments.
 
 # Requirements:
-* MariaDB Version 10x
-* Redis Version 6x
+* Before initiating this server, it is mandatory to configure the following microservices. Please adhere to the individual setup guidelines for each microservice:
+  * [CC-Metadata-Manager](https://github.com/fraunhoferfokus/cc_metadata-manager)
+  * [CC-License-Manager](https://github.com/fraunhoferfokus/cc_license-manager)
+  * [CC-User-Context-Manager](https://github.com/fraunhoferfokus/cc_user-context-manager)
+* MariaDB Version 10x setup locally 
+* Redis Version 6x setup locally
 * Node.js Version 20x
-* Kecloak Version 18x
-* [moin.schule](https://www.n-21.de/portal/seiten/moin-schule-900000111-10056.html) (OIDC) authentication service credentials 
+* Kecloak proxy credentials which is configured to forward all requests to moin.schule
+* [moin.schule](https://www.n-21.de/portal/seiten/moin-schule-900000111-10056.html) (OIDC) authentication service credentials
+  
 
 # Quick Start:
 

@@ -103,6 +103,11 @@ declare module 'express-session' {
 }
 if (process.env.DELETE_USE_CASE_EVERY_DAY) scheduleEveryDay()
 
+const USER_MANGER_URL = process.env.NEXT_PUBLIC_USER_MANAGER_URL
+const LICENSE_MANAGER_URL = process.env.NEXT_PUBLIC_LICENSE_MANAGER_URL
+
+
+
 app.prepare().then(() => {
     const options = {
         definition: {
@@ -132,9 +137,56 @@ app.prepare().then(() => {
             store: redisStore,
             resave: false, // required: force lightweight session keep alive (touch)
             saveUninitialized: false, // recommended: only save session when data exists
-            secret: "keyboard cat",
+            secret: process.env.SESSION_SECRET! || 'keyboard cat',
         })
     )
+
+    server.get('/api/users', async (req, res, next) => {
+        try {
+            let access_token = req.session.access_token
+            const users = (await axios.get(USER_MANGER_URL + '/users', {
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                }
+            })).data
+            return res.json(users)
+        } catch (err) {
+            return next(err)
+        }
+    })
+
+    server.get('/api/groups', async (req, res, next) => {
+        try {
+            let access_token = req.session.access_token
+            const groups = (await axios.get(USER_MANGER_URL + '/groups', {
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                }
+            })).data
+            return res.json(groups)
+        } catch (err) {
+            return next(err)
+        }
+
+        
+    })
+
+    server.get('/api/licenseDefinitions', async (req, res, next) => {
+        try {
+            let access_token = req.session.access_token
+            const licenseDefinitions = (await axios.get(LICENSE_MANAGER_URL + '/licenseDefinitions', {
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                }
+            })).data
+            return res.json(licenseDefinitions)
+        } catch (err) {
+            return next(err)
+        }
+    })
 
     server.get('/api/user-info', AuthHandler.requireSessison, (req, res) => {
         return res.send(req.session.user)
