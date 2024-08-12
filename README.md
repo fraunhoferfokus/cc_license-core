@@ -23,6 +23,14 @@ As part of the Fraunhofer FOKUS consortium, which acts as an exemplary implement
 ## CC-LICENSE-CORE
 The license core accesses other microservices to allow for license assignments and demand notifications in a GUI. Furthermore, this component verifies the legal consumption of individual users through their license assignments.
 
+# Dependencies
+## License Package and Metadata Services
+* To import license data and corresoponding metadata, the APIs of BILDUNGSLOGIN are used to deliver the relevant content. More details: partners/BILDUNGSLOGIN.md
+## SSO and User- Contextdata Service
+* Authentication, Autorisation as well as user context information are being delivered by moin.schule via OIDC/SchulConnex. More details: partners/N21.md
+## Medienregal BILDUNGSLOGIN
+* To be able to view their assigned licenses, the BILDUNGSLOGIN Medienregal is used to query relevant licenses from the component, as well as list- and view the Media accordingly. More details: partners/BILDUNGSLOGIN.md
+
 # Requirements:
 * Before initiating this server, it is mandatory to configure the following microservices. Please adhere to the individual setup guidelines for each microservice:
   * [CC-Metadata-Manager](https://github.com/fraunhoferfokus/cc_metadata-manager)
@@ -31,8 +39,7 @@ The license core accesses other microservices to allow for license assignments a
 * MariaDB Version 10x setup locally 
 * Redis Version 6x setup locally
 * Node.js Version 20x
-* Kecloak proxy credentials which is configured to forward all requests to moin.schule
-* [moin.schule](https://www.n-21.de/portal/seiten/moin-schule-900000111-10056.html) (OIDC) authentication service credentials
+* Kecloak proxy credentials which is configured to forward all requests
   
 
 # Quick Start:
