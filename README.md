@@ -25,9 +25,9 @@ The license core accesses other microservices to allow for license assignments a
 
 # Dependencies
 ## License Package and Metadata Services
-* To import license data and corresoponding metadata, the APIs of BILDUNGSLOGIN are used to deliver the relevant content. More details: partners/BILDUNGSLOGIN.md
+* To import license data and corresoponding metadata, the APIs of BILDUNGSLOGIN are used to deliver the relevant content. More details: [partners/BILDUNGSLOGIN.md](./partners/BILDUNGSLOGIN.md)
 ## SSO and User- Contextdata Service
-* Authentication, Autorisation as well as user context information are being delivered by moin.schule via OIDC/SchulConnex. More details: partners/N21.md
+* Authentication, Autorisation as well as user context information are being delivered by moin.schule via OIDC/SchulConnex. More details: [partners/n-21.md](./partners/n-21.md)
 ## Medienregal BILDUNGSLOGIN
 * To be able to view their assigned licenses, the BILDUNGSLOGIN Medienregal is used to query relevant licenses from the component, as well as list- and view the Media accordingly. More details: partners/BILDUNGSLOGIN.md
 
