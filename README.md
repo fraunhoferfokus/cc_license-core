@@ -17,7 +17,7 @@ To unlock full functionality, each service component has been developed as a mic
 
 The [Control & Connect](https://www.fokus.fraunhofer.de/de/projekt/fame/control_connect_23-05) project, funded by the Federal Ministry of Education and Research (BMBF) under funding code 16INBI002C, tackled the problem of user-related license allocation in the German education sector. 
 
-As part of the Fraunhofer FOKUS consortium, which acts as an exemplary implementer of the concept, three key partners have joined forces with the Verband der Bildungsmedien (VBM) , which represents the interests of school associations and publishers, and the n-21 state initiative, which has extensive expertise in the administration and coordination of school and organizational structures in Lower Saxony, in order to meet the challenges effectively.
+In the consortium, three key partners have joined forces with Fraunhofer FOKUS as implementer of the concept, the Verband der Bildungsmedien (VBM), which represents the interests of school associations and publishers, and the n-21 state initiative, which has extensive expertise in the administration and coordination of school and organizational structures in Lower Saxony, in order to meet the challenges effectively.
 
 
 ## CC-LICENSE-CORE
